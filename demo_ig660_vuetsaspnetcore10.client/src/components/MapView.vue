@@ -1,3 +1,5 @@
+<!--圖台主頁面-->
+
 <template>
   <div class="map-layout">
     <!--上方 Logo 與選單-->
@@ -15,7 +17,7 @@
               定位查詢
               <i class="arrow-down"></i>
             </a>
-            <transition name="fade">
+            <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'locate'">
                 <li><a title="包含地建號,門牌,道路,路口,地標,坐標">常用定位</a></li>
                 <li><a>行政區域定位</a></li>
@@ -28,7 +30,7 @@
           <!--房地市場-->
           <li @mouseenter="activeMenu = 'market'" @mouseleave="activeMenu = null">
             <a class="main-link" href="javascript:;">房地市場 <i class="arrow-down"></i></a>
-            <transition name="fade">
+            <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'market'">
                 <li><a @click="run('startRPQ')">實價登錄查詢</a></li>
                 <li><a @click="run('opendiv', 'layside_house3')">社區建案看板</a></li>
@@ -41,7 +43,7 @@
           <li @mouseenter="activeMenu = 'safety'"
               @mouseleave="activeMenu = null">
             <a class="main-link" href="javascript:;">交易安全 <i class="arrow-down"></i></a>
-            <transition name="fade">
+            <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'safety'">
                 <li><a @click="run('opendiv', 'layside_house2')">建案備查與銷售</a></li>
                 <li><a @click="run('opendiv', 'layside_house4')">不動產相關業者</a></li>
@@ -55,7 +57,7 @@
           <li @mouseenter="activeMenu = 'land'"
               @mouseleave="activeMenu = null">
             <a class="main-link" href="javascript:;">地政資訊 <i class="arrow-down"></i></a>
-            <transition name="fade">
+            <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'land'">
                 <li><a @click="run('opendiv', 'layside_land1')">未辦繼承</a></li>
                 <li><a @click="run('opendiv', 'layside_land2')">地籍清理</a></li>
@@ -71,7 +73,7 @@
           <li @mouseenter="activeMenu = 'life'"
               @mouseleave="activeMenu = null">
             <a class="main-link" href="javascript:;">生活資訊 <i class="arrow-down"></i></a>
-            <transition name="fade">
+            <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'life'">
                 <li><a href="https://165.npa.gov.tw/#/" target="_blank">165反詐騙</a></li>
                 <li><a @click="run('linkAQI')">空氣品質</a></li>
@@ -86,16 +88,92 @@
           </li>
         </ul>
       </nav>
+      <!--右側的佔位容器-->
       <div class="right-area"></div>
     </header>
+
+    <!--左側選單-->
+    <div id="rightpanel" class="animate__animated animate__fadeIn" style="width: 64px;height: 85%; position: absolute; left: -8px; top: 72px; border-radius: 8px; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);">
+      <div id="side-menu" :class="['side-menu', { open: isSideOpen }]" style="z-index:1000;">
+        <div class="btnGroup flex-col">
+          <button id="maptool1" class="functionBtn" title="圖面分析" onclick="GeoAnStep1();">
+            <img class="iconImg" src="/src/Icons/map-analytic.svg" alt="">
+            <p class="name-tag">圖面分析</p>
+          </button>
+          <button class="functionBtn" id="" title="3D切換" onclick="ChangeView();exchangediv('quicktool');">
+            <img class="iconImg" src="/src/Icons/3D.svg" alt="">
+            <p class="name-tag">3D切換</p>
+          </button>
+          <button class="functionBtn" title="地圖列印" onclick="startprint();">
+            <img class="iconImg" src="/src/Icons/printer.svg" alt="">
+            <p class="name-tag">地圖列印</p>
+          </button>
+          <div class="btnGroup btn-extend flex flex-col" id="MSGA_left">
+            <button class="functionBtn control" id="" title="繪圖工具" onclick="OpenDraw()">
+              <img class="iconImg" src="/src/Icons/draw-measure.svg" alt="">
+              <p class="name-tag">繪圖工具</p>
+            </button>
+            <div class="extend-group">
+              <div class="overflow-hidden">
+                <button class="functionBtn" id="MDD" title="清除">
+                  <img class="iconImg" src="/src/Icons/erase.svg" alt="">
+                  <p class="name-tag">清除</p>
+                </button>
+                <button class="functionBtn" id="MDT" title="文字">
+                  <img class="iconImg" src="/src/Icons/font.svg" alt="">
+                  <p class="name-tag">文字</p>
+                </button>
+                <button class="functionBtn" id="MDC" title="圓形">
+                  <img class="iconImg" src="/src/Icons/circle.svg" alt="">
+                  <p class="name-tag">圓形</p>
+                </button>
+                <button class="functionBtn" id="MDL" title="線狀">
+                  <img class="iconImg" src="/src/Icons/line.svg" alt="">
+                  <p class="name-tag">線狀</p>
+                </button>
+                <button class="functionBtn" id="MDA" title="面狀">
+                  <img class="iconImg" src="/src/Icons/surface.svg" alt="">
+                  <p class="name-tag">面狀</p>
+                </button>
+                <button class="functionBtn" id="MDR" title="矩形">
+                  <img class="iconImg" src="/src/Icons/rec.svg" alt="">
+                  <p class="name-tag">矩形</p>
+                </button>
+                <button class="functionBtn" id="MDP" title="點狀">
+                  <img class="iconImg" src="/src/Icons/point.svg" alt="">
+                  <p class="name-tag">點狀</p>
+                </button>
+              </div>
+            </div>
+          </div>
+          <button class="functionBtn" id="" onclick="opendrawset()" title="環境設定">
+            <img class="iconImg" src="/src/Icons/tool.svg" alt="">
+            <p class="name-tag">環境設定</p>
+          </button>
+          <button class="functionBtn" id="" onclick="opendrawset('draw')" title="地圖樣式">
+            <img class="iconImg" src="/src/Icons/erase.svg" alt="">
+            <p class="name-tag">地圖樣式</p>
+          </button>
+        </div>
+        <div class="btnGroup flex-col">
+          <button class="functionBtn" id="" title="回入口頁" onclick="window.open('https://ig660.nantou.gov.tw/into')">
+            <img class="iconImg" src="/src/Icons/home.svg" alt="">
+            <p class="name-tag">回入口頁</p>
+          </button>
+          <button @click="isSideOpen = !isSideOpen" class="functionBtn closePageBtn" title="收合畫面">
+            <img class="iconImg" src="/src/Icons/sidebar-expand.svg" alt="">
+            <p class="name-tag">收合畫面</p>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
   import { ref } from 'vue';
-
-  // 控制當前顯示哪一個下拉選單
-  const activeMenu = ref(null);
+  const activeMenu = ref(null);  // 控制當前顯示哪一個下拉選單
+  const isSideOpen = ref(true);  // 控制左側選單的開合
 
   // 打開外部連結
   const openHome = () => {
