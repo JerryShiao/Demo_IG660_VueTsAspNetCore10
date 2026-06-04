@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="demo_ig660_vuetsaspnetcore10.client/demo_ig660_vuetsaspnetcore10.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Demo_IG660_VueTsAspNetCore10.Server/Demo_IG660_VueTsAspNetCore10.Server.csproj" />
+</Solution>
