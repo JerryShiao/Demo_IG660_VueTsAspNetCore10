@@ -100,7 +100,7 @@
 
     <!--左側選單-->
     <div id="rightpanel" class="animate__animated animate__fadeIn"
-         style="width: 64px; height: 85%; position: absolute; left: -8px; top: 72px; border-radius: 8px; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);">
+         style="width: 64px; height: 75%; position: absolute; left: -8px; top: 72px; border-radius: 8px; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);">
       <div id="side-menu" :class="['side-menu', { open: isSideOpen }]" style="z-index:1000;">
         <div class="btnGroup flex-col">
           <button id="maptool1" class="functionBtn" title="圖面分析" @click="NofunctionAlert();">
@@ -172,6 +172,19 @@
             <img class="iconImg" src="/src/Icons/sidebar-expand.svg" alt="">
             <p class="name-tag">收合畫面</p>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!--圖層控制-->
+    <div id="LayerlistBT" style="position: fixed; left: 66px; bottom: 16px;">
+      <div  class="layer-control-btn" style="width: 64px; height: 64px; color: #3c90cd; background-color: white; border-radius: 8px; margin: 2px; cursor: pointer; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25); display: inline-block; "
+           @click="NofunctionAlert();">
+        <div style="display: flex; flex-direction: column; margin-top:10px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M10.9827 0.222385C11.6277 -0.0741283 12.3724 -0.0741283 13.0174 0.222385L22.4809 4.56265C22.8488 4.73025 23.0826 5.09552 23.0826 5.49946C23.0826 5.90341 22.8488 6.26868 22.4809 6.43627L13.0174 10.7765C12.3724 11.0731 11.6277 11.0731 10.9827 10.7765L1.51923 6.43627C1.15125 6.26438 0.91748 5.89911 0.91748 5.49946C0.91748 5.09981 1.15125 4.73025 1.51923 4.56265L10.9827 0.222385ZM20.1778 9.00606L22.4809 10.0632C22.8488 10.2308 23.0826 10.5961 23.0826 11C23.0826 11.4039 22.8488 11.7692 22.4809 11.9368L13.0174 16.2771C12.3724 16.5736 11.6277 16.5736 10.9827 16.2771L1.51923 11.9368C1.15125 11.7649 0.91748 11.3996 0.91748 11C0.91748 10.6004 1.15125 10.2308 1.51923 10.0632L3.82232 9.00606L10.4026 12.0228C11.4156 12.4869 12.5845 12.4869 13.5975 12.0228L20.1778 9.00606ZM13.5975 17.5233L20.1778 14.5066L22.4809 15.5637C22.8488 15.7313 23.0826 16.0966 23.0826 16.5005C23.0826 16.9045 22.8488 17.2698 22.4809 17.4373L13.0174 21.7776C12.3724 22.0741 11.6277 22.0741 10.9827 21.7776L1.51923 17.4373C1.15125 17.2655 0.91748 16.9002 0.91748 16.5005C0.91748 16.1009 1.15125 15.7313 1.51923 15.5637L3.82232 14.5066L10.4026 17.5233C11.4156 17.9874 12.5845 17.9874 13.5975 17.5233Z" fill="#3c90cd" />
+          </svg>
+          <p style="text-align: center; font-weight: bolder; margin-top: -3px;">圖層控制</p>
         </div>
       </div>
     </div>
@@ -464,6 +477,7 @@
   }
   /*【左側選單】END =====================================================*/
 
+  /* 地圖內容 */
   .map-container {
     position: absolute;
     top: 64px; /* navbar 高度 */
@@ -474,4 +488,19 @@
     height: calc(100vh - 64px);
     overflow: hidden;
   }
+  
+  /*【圖層控制】BEGIN =====================================================*/
+  .layer-control-btn {
+    transition: all 0.3s ease;
+  }
+
+    .layer-control-btn:hover {
+      background-color: #e0f2ff !important;
+      box-shadow: 0px 0px 8px 0px rgba(60, 144, 205, 0.4) !important;
+    }
+
+      .layer-control-btn:hover svg {
+        filter: brightness(1.2);
+      }
+  /*【圖層控制】END =====================================================*/
 </style>
