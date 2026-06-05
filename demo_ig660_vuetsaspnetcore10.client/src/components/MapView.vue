@@ -116,7 +116,8 @@
             <p class="name-tag">地圖列印</p>
           </button>
           <div class="btnGroup btn-extend flex flex-col" id="MSGA_left">
-            <button class="functionBtn control" :class="{ 'active': showDrawTools }" id="" title="繪圖工具" @click.stop="ToggleDrawTools">
+            <button :class="['functionBtn', 'control', { 'active': showDrawTools }]"
+                    title="繪圖工具" @click.stop="ToggleDrawTools">
               <img class="iconImg" src="/src/Icons/draw-measure.svg" alt="">
               <p class="name-tag">繪圖工具</p>
             </button>
@@ -177,7 +178,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   //【引入】=====================================================================
   // Vue
   import {
@@ -200,12 +201,12 @@
   const activeMenu = ref(null);     // 控制當前顯示哪一個下拉選單
   const isSideOpen = ref(true);     // 控制左側選單的開合
   const showDrawTools = ref(false); // 控制繪圖工具面板顯示/隱藏
-  let mainMap;     // 宣告一個變量來存儲地圖實例
-  let mapView; // 宣告一個變量來存儲地圖視圖實例
+  let mainMap : Map;     // 宣告一個變量來存儲地圖實例
+  let mapView: MapView; // 宣告一個變量來存儲地圖視圖實例
 
   // 1. 初始化 loading 控制器
   const $loading = useLoading();
-  let loader = null; // 用來記錄畫面上遮罩實體的變數
+  let loader: any = null; // 用來記錄畫面上遮罩實體的變數
 
   mainMap = new Map({
     basemap: "osm", // 添加底圖(地形圖)
@@ -268,14 +269,9 @@
       popupEnabled: true,
       popup: {
         dockEnabled: false,
-        collapseEnabled: false,
-        maxInlineActions: 6,
         dockOptions: {
           breakpoint: false,
           buttonEnabled: true,
-          alignment: "top-center",
-          collapsed: false,
-          collapseEnabled: false,
           position: "bottom-right"
         }
       }
@@ -283,8 +279,6 @@
 
     // 在地圖視圖加載完成後執行
     mapView.when(() => {
-      mapView.locale = "zh-TW"; // 設定地圖語言為中文
-
       // 如果遮罩還開著，就把它關掉
       if (loader) {
         loader.hide();
