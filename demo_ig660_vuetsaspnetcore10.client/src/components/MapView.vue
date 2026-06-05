@@ -195,7 +195,7 @@
   let mapView; // 宣告一個變量來存儲地圖視圖實例
 
   mainMap = new Map({
-    basemap: "topo", // 添加底圖(地形圖)
+    basemap: "osm", // 添加底圖(地形圖)
     ground: {
       navigationConstraint: {
         type: "stay-above"
@@ -237,14 +237,11 @@
     mapView = new MapView({
       container: "MapViewDiv",
       map: mainMap,
-      center: mainMap.center, // 設定初始中心點
-      zoom: 10,               // 設定初始縮放等級
-      scale: mainMap.scale,
+      center: [120.85, 23.75], // 設定初始中心點：台灣中心坐標（經度, 緯度）
+      zoom: 10,              // 設定初始縮放等級
       constraints: {
         rotationEnabled: false,
-        snapToZoom: false,
-        maxScale: 564.248588,
-        minScale: 9244648.868618
+        snapToZoom: false
       },
       popupEnabled: true,
       popup: {
@@ -260,6 +257,11 @@
           position: "bottom-right"
         }
       }
+    });
+
+    // 在地圖視圖加載完成後執行
+    mapView.when(() => {
+      mapView.locale = "zh-TW"; // 設定地圖語言為中文
     });
   }
   //#endregion
