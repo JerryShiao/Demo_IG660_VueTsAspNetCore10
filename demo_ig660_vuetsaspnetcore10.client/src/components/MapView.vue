@@ -19,11 +19,11 @@
             </a>
             <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'locate'">
-                <li><a title="包含地建號,門牌,道路,路口,地標,坐標">常用定位</a></li>
-                <li><a>行政區域定位</a></li>
-                <li><a>開發區位定位</a></li>
-                <li><a>社區定位</a></li>
-                <li><a>電桿定位</a></li>
+                <li><a title="包含地建號,門牌,道路,路口,地標,坐標" @click="NofunctionAlert();">常用定位</a></li>
+                <li><a @click="NofunctionAlert();">行政區域定位</a></li>
+                <li><a @click="NofunctionAlert();">開發區位定位</a></li>
+                <li><a @click="NofunctionAlert();">社區定位</a></li>
+                <li><a @click="NofunctionAlert();">電桿定位</a></li>
               </ul>
             </transition>
           </li>
@@ -32,10 +32,10 @@
             <a class="main-link" href="javascript:;">房地市場 <i class="arrow-down"></i></a>
             <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'market'">
-                <li><a @click="run('startRPQ')">實價登錄查詢</a></li>
-                <li><a @click="run('opendiv', 'layside_house3')">社區建案看板</a></li>
-                <li><a @click="run   * ('LawingQuery')">法拍待拍</a></li>
-                <li><a @click="run('LawedQuery')">法拍拍定</a></li>
+                <li><a @click="NofunctionAlert();">實價登錄查詢</a></li>
+                <li><a @click="NofunctionAlert();">社區建案看板</a></li>
+                <li><a @click="NofunctionAlert();">法拍待拍</a></li>
+                <li><a @click="NofunctionAlert();">法拍拍定</a></li>
               </ul>
             </transition>
           </li>
@@ -45,11 +45,11 @@
             <a class="main-link" href="javascript:;">交易安全 <i class="arrow-down"></i></a>
             <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'safety'">
-                <li><a @click="run('opendiv', 'layside_house2')">建案備查與銷售</a></li>
-                <li><a @click="run('opendiv', 'layside_house4')">不動產相關業者</a></li>
-                <li><a @click="run('useLicense')">建管執照地圖</a></li>
-                <li><a @click="run('overnav', 555)">建物屋齡模擬</a></li>
-                <li><a @click="run('opendiv', 'layside_land6')">土地參考檔分類</a></li>
+                <li><a @click="NofunctionAlert();">建案備查與銷售</a></li>
+                <li><a @click="NofunctionAlert();">不動產相關業者</a></li>
+                <li><a @click="NofunctionAlert();">建管執照地圖</a></li>
+                <li><a @click="NofunctionAlert();">建物屋齡模擬</a></li>
+                <li><a @click="NofunctionAlert();">土地參考檔分類</a></li>
               </ul>
             </transition>
           </li>
@@ -59,13 +59,13 @@
             <a class="main-link" href="javascript:;">地政資訊 <i class="arrow-down"></i></a>
             <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'land'">
-                <li><a @click="run('opendiv', 'layside_land1')">未辦繼承</a></li>
-                <li><a @click="run('opendiv', 'layside_land2')">地籍清理</a></li>
-                <li><a @click="run('opendiv', 'layside_land3')">375租約</a></li>
-                <li><a @click="run('opendiv', 'layside_land5')">縣有耕地</a></li>
-                <li><a @click="run('opendiv', 'layside_land10')">原住民保留地</a></li>
-                <li><a @click="run('opendiv', 'layside_land11')">控制點查詢</a></li>
-                <li><a @click="run('opendiv', 'layside_land4')">土地標售</a></li>
+                <li><a @click="NofunctionAlert();">未辦繼承</a></li>
+                <li><a @click="NofunctionAlert();">地籍清理</a></li>
+                <li><a @click="NofunctionAlert();">375租約</a></li>
+                <li><a @click="NofunctionAlert();">縣有耕地</a></li>
+                <li><a @click="NofunctionAlert();">原住民保留地</a></li>
+                <li><a @click="NofunctionAlert();">控制點查詢</a></li>
+                <li><a @click="NofunctionAlert();">土地標售</a></li>
               </ul>
             </transition>
           </li>
@@ -76,13 +76,13 @@
             <transition name="slide">
               <ul class="dropdown" v-show="activeMenu === 'life'">
                 <li><a href="https://165.npa.gov.tw/#/" target="_blank">165反詐騙</a></li>
-                <li><a @click="run('linkAQI')">空氣品質</a></li>
-                <li><a @click="run('linkUVI')">日曬指數</a></li>
-                <li><a @click="run('linkROD')">雨量資料</a></li>
-                <li><a @click="run('linkWOR')">天氣報告</a></li>
-                <li><a @click="run('linkStopWater')">停水公告</a></li>
-                <li><a @click="run('linkEQR')">近期地震</a></li>
-                <li><a @click="run('pipelineCoord')">挖掘資訊</a></li>
+                <li><a @click="NofunctionAlert();">空氣品質</a></li>
+                <li><a @click="NofunctionAlert();">日曬指數</a></li>
+                <li><a @click="NofunctionAlert();">雨量資料</a></li>
+                <li><a @click="NofunctionAlert();">天氣報告</a></li>
+                <li><a @click="NofunctionAlert();">停水公告</a></li>
+                <li><a @click="NofunctionAlert();">近期地震</a></li>
+                <li><a @click="NofunctionAlert();">挖掘資訊</a></li>
               </ul>
             </transition>
           </li>
@@ -102,15 +102,15 @@
          style="width: 64px; height: 85%; position: absolute; left: -8px; top: 72px; border-radius: 8px; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);">
       <div id="side-menu" :class="['side-menu', { open: isSideOpen }]" style="z-index:1000;">
         <div class="btnGroup flex-col">
-          <button id="maptool1" class="functionBtn" title="圖面分析" onclick="GeoAnStep1();">
+          <button id="maptool1" class="functionBtn" title="圖面分析" @click="NofunctionAlert();">
             <img class="iconImg" src="/src/Icons/map-analytic.svg" alt="">
             <p class="name-tag">圖面分析</p>
           </button>
-          <button class="functionBtn" id="" title="3D切換" onclick="ChangeView();exchangediv('quicktool');">
+          <button class="functionBtn" id="" title="3D切換" @click="NofunctionAlert();">
             <img class="iconImg" src="/src/Icons/3D.svg" alt="">
             <p class="name-tag">3D切換</p>
           </button>
-          <button class="functionBtn" title="地圖列印" onclick="startprint();">
+          <button class="functionBtn" title="地圖列印" @click="NofunctionAlert();">
             <img class="iconImg" src="/src/Icons/printer.svg" alt="">
             <p class="name-tag">地圖列印</p>
           </button>
@@ -121,42 +121,42 @@
             </button>
             <div class="extend-group" v-show="showDrawTools">
               <div>
-                <button class="functionBtn" id="MDD" title="清除">
+                <button class="functionBtn" id="MDD" title="清除" @click="NofunctionAlert();">
                   <img class="iconImg" src="/src/Icons/erase.svg" alt="">
                   <p class="name-tag">清除</p>
                 </button>
-                <button class="functionBtn" id="MDT" title="文字">
+                <button class="functionBtn" id="MDT" title="文字" @click="NofunctionAlert();">
                   <img class="iconImg" src="/src/Icons/font.svg" alt="">
                   <p class="name-tag">文字</p>
                 </button>
-                <button class="functionBtn" id="MDC" title="圓形">
+                <button class="functionBtn" id="MDC" title="圓形" @click="NofunctionAlert();">
                   <img class="iconImg" src="/src/Icons/circle.svg" alt="">
                   <p class="name-tag">圓形</p>
                 </button>
-                <button class="functionBtn" id="MDL" title="線狀">
+                <button class="functionBtn" id="MDL" title="線狀" @click="NofunctionAlert();">
                   <img class="iconImg" src="/src/Icons/line.svg" alt="">
                   <p class="name-tag">線狀</p>
                 </button>
-                <button class="functionBtn" id="MDA" title="面狀">
+                <button class="functionBtn" id="MDA" title="面狀" @click="NofunctionAlert();">
                   <img class="iconImg" src="/src/Icons/surface.svg" alt="">
                   <p class="name-tag">面狀</p>
                 </button>
-                <button class="functionBtn" id="MDR" title="矩形">
+                <button class="functionBtn" id="MDR" title="矩形" @click="NofunctionAlert();">
                   <img class="iconImg" src="/src/Icons/rec.svg" alt="">
                   <p class="name-tag">矩形</p>
                 </button>
-                <button class="functionBtn" id="MDP" title="點狀">
+                <button class="functionBtn" id="MDP" title="點狀" @click="NofunctionAlert();">
                   <img class="iconImg" src="/src/Icons/point.svg" alt="">
                   <p class="name-tag">點狀</p>
                 </button>
               </div>
             </div>
           </div>
-          <button class="functionBtn" id="" onclick="opendrawset()" title="環境設定">
+          <button class="functionBtn" id="" @click="NofunctionAlert();" title="環境設定">
             <img class="iconImg" src="/src/Icons/tool.svg" alt="">
             <p class="name-tag">環境設定</p>
           </button>
-          <button class="functionBtn" id="" onclick="opendrawset('draw')" title="地圖樣式">
+          <button class="functionBtn" id="" @click="NofunctionAlert();" title="地圖樣式">
             <img class="iconImg" src="/src/Icons/erase.svg" alt="">
             <p class="name-tag">地圖樣式</p>
           </button>
@@ -173,19 +173,24 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
   //【引入】=====================================================================
+  // Vue
   import {
     ref,      // 引入ref函數以創建響應式變量
     onMounted // 引入onMounted函數以在組件掛載後執行代碼
   } from 'vue';
+
+  // ArcGIS SDK
   import Map from '@arcgis/core/Map';
   import MapView from '@arcgis/core/views/MapView';
   import Popup from '@arcgis/core/widgets/Popup';
+
+  //JS 套件  
+  import Swal from 'sweetalert2'; //sweetalert2
 
   //【宣告】=====================================================================
   const activeMenu = ref(null);     // 控制當前顯示哪一個下拉選單
@@ -262,6 +267,19 @@
     // 在地圖視圖加載完成後執行
     mapView.when(() => {
       mapView.locale = "zh-TW"; // 設定地圖語言為中文
+    });
+  }
+  //#endregion
+
+  //#region ◆功能停用提示 [NofunctionAlert]
+  /**
+   * 功能停用提示
+   */
+  function NofunctionAlert() {
+    Swal.fire({
+      title: '功能停用',
+      text: '此 Demo 尚未實作此功能！',
+      icon: 'warning',
     });
   }
   //#endregion
