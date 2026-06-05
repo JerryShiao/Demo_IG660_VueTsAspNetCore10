@@ -2,6 +2,7 @@
 
 <template>
   <div class="map-layout">
+
     <!--上方 Logo 與選單-->
     <header class="navbar">
       <!--上方 Logo-->
@@ -184,20 +185,27 @@
     onMounted // 引入onMounted函數以在組件掛載後執行代碼
   } from 'vue';
 
+  // Loading 遮罩使用官方提供的 useLoading 函式
+  import { useLoading } from 'vue-loading-overlay';
+
   // ArcGIS SDK
   import Map from '@arcgis/core/Map';
   import MapView from '@arcgis/core/views/MapView';
   import Popup from '@arcgis/core/widgets/Popup';
 
-  //JS 套件  
+  // 套件
   import Swal from 'sweetalert2'; //sweetalert2
 
   //【宣告】=====================================================================
   const activeMenu = ref(null);     // 控制當前顯示哪一個下拉選單
-  const isSideOpen = ref(true);     // 控制左側選單的開合  
+  const isSideOpen = ref(true);     // 控制左側選單的開合
   const showDrawTools = ref(false); // 控制繪圖工具面板顯示/隱藏
-  let mainMap; // 宣告一個變量來存儲地圖實例
+  let mainMap;     // 宣告一個變量來存儲地圖實例
   let mapView; // 宣告一個變量來存儲地圖視圖實例
+
+  // 1. 初始化 loading 控制器
+  const $loading = useLoading();
+  let loader = null; // 用來記錄畫面上遮罩實體的變數
 
   mainMap = new Map({
     basemap: "osm", // 添加底圖(地形圖)
@@ -211,6 +219,15 @@
   //【初始化】===================================================================
   // 在組件掛載後執行
   onMounted(() => {
+
+    // 2. 網頁一掛載，立刻開起遮罩，並將其實體存入 loader
+    loader = $loading.show({
+      color: '#41b883',
+      loader: 'spinner',
+      transition: 'fade',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)' // 深色背景 (透明度 75%)
+    });
+
     CreateMap(); // 創建地圖
   });
 
@@ -267,6 +284,11 @@
     // 在地圖視圖加載完成後執行
     mapView.when(() => {
       mapView.locale = "zh-TW"; // 設定地圖語言為中文
+
+      // 如果遮罩還開著，就把它關掉
+      if (loader) {
+        loader.hide();
+      }
     });
   }
   //#endregion

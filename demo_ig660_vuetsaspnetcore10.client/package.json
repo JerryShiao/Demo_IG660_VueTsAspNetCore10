@@ -17,8 +17,10 @@
     "@arcgis/core": "^5.0.19",
     "@tmcw/togeojson": "^7.1.2",
     "animate.css": "^4.1.1",
+    "primevue": "^4.5.5",
     "sweetalert2": "^11.26.25",
-    "vue": "^3.5.32"
+    "vue": "^3.5.32",
+    "vue-loading-overlay": "^6.0.6"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
