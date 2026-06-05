@@ -5,7 +5,7 @@
     <!--上方 Logo 與選單-->
     <header class="navbar">
       <!--上方 Logo-->
-      <div class="logo-area" @click="openHome">
+      <div class="logo-area" @click="OpenHome">
         <img src="/icons/png/logo_tn3.png" alt="Logo" />
       </div>
       <!--上方選單-->
@@ -34,7 +34,7 @@
               <ul class="dropdown" v-show="activeMenu === 'market'">
                 <li><a @click="run('startRPQ')">實價登錄查詢</a></li>
                 <li><a @click="run('opendiv', 'layside_house3')">社區建案看板</a></li>
-                <li><a @click="run('LawingQuery')">法拍待拍</a></li>
+                <li><a @click="run   * ('LawingQuery')">法拍待拍</a></li>
                 <li><a @click="run('LawedQuery')">法拍拍定</a></li>
               </ul>
             </transition>
@@ -92,8 +92,14 @@
       <div class="right-area"></div>
     </header>
 
+    <!--地圖內容-->
+    <div id="mapDiv" class="map-container" style="background-color:white">
+      <div id="MapViewDiv" style="width: 100%; height: 100%; padding:0;margin:0 "></div>
+    </div>
+
     <!--左側選單-->
-    <div id="rightpanel" class="animate__animated animate__fadeIn" style="width: 64px;height: 85%; position: absolute; left: -8px; top: 72px; border-radius: 8px; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);">
+    <div id="rightpanel" class="animate__animated animate__fadeIn"
+         style="width: 64px; height: 85%; position: absolute; left: -8px; top: 72px; border-radius: 8px; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);">
       <div id="side-menu" :class="['side-menu', { open: isSideOpen }]" style="z-index:1000;">
         <div class="btnGroup flex-col">
           <button id="maptool1" class="functionBtn" title="圖面分析" onclick="GeoAnStep1();">
@@ -109,12 +115,12 @@
             <p class="name-tag">地圖列印</p>
           </button>
           <div class="btnGroup btn-extend flex flex-col" id="MSGA_left">
-            <button class="functionBtn control" id="" title="繪圖工具" onclick="OpenDraw()">
+            <button class="functionBtn control" :class="{ 'active': showDrawTools }" id="" title="繪圖工具" @click.stop="ToggleDrawTools">
               <img class="iconImg" src="/src/Icons/draw-measure.svg" alt="">
               <p class="name-tag">繪圖工具</p>
             </button>
-            <div class="extend-group">
-              <div class="overflow-hidden">
+            <div class="extend-group" v-show="showDrawTools">
+              <div>
                 <button class="functionBtn" id="MDD" title="清除">
                   <img class="iconImg" src="/src/Icons/erase.svg" alt="">
                   <p class="name-tag">清除</p>
@@ -167,36 +173,97 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup>
-  import { ref } from 'vue';
-  const activeMenu = ref(null);  // 控制當前顯示哪一個下拉選單
-  const isSideOpen = ref(true);  // 控制左側選單的開合
+  //【引入】=====================================================================
+  import {
+    ref,      // 引入ref函數以創建響應式變量
+    onMounted // 引入onMounted函數以在組件掛載後執行代碼
+  } from 'vue';
+  import Map from '@arcgis/core/Map';
+  import MapView from '@arcgis/core/views/MapView';
+  import Popup from '@arcgis/core/widgets/Popup';
 
-  // 打開外部連結
-  const openHome = () => {
+  //【宣告】=====================================================================
+  const activeMenu = ref(null);     // 控制當前顯示哪一個下拉選單
+  const isSideOpen = ref(true);     // 控制左側選單的開合  
+  const showDrawTools = ref(false); // 控制繪圖工具面板顯示/隱藏
+  let mainMap; // 宣告一個變量來存儲地圖實例
+  let mapView; // 宣告一個變量來存儲地圖視圖實例
+
+  mainMap = new Map({
+    basemap: "topo", // 添加底圖(地形圖)
+    ground: {
+      navigationConstraint: {
+        type: "stay-above"
+      }
+    }
+  });
+
+  //【初始化】===================================================================
+  // 在組件掛載後執行
+  onMounted(() => {
+    CreateMap(); // 創建地圖
+  });
+
+  //【方法】=====================================================================
+
+  //#region ◆開啟首頁 [OpenHome]
+  /**
+   * 開啟首頁
+   */
+  const OpenHome = () => {
     window.open('https://ig660.nantou.gov.tw/into', '_blank');
   };
+  //#endregion
 
+  //#region ◆開啟/關閉繪圖工具面板 [ToggleDrawTools]
   /**
-   * 統一執行舊有的全域 JS Function
-   * @param {string} funcName 函式名稱
-   * @param {any} params 參數
+   * 開啟/關閉繪圖工具面板
    */
-  const run = (funcName, params = null) => {
-    // 先重置側邊欄 (仿照原本的 LaysideReset)
-    if (window.LaysideReset) window.LaysideReset();
-
-    // 執行對應函式
-    if (window[funcName]) {
-      window[funcName](params);
-    }
-
-    // 點擊後關閉選單
-    activeMenu.value = null;
+  const ToggleDrawTools = () => {
+    showDrawTools.value = !showDrawTools.value;
   };
+  //#endregion
+
+  //#region ◆創建地圖 [CreateMap]
+  /**
+   * 創建地圖
+   */
+  function CreateMap() {
+    mapView = new MapView({
+      container: "MapViewDiv",
+      map: mainMap,
+      center: mainMap.center, // 設定初始中心點
+      zoom: 10,               // 設定初始縮放等級
+      scale: mainMap.scale,
+      constraints: {
+        rotationEnabled: false,
+        snapToZoom: false,
+        maxScale: 564.248588,
+        minScale: 9244648.868618
+      },
+      popupEnabled: true,
+      popup: {
+        dockEnabled: false,
+        collapseEnabled: false,
+        maxInlineActions: 6,
+        dockOptions: {
+          breakpoint: false,
+          buttonEnabled: true,
+          alignment: "top-center",
+          collapsed: false,
+          collapseEnabled: false,
+          position: "bottom-right"
+        }
+      }
+    });
+  }
+  //#endregion
+
 </script>
 
 <style scoped>
@@ -205,7 +272,7 @@
     width: 100%;
     font-family: "Microsoft JhengHei", Arial, sans-serif;
   }
-
+  /*【上方選單】BEGIN =======================================================*/
   /* 導覽列：改為白色背景 */
   .navbar {
     height: 65px;
@@ -334,5 +401,41 @@
     .menu-container {
       display: none;
     }
+  }
+  /*【上方選單】END =======================================================*/
+
+  /*【左側選單】BEGIN =====================================================*/
+  .functionBtn.active {
+    background-color: rgb(196 201 136 / var(--tw-bg-opacity));
+    /* 可選：添加更多樣式 */
+  }
+
+  .functionBtn {
+    transition: all 0.3s ease;
+  }
+
+  .iconImg {
+    transition: filter 0.3s ease;
+  }
+
+  .functionBtn:hover .iconImg {
+    filter: brightness(1.3) drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+  }
+
+  /* 改變紅色 */
+  .functionBtn:hover .iconImg {
+    filter: invert(0.5) sepia(1) hue-rotate(-20deg) saturate(1.5);
+  }
+  /*【左側選單】END =====================================================*/
+
+  .map-container {
+    position: absolute;
+    top: 64px; /* navbar 高度 */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: calc(100vh - 64px);
+    overflow: hidden;
   }
 </style>
