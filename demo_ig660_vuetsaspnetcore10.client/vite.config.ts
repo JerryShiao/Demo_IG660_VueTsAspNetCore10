@@ -7,6 +7,10 @@ import path from 'path';
 import child_process from 'child_process';
 import { env } from 'process';
 
+// 引入自動引入套件與 PrimeVue 解析器
+import Components from 'unplugin-vue-components/vite'
+import { PrimeVueResolver } from 'unplugin-vue-components/resolvers'
+
 const baseFolder =
     env.APPDATA !== undefined && env.APPDATA !== ''
         ? `${env.APPDATA}/ASP.NET/https`
@@ -39,7 +43,15 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [plugin()],
+  plugins: [
+    plugin(),
+    // 設定自動引入
+    Components({
+      resolvers: [
+        PrimeVueResolver()
+      ]
+    })
+  ],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
