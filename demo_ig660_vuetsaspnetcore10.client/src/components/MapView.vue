@@ -177,10 +177,9 @@
     </div>
 
     <!--圖層控制-->
-    <div id="LayerlistBT" style="position: fixed; left: 66px; bottom: 16px;">
-      <div class="layer-control-btn" style="width: 64px; height: 64px; color: #3c90cd; background-color: white; border-radius: 8px; margin: 2px; cursor: pointer; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25); display: inline-block; "
-           @click="NofunctionAlert();">
-        <div style="display: flex; flex-direction: column; margin-top:10px;">
+    <div class="layer-trigger-container">
+      <div class="layer-control-btn" @click="isLayerPanelVisible = !isLayerPanelVisible">
+        <div class="btn-content">
           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="28" viewBox="0 0 24 24" fill="none">
             <path d="M10.9827 0.222385C11.6277 -0.0741283 12.3724 -0.0741283 13.0174 0.222385L22.4809 4.56265C22.8488 4.73025 23.0826 5.09552 23.0826 5.49946C23.0826 5.90341 22.8488 6.26868 22.4809 6.43627L13.0174 10.7765C12.3724 11.0731 11.6277 11.0731 10.9827 10.7765L1.51923 6.43627C1.15125 6.26438 0.91748 5.89911 0.91748 5.49946C0.91748 5.09981 1.15125 4.73025 1.51923 4.56265L10.9827 0.222385ZM20.1778 9.00606L22.4809 10.0632C22.8488 10.2308 23.0826 10.5961 23.0826 11C23.0826 11.4039 22.8488 11.7692 22.4809 11.9368L13.0174 16.2771C12.3724 16.5736 11.6277 16.5736 10.9827 16.2771L1.51923 11.9368C1.15125 11.7649 0.91748 11.3996 0.91748 11C0.91748 10.6004 1.15125 10.2308 1.51923 10.0632L3.82232 9.00606L10.4026 12.0228C11.4156 12.4869 12.5845 12.4869 13.5975 12.0228L20.1778 9.00606ZM13.5975 17.5233L20.1778 14.5066L22.4809 15.5637C22.8488 15.7313 23.0826 16.0966 23.0826 16.5005C23.0826 16.9045 22.8488 17.2698 22.4809 17.4373L13.0174 21.7776C12.3724 22.0741 11.6277 22.0741 10.9827 21.7776L1.51923 17.4373C1.15125 17.2655 0.91748 16.9002 0.91748 16.5005C0.91748 16.1009 1.15125 15.7313 1.51923 15.5637L3.82232 14.5066L10.4026 17.5233C11.4156 17.9874 12.5845 17.9874 13.5975 17.5233Z" fill="#3c90cd" />
           </svg>
@@ -189,78 +188,140 @@
       </div>
     </div>
 
-    <!--圖層控制 跳窗-->
-    <div id="layerlistpanel" class="animate__animated animate__fadeIn" style="width: 312px; position: absolute; left: 58px; top: 72px; background-color: #ffffffbb; border-radius: 8px; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25); z-index: 99;">
-      <div id="laylist" lay-filter="laylist" class="layui-tab  layui-tab-card">
-        <ul class="layui-tab-title">
-          <li lay-id="1" class="layui-this" style="padding: 0px 8px; border-radius: 8px; margin-right:2px">系統圖資</li>
-          <li lay-id="2" style="padding: 0px 8px; border-radius: 8px; margin-right: 2px">操作歷程管理</li>
-          <li lay-id="3" style="padding: 0px 8px; border-radius: 8px; margin-right: 2px">加入圖層</li>
-        </ul>
-        <div class="layui-tab-content">
-          <div class="layui-tab-item layui-show">
-            <div class="layui-form">
-              <div class="layui-collapse" lay-accordion>
-                <div class="layui-colla-item" style="display:none;">
-                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　三維模型與建物圖層　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer7')"></i></div>
-                  <div id="bglayer7" class="layui-colla-content" style="padding:2px;"></div>
-                </div>
-                <div class="layui-colla-item">
-                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　區域範圍與圖面標註　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer1')"></i></div>
-                  <div id="bglayer1" class="layui-colla-content" style="padding:2px;"></div>
-                </div>
-                <div class="layui-colla-item">
-                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　地段與地籍相關圖資　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer3')"></i></div>
-                  <div id="bglayer3" class="layui-colla-content" style="padding:2px;"></div>
-                </div>
-                <div class="layui-colla-item">
-                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　自然環境與管制資訊　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer2')"></i></div>
-                  <div id="bglayer2" class="layui-colla-content" style="padding:2px;"></div>
-                </div>
-                <div class="layui-colla-item">
-                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　都計與非都土地使用　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer4')"></i></div>
-                  <div id="bglayer4" class="layui-colla-content" style="padding:2px;"></div>
-                </div>
-                <div class="layui-colla-item">
-                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　航拍與衛星影像圖資　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer5')"></i></div>
-                  <div id="bglayer5" class="layui-colla-content" style="padding:2px;"></div>
-                </div>
-                <div class="layui-colla-item">
-                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　電子地圖與歷史底圖　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer6')"></i></div>
-                  <div id="bglayer6" class="layui-colla-content layui-show" style="padding:2px;"></div>
-                </div>
-                <div>
-                  <button type="button" class="layui-btn layui-btn-sm" style="display: inline-block; margin: 3px ;" onclick="loadfavsin();GroupLayerControl('layer_hist')">更多歷史底圖</button>
-                  <button type="button" class="layui-btn layui-btn-sm" style="display: inline-block; margin: 3px ;" onclick="defaultMainMap()">回到預設底圖</button>
-                  <!--按鈕顏色修補-->
-                  <button type="button" class="layui-btn layui-btn-sm layui-btn-customize" style="display: inline-block; margin: 3px ;" onclick="inUseMainMap()">目前開啟圖層</button>
-                </div>
-                <div style="margin:6px" color="blue">
-                  <input type="checkbox" id="layerid_TClayer" lay-filter="layerid_TClayer" title="同時顯示臺中市圖資">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="layui-tab-item"></div>
-          <div class="layui-tab-item">
-            <div class="layui-form">
-              <div style="width: 310px; display: inline-block; margin: 1px;">
-                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding:0px 7px;" onclick="importshp()">SHP</button>
-                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding: 0px 7px;" onclick="importkml()">KML</button>
-                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding: 0px 7px;" onclick="importdxf();layer.msg('若使用圖台匯出的DXF檔案匯入，<br>請記得切換為WGS84坐標系統。', {time: 10000, btn: ['確認'],});">DXF</button>
-                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding: 0px 6px;" onclick="importcsv()">CSV地號</button>
-                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding: 0px 6px;" onclick="importcsv2()">CSV坐標</button>
-                <button type="button" class="layui-btn layui-bg-cyan" style="display: inline-block; margin: 3px;" onclick="importxml()">XML(建物模型)</button>
-                <button type="button" class="layui-btn layui-bg-cyan" style="display: inline-block; margin: 3px;" onclick="importzpb()">ZPB(建物平面圖)</button>
-                <button type="button" class="layui-btn layui-bg-orange" style="display: inline-block; margin: 3px;" onclick="loadMapService()">載入地圖服務</button>
-                <button type="button" class="layui-btn layui-bg-orange" style="display: inline-block; margin: 3px;" onclick="AddLayer_InstructionsForUse()">資料說明</button>
-              </div>
-            </div>
-          </div>
+    <!--圖層控制 跳窗 BEGIN ============================================================ -->
+    <Dialog v-model:visible="isLayerPanelVisible"
+            header="圖層管理選單"
+            :modal="false"
+            :draggable="true" :resizable="true" :maximizable="true" position="topright"
+            :style="{
+          width: '450px',
+          minWidth: '350px',
+          minHeight: '400px'
+        }"
+            class="resizable-dialog"
+            @hide="isLayerPanelVisible = false">
+      <template #header>
+        <div class="dialog-header-custom">
+          <span class="panel-title">圖層管理選單</span>
         </div>
-      </div>
-      <a style="position: absolute; top: 20px; right: 8px; background-color: #96d6e5; color: white; border-radius: 12px; cursor: pointer; width: 24px; height: 24px; font-size: 18px; text-align: center " onclick="closediv('layerlistpanel')">Ｘ</a>
-    </div>
+      </template>
+
+      <Tabs v-model:value="activeTab">
+        <TabList>
+          <Tab value="system">系統圖資</Tab>
+          <Tab value="history">操作歷程管理</Tab>
+          <Tab value="import">加入圖層</Tab>
+        </TabList>
+
+        <TabPanels>
+          <TabPanel value="system">
+            <Accordion :value="activeAccordion">
+
+              <AccordionPanel value="3d-models">
+                <AccordionHeader>
+                  <span>三維模型與建物圖層</span>
+                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('3d-models')"></i>
+                </AccordionHeader>
+                <AccordionContent>
+                  <div id="layer-3d-models" class="layer-content-box"></div>
+                </AccordionContent>
+              </AccordionPanel>
+
+              <AccordionPanel value="regions">
+                <AccordionHeader>
+                  <span>區域範圍與圖面標註</span>
+                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('regions')"></i>
+                </AccordionHeader>
+                <AccordionContent>
+                  <div id="layer-regions" class="layer-content-box"></div>
+                </AccordionContent>
+              </AccordionPanel>
+
+              <AccordionPanel value="cadastral">
+                <AccordionHeader>
+                  <span>地段與地籍相關圖資</span>
+                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('cadastral')"></i>
+                </AccordionHeader>
+                <AccordionContent>
+                  <div id="layer-cadastral" class="layer-content-box"></div>
+                </AccordionContent>
+              </AccordionPanel>
+
+              <AccordionPanel value="environment">
+                <AccordionHeader>
+                  <span>自然環境與管制資訊</span>
+                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('environment')"></i>
+                </AccordionHeader>
+                <AccordionContent>
+                  <div id="layer-environment" class="layer-content-box"></div>
+                </AccordionContent>
+              </AccordionPanel>
+
+              <AccordionPanel value="urban-planning">
+                <AccordionHeader>
+                  <span>都計與非都土地使用</span>
+                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('urban-planning')"></i>
+                </AccordionHeader>
+                <AccordionContent>
+                  <div id="layer-urban-planning" class="layer-content-box"></div>
+                </AccordionContent>
+              </AccordionPanel>
+
+              <AccordionPanel value="satellite">
+                <AccordionHeader>
+                  <span>航拍與衛星影像圖資</span>
+                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('satellite')"></i>
+                </AccordionHeader>
+                <AccordionContent>
+                  <div id="layer-satellite" class="layer-content-box"></div>
+                </AccordionContent>
+              </AccordionPanel>
+
+              <AccordionPanel value="electronic-maps">
+                <AccordionHeader>
+                  <span>電子地圖與歷史底圖</span>
+                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('electronic-maps')"></i>
+                </AccordionHeader>
+                <AccordionContent>
+                  <div id="layer-electronic-maps" class="layer-content-box"></div>
+                </AccordionContent>
+              </AccordionPanel>
+
+            </Accordion>
+
+            <div class="action-button-group">
+              <Button label="更多歷史底圖" size="small" severity="info" @click="loadfavsin(); GroupLayerControl('layer_hist')" />
+              <Button label="回到預設底圖" size="small" severity="secondary" @click="defaultMainMap()" />
+              <Button label="目前開啟圖層" size="small" severity="success" @click="inUseMainMap()" />
+            </div>
+
+            <div class="checkbox-container">
+              <Checkbox v-model="isTaichungLayerVisible" inputId="tc-layer-checkbox" :binary="true" @change="onTcLayerToggle" />
+              <label for="tc-layer-checkbox"> 同時顯示臺中市圖資 </label>
+            </div>
+          </TabPanel>
+
+          <TabPanel value="history">
+            <p class="empty-text">暫無歷程紀錄</p>
+          </TabPanel>
+
+          <TabPanel value="import">
+            <div class="import-grid">
+              <Button label="SHP" severity="contrast" raised @click="importshp()" />
+              <Button label="KML" severity="contrast" raised @click="importkml()" />
+              <Button label="DXF" severity="contrast" raised @click="handleDxfImport" />
+              <Button label="CSV 地號" severity="contrast" raised @click="importcsv()" />
+              <Button label="CSV 坐標" severity="contrast" raised @click="importcsv2()" />
+              <Button label="XML(建物模型)" severity="secondary" raised @click="importxml()" />
+              <Button label="ZPB(建物平面圖)" severity="secondary" raised @click="importzpb()" />
+              <Button label="載入地圖服務" severity="warn" raised @click="loadMapService()" />
+              <Button label="資料說明" severity="warn" raised @click="AddLayer_InstructionsForUse()" />
+            </div>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </Dialog>
+    <!--圖層控制 跳窗 END ============================================================== -->
   </div>
 </template>
 
@@ -294,7 +355,14 @@
   const isSideOpen = ref(true);     // 控制左側選單的開合
   const showDrawTools = ref(false); // 控制繪圖工具面板顯示/隱藏
 
-  // 1. 初始化 loading 控制器
+  // —— PrimeVue 控制響應式變數 ——
+  const isLayerPanelVisible = ref(true);           // 控制圖層控制跳窗的顯示隱藏
+  const activeTab = ref('system');                 // 預設開啟「系統圖資」頁籤
+  const activeAccordion = ref('electronic-maps');  // 預設展開「電子地圖與歷史底圖」面板
+  const isTaichungLayerVisible = ref(false);       // 臺中市圖資勾選狀態
+
+
+  // —— 初始化 loading 控制器 ——
   const $loading = useLoading();
   let loader: any = null; // 用來記錄畫面上遮罩實體的變數
 
@@ -358,15 +426,7 @@
         rotationEnabled: false,
         snapToZoom: false
       },
-      popupEnabled: true,
-      popup: {
-        dockEnabled: false,
-        dockOptions: {
-          breakpoint: false,
-          buttonEnabled: true,
-          position: "bottom-right"
-        }
-      }
+      popupEnabled: true
     });
 
     // 在地圖視圖加載完成後執行
@@ -395,10 +455,22 @@
 </script>
 
 <style scoped>
-  /* 佈局容器 */
+  /* 基礎佈局 */
   .map-layout {
     width: 100%;
     font-family: "Microsoft JhengHei", Arial, sans-serif;
+  }
+
+  /* 地圖內容 */
+  .map-container {
+    position: absolute;
+    top: 64px; /* navbar 高度 */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: calc(100vh - 64px);
+    overflow: hidden;
   }
   /*【上方選單】BEGIN =======================================================*/
   /* 導覽列：改為白色背景 */
@@ -556,30 +628,131 @@
   }
   /*【左側選單】END =====================================================*/
 
-  /* 地圖內容 */
-  .map-container {
-    position: absolute;
-    top: 64px; /* navbar 高度 */
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: calc(100vh - 64px);
-    overflow: hidden;
-  }
-  
+
   /*【圖層控制】BEGIN =====================================================*/
+  /* —— 圖層按鈕與新面板樣式 —— */
+  .layer-trigger-container {
+    position: fixed;
+    left: 66px;
+    bottom: 16px;
+    z-index: 99;
+  }
+
   .layer-control-btn {
+    width: 64px;
+    height: 64px;
+    color: #3c90cd;
+    background-color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
     transition: all 0.3s ease;
   }
 
     .layer-control-btn:hover {
-      background-color: #e0f2ff !important;
-      box-shadow: 0px 0px 8px 0px rgba(60, 144, 205, 0.4) !important;
+      background-color: #e0f2ff;
+      box-shadow: 0px 0px 8px 0px rgba(60, 144, 205, 0.4);
     }
 
-      .layer-control-btn:hover svg {
-        filter: brightness(1.2);
-      }
+  .btn-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+  }
+
+  .btn-text {
+    text-align: center;
+    font-weight: bolder;
+    margin-top: -3px;
+    font-size: 12px;
+  }
+
+  /* PrimeVue 打造的新版圖層控制面板容器 */
+  .layer-control-panel {
+    width: 340px;
+    position: absolute;
+    left: 58px;
+    top: 72px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .panel-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #334155;
+  }
+
+  /* 折疊面板內部小樣式 */
+  .info-icon {
+    color: #64748b;
+    margin-left: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+    .info-icon:hover {
+      color: #3b82f6;
+    }
+
+  .layer-content-box {
+    min-height: 20px;
+    padding: 4px 0;
+  }
+
+  /* 按鈕與排版優化 */
+  .action-button-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 4px;
+  }
+
+  .empty-text {
+    color: #94a3b8;
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  /* 匯入外部資料網格系統 */
+  .import-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 4px 0;
+  }
   /*【圖層控制】END =====================================================*/
+</style>
+
+<style>
+  /* 直接控制全域的 PrimeVue Dialog 縮放行為 */
+  .p-dialog[data-pc-name="dialog"] {
+    resize: both !important;
+    overflow: auto !important;
+  }
+
+  .p-dialog .p-resizable-handle {
+    cursor: se-resize !important;
+  }
 </style>
