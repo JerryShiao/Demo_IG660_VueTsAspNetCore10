@@ -220,7 +220,7 @@
               <AccordionPanel value="3d-models">
                 <AccordionHeader>
                   <span>三維模型與建物圖層</span>
-                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('3d-models')"></i>
+                  <i class="pi pi-info-circle info-icon"></i>
                 </AccordionHeader>
                 <AccordionContent>
                   <div id="layer-3d-models" class="layer-content-box"></div>
@@ -230,7 +230,7 @@
               <AccordionPanel value="regions">
                 <AccordionHeader>
                   <span>區域範圍與圖面標註</span>
-                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('regions')"></i>
+                  <i class="pi pi-info-circle info-icon"></i>
                 </AccordionHeader>
                 <AccordionContent>
                   <div id="layer-regions" class="layer-content-box"></div>
@@ -240,7 +240,7 @@
               <AccordionPanel value="cadastral">
                 <AccordionHeader>
                   <span>地段與地籍相關圖資</span>
-                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('cadastral')"></i>
+                  <i class="pi pi-info-circle info-icon"></i>
                 </AccordionHeader>
                 <AccordionContent>
                   <div id="layer-cadastral" class="layer-content-box"></div>
@@ -250,7 +250,7 @@
               <AccordionPanel value="environment">
                 <AccordionHeader>
                   <span>自然環境與管制資訊</span>
-                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('environment')"></i>
+                  <i class="pi pi-info-circle info-icon" ></i>
                 </AccordionHeader>
                 <AccordionContent>
                   <div id="layer-environment" class="layer-content-box"></div>
@@ -260,7 +260,7 @@
               <AccordionPanel value="urban-planning">
                 <AccordionHeader>
                   <span>都計與非都土地使用</span>
-                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('urban-planning')"></i>
+                  <i class="pi pi-info-circle info-icon"></i>
                 </AccordionHeader>
                 <AccordionContent>
                   <div id="layer-urban-planning" class="layer-content-box"></div>
@@ -270,7 +270,7 @@
               <AccordionPanel value="satellite">
                 <AccordionHeader>
                   <span>航拍與衛星影像圖資</span>
-                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('satellite')"></i>
+                  <i class="pi pi-info-circle info-icon"></i>
                 </AccordionHeader>
                 <AccordionContent>
                   <div id="layer-satellite" class="layer-content-box"></div>
@@ -280,7 +280,7 @@
               <AccordionPanel value="electronic-maps">
                 <AccordionHeader>
                   <span>電子地圖與歷史底圖</span>
-                  <i class="pi pi-info-circle info-icon" @click.stop="bglayerInfo('electronic-maps')"></i>
+                  <i class="pi pi-info-circle info-icon"></i>
                 </AccordionHeader>
                 <AccordionContent>
                   <div id="layer-electronic-maps" class="layer-content-box"></div>
@@ -377,7 +377,7 @@
   const mapView = shallowRef < MapView | SceneView | null > (null); // 地圖視圖的響應式引用
   const mapInstance = shallowRef < Map | null > (null);             // 抽取 Map 實例
 
-  const activeMenu = ref(null);     // 控制當前顯示哪一個下拉選單
+  const activeMenu = ref < string | null > (null);     // 控制當前顯示哪一個下拉選單
   const isSideOpen = ref(true);     // 控制左側選單的開合
   const showDrawTools = ref(false); // 控制繪圖工具面板顯示/隱藏
 
