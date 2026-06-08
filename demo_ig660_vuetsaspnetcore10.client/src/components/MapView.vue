@@ -307,7 +307,7 @@
 
           <TabPanel value="import">
             <div class="import-grid">
-              <Button label="SHP" severity="contrast" raised @click="importshp()" />
+              <Button label="SHP" severity="contrast" raised @click="handleOpenShp()" />
               <Button label="KML" severity="contrast" raised @click="NofunctionAlert()" />
               <Button label="DXF" severity="contrast" raised @click="NofunctionAlert()" />
               <Button label="CSV 地號" severity="contrast" raised @click="NofunctionAlert()" />
@@ -325,20 +325,7 @@
     <!--SHP 跳窗 BEGIN ================================================================= -->
     <template>
       <div>
-        <button @click="importshp">載入 Shapefile</button>
-
-        <Dialog v-model:visible="isDialogVisible"
-                  :header="dialogTitle"
-                  :modal="true"
-                 :draggable="true" :resizable="true" :maximizable="true"
-                  :style="{ width: dialogWidth }"
-                  :breakpoints="{ '960px': '95vw' }"
-                  :contentStyle="{ height: '560px', padding: '0' }">
-          <iframe id="tempshpfile"
-                  :src="iframeSrc"
-                  style="border: 0; width: 100%; height: 100%;"
-                  scrolling="no"></iframe>
-        </Dialog>
+        <ShpDialog ref="shpDialogRef" />
       </div>
     </template>
     <!--SHP 跳窗 END =================================================================== -->
@@ -367,10 +354,8 @@
   import Swal from 'sweetalert2'; //sweetalert2
 
   // ---  SHP 跳窗 ---
-  const isDialogVisible = ref(false);
-  const dialogTitle = ref("Shapefile載入與預覽");
-  const iframeSrc = ref("./Assist/SHPtoGeoJson/index.html");
-  const dialogWidth = ref("364px");
+  import ShpDialog from './ShpDialog.vue'; // 引入ShpDialog組件
+  const shpDialogRef = ref < InstanceType < typeof ShpDialog > | null > (null); // 創建對ShpDialog組件的引用
 
   //【宣告】=====================================================================
   const mapElement = ref(null);     // 用於綁定地圖容器的ref
@@ -478,22 +463,14 @@
   }
   //#endregion
 
-  //#region ◆開啟 SHP 跳窗 [importshp]
+  //#region ◆點擊 SHP 按鈕時觸發 [handleOpenShp]
   /**
-   * 開啟 SHP 跳窗
+   * 點擊 SHP 按鈕時觸發
    */
-  function importshp() {
-    try {
-      // 關閉前一個 dialog（在 Vue 中直接將 visible 設為 false）
-      isDialogVisible.value = false;
-    }
-    catch (e) {
-      console.error("清理事件失敗:", e);
-    }
-
-    // 開啟 PrimeVue Dialog
-    isDialogVisible.value = true;
-  }
+  const handleOpenShp = () => {
+    // 直接呼叫子元件暴露出來的 openDialog() 方法
+    shpDialogRef.value?.openDialog();
+  };
   //#endregion
 
 </script>
