@@ -1,6 +1,7 @@
 import './assets/main.css'
 import { createApp } from 'vue';
 import App from './App.vue';
+import Swal from 'sweetalert2'
 
 // 引入 vue-loading-overlay 的全域物件
 import 'vue-loading-overlay/dist/css/index.css';
@@ -20,5 +21,23 @@ app.use(PrimeVue, {
     }
   }
 })
+
+// 設定 Swal 全局預設配置
+const swalMixin = Swal.mixin({
+  allowOutsideClick: false,
+  allowEscapeKey: true,
+  didOpen: (modal) => {
+    const swalContainer = modal.closest('.swal2-container');
+    if (swalContainer) {
+      (swalContainer as HTMLElement).style.zIndex = '999999';
+    }
+  },
+  customClass: {
+    container: 'swal-container-top'
+  }
+})
+
+// 將 Swal 實例掛載到全局屬性（可選）
+app.config.globalProperties.$swal = swalMixin
 
 app.mount('#app');

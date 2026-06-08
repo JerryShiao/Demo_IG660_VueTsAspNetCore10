@@ -194,15 +194,15 @@
             :modal="false"
             :draggable="true" :resizable="true" :maximizable="true" position="topright"
             :style="{
-          width: '450px',
-          minWidth: '350px',
-          minHeight: '400px'
-        }"
+              width: '450px',
+              minWidth: '350px',
+              minHeight: '400px'
+            }"
             class="resizable-dialog"
             @hide="isLayerPanelVisible = false">
       <template #header>
         <div class="dialog-header-custom">
-          <span class="panel-title">圖層管理選單</span>
+          <span class="panel-title">圖層控制</span>
         </div>
       </template>
 
@@ -290,9 +290,9 @@
             </Accordion>
 
             <div class="action-button-group">
-              <Button label="更多歷史底圖" size="small" severity="info" @click="loadfavsin(); GroupLayerControl('layer_hist')" />
-              <Button label="回到預設底圖" size="small" severity="secondary" @click="defaultMainMap()" />
-              <Button label="目前開啟圖層" size="small" severity="success" @click="inUseMainMap()" />
+              <Button label="更多歷史底圖" size="small" severity="info" @click="NofunctionAlert();" />
+              <Button label="回到預設底圖" size="small" severity="secondary" @click="NofunctionAlert();" />
+              <Button label="目前開啟圖層" size="small" severity="success" @click="NofunctionAlert();" />
             </div>
 
             <div class="checkbox-container">
@@ -320,7 +320,7 @@
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </Dialog>
+</Dialog>
     <!--圖層控制 跳窗 END ============================================================== -->
   </div>
 </template>
@@ -357,7 +357,7 @@
 
   // —— PrimeVue 控制響應式變數 ——
   const isLayerPanelVisible = ref(true);           // 控制圖層控制跳窗的顯示隱藏
-  const activeTab = ref('system');                 // 預設開啟「系統圖資」頁籤
+  const activeTab = ref('import');                 // 預設開啟「加入圖層」頁籤
   const activeAccordion = ref('electronic-maps');  // 預設展開「電子地圖與歷史底圖」面板
   const isTaichungLayerVisible = ref(false);       // 臺中市圖資勾選狀態
 
@@ -472,6 +472,7 @@
     height: calc(100vh - 64px);
     overflow: hidden;
   }
+
   /*【上方選單】BEGIN =======================================================*/
   /* 導覽列：改為白色背景 */
   .navbar {
@@ -755,4 +756,13 @@
   .p-dialog .p-resizable-handle {
     cursor: se-resize !important;
   }
+
+  /* ✅ 新增：確保 Swal 永遠在 Dialog 上方 */
+  .swal2-container {
+    z-index: 10000 !important;
+  }
+
+    .swal2-container.swal2-shown {
+      z-index: 10000 !important;
+    }
 </style>

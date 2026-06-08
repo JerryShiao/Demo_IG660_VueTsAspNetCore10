@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-vue';
 import fs from 'fs';
@@ -7,9 +6,9 @@ import path from 'path';
 import child_process from 'child_process';
 import { env } from 'process';
 
-// 引入自動引入套件與 PrimeVue 解析器
-import Components from 'unplugin-vue-components/vite'
-import { PrimeVueResolver } from 'unplugin-vue-components/resolvers'
+// 1. 引入正確的 PrimeVue v4 專用自動引入解析器
+import Components from 'unplugin-vue-components/vite';
+import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 
 const baseFolder =
     env.APPDATA !== undefined && env.APPDATA !== ''
@@ -45,11 +44,12 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 export default defineConfig({
   plugins: [
     plugin(),
-    // 設定自動引入
+    // 2. 設定自動引入
     Components({
       resolvers: [
-        PrimeVueResolver()
-      ]
+        PrimeVueResolver() // 👈 這會完美識別 v4 的 Tabs, TabList, Tab 等所有新元件！
+      ],
+      dts: true
     })
   ],
     resolve: {
