@@ -95,7 +95,7 @@
 
     <!--地圖內容-->
     <div id="mapDiv" class="map-container" style="background-color:white">
-      <div id="MapViewDiv" style="width: 100%; height: 100%; padding:0;margin:0 "></div>
+      <div ref="mapElement" style="width: 100%; height: 100%; padding:0;margin:0 "></div>
     </div>
 
     <!--左側選單-->
@@ -178,7 +178,7 @@
 
     <!--圖層控制-->
     <div id="LayerlistBT" style="position: fixed; left: 66px; bottom: 16px;">
-      <div  class="layer-control-btn" style="width: 64px; height: 64px; color: #3c90cd; background-color: white; border-radius: 8px; margin: 2px; cursor: pointer; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25); display: inline-block; "
+      <div class="layer-control-btn" style="width: 64px; height: 64px; color: #3c90cd; background-color: white; border-radius: 8px; margin: 2px; cursor: pointer; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25); display: inline-block; "
            @click="NofunctionAlert();">
         <div style="display: flex; flex-direction: column; margin-top:10px;">
           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="28" viewBox="0 0 24 24" fill="none">
@@ -188,6 +188,79 @@
         </div>
       </div>
     </div>
+
+    <!--圖層控制 跳窗-->
+    <div id="layerlistpanel" class="animate__animated animate__fadeIn" style="width: 312px; position: absolute; left: 58px; top: 72px; background-color: #ffffffbb; border-radius: 8px; box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25); z-index: 99;">
+      <div id="laylist" lay-filter="laylist" class="layui-tab  layui-tab-card">
+        <ul class="layui-tab-title">
+          <li lay-id="1" class="layui-this" style="padding: 0px 8px; border-radius: 8px; margin-right:2px">系統圖資</li>
+          <li lay-id="2" style="padding: 0px 8px; border-radius: 8px; margin-right: 2px">操作歷程管理</li>
+          <li lay-id="3" style="padding: 0px 8px; border-radius: 8px; margin-right: 2px">加入圖層</li>
+        </ul>
+        <div class="layui-tab-content">
+          <div class="layui-tab-item layui-show">
+            <div class="layui-form">
+              <div class="layui-collapse" lay-accordion>
+                <div class="layui-colla-item" style="display:none;">
+                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　三維模型與建物圖層　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer7')"></i></div>
+                  <div id="bglayer7" class="layui-colla-content" style="padding:2px;"></div>
+                </div>
+                <div class="layui-colla-item">
+                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　區域範圍與圖面標註　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer1')"></i></div>
+                  <div id="bglayer1" class="layui-colla-content" style="padding:2px;"></div>
+                </div>
+                <div class="layui-colla-item">
+                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　地段與地籍相關圖資　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer3')"></i></div>
+                  <div id="bglayer3" class="layui-colla-content" style="padding:2px;"></div>
+                </div>
+                <div class="layui-colla-item">
+                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　自然環境與管制資訊　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer2')"></i></div>
+                  <div id="bglayer2" class="layui-colla-content" style="padding:2px;"></div>
+                </div>
+                <div class="layui-colla-item">
+                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　都計與非都土地使用　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer4')"></i></div>
+                  <div id="bglayer4" class="layui-colla-content" style="padding:2px;"></div>
+                </div>
+                <div class="layui-colla-item">
+                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　航拍與衛星影像圖資　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer5')"></i></div>
+                  <div id="bglayer5" class="layui-colla-content" style="padding:2px;"></div>
+                </div>
+                <div class="layui-colla-item">
+                  <div class="layui-colla-title" style="text-align: center; font-weight: bolder;">　電子地圖與歷史底圖　<i class="layui-icon layui-icon-tips" style="font-size: 17px;color: #B1AA9C;" onclick="bglayerInfo('bglayer6')"></i></div>
+                  <div id="bglayer6" class="layui-colla-content layui-show" style="padding:2px;"></div>
+                </div>
+                <div>
+                  <button type="button" class="layui-btn layui-btn-sm" style="display: inline-block; margin: 3px ;" onclick="loadfavsin();GroupLayerControl('layer_hist')">更多歷史底圖</button>
+                  <button type="button" class="layui-btn layui-btn-sm" style="display: inline-block; margin: 3px ;" onclick="defaultMainMap()">回到預設底圖</button>
+                  <!--按鈕顏色修補-->
+                  <button type="button" class="layui-btn layui-btn-sm layui-btn-customize" style="display: inline-block; margin: 3px ;" onclick="inUseMainMap()">目前開啟圖層</button>
+                </div>
+                <div style="margin:6px" color="blue">
+                  <input type="checkbox" id="layerid_TClayer" lay-filter="layerid_TClayer" title="同時顯示臺中市圖資">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="layui-tab-item"></div>
+          <div class="layui-tab-item">
+            <div class="layui-form">
+              <div style="width: 310px; display: inline-block; margin: 1px;">
+                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding:0px 7px;" onclick="importshp()">SHP</button>
+                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding: 0px 7px;" onclick="importkml()">KML</button>
+                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding: 0px 7px;" onclick="importdxf();layer.msg('若使用圖台匯出的DXF檔案匯入，<br>請記得切換為WGS84坐標系統。', {time: 10000, btn: ['確認'],});">DXF</button>
+                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding: 0px 6px;" onclick="importcsv()">CSV地號</button>
+                <button type="button" class="layui-btn" style="display: inline-block; margin: 3px; padding: 0px 6px;" onclick="importcsv2()">CSV坐標</button>
+                <button type="button" class="layui-btn layui-bg-cyan" style="display: inline-block; margin: 3px;" onclick="importxml()">XML(建物模型)</button>
+                <button type="button" class="layui-btn layui-bg-cyan" style="display: inline-block; margin: 3px;" onclick="importzpb()">ZPB(建物平面圖)</button>
+                <button type="button" class="layui-btn layui-bg-orange" style="display: inline-block; margin: 3px;" onclick="loadMapService()">載入地圖服務</button>
+                <button type="button" class="layui-btn layui-bg-orange" style="display: inline-block; margin: 3px;" onclick="AddLayer_InstructionsForUse()">資料說明</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a style="position: absolute; top: 20px; right: 8px; background-color: #96d6e5; color: white; border-radius: 12px; cursor: pointer; width: 24px; height: 24px; font-size: 18px; text-align: center " onclick="closediv('layerlistpanel')">Ｘ</a>
+    </div>
   </div>
 </template>
 
@@ -196,6 +269,7 @@
   // Vue
   import {
     ref,      // 引入ref函數以創建響應式變量
+    shallowRef, // 引入shallowRef函數以創建淺響應式變量
     onMounted // 引入onMounted函數以在組件掛載後執行代碼
   } from 'vue';
 
@@ -205,34 +279,39 @@
   // ArcGIS SDK
   import Map from '@arcgis/core/Map';
   import MapView from '@arcgis/core/views/MapView';
+  import SceneView from '@arcgis/core/views/SceneView';
   import Popup from '@arcgis/core/widgets/Popup';
 
   // 套件
   import Swal from 'sweetalert2'; //sweetalert2
 
   //【宣告】=====================================================================
+  const mapElement = ref(null);     // 用於綁定地圖容器的ref
+  const mapView = shallowRef < MapView | SceneView | null > (null); // 地圖視圖的響應式引用
+  const mapInstance = shallowRef < Map | null > (null);             // 抽取 Map 實例
+
   const activeMenu = ref(null);     // 控制當前顯示哪一個下拉選單
   const isSideOpen = ref(true);     // 控制左側選單的開合
   const showDrawTools = ref(false); // 控制繪圖工具面板顯示/隱藏
-  let mainMap : Map;     // 宣告一個變量來存儲地圖實例
-  let mapView: MapView; // 宣告一個變量來存儲地圖視圖實例
 
   // 1. 初始化 loading 控制器
   const $loading = useLoading();
   let loader: any = null; // 用來記錄畫面上遮罩實體的變數
 
-  mainMap = new Map({
-    basemap: "osm", // 添加底圖(地形圖)
-    ground: {
-      navigationConstraint: {
-        type: "stay-above"
-      }
-    }
-  });
-
   //【初始化】===================================================================
   // 在組件掛載後執行
-  onMounted(() => {
+  onMounted(async () => {
+
+    // 初始化 Map
+    const mainMap = new Map({
+      basemap: "osm", // 添加底圖(地形圖)
+      ground: {
+        navigationConstraint: {
+          type: "stay-above"
+        }
+      }
+    });
+    mapInstance.value = mainMap;
 
     // 2. 網頁一掛載，立刻開起遮罩，並將其實體存入 loader
     loader = $loading.show({
@@ -242,7 +321,7 @@
       backgroundColor: 'rgba(0, 0, 0, 0.75)' // 深色背景 (透明度 75%)
     });
 
-    CreateMap(); // 創建地圖
+    await CreateMap(); // 創建地圖
   });
 
   //【方法】=====================================================================
@@ -269,12 +348,12 @@
   /**
    * 創建地圖
    */
-  function CreateMap() {
-    mapView = new MapView({
-      container: "MapViewDiv",
-      map: mainMap,
+  async function CreateMap() {
+    mapView.value = new MapView({
+      container: mapElement.value as any,
+      map: mapInstance.value,  // 使用之前儲存的 map 實例
       center: [120.85, 23.75], // 設定初始中心點：台灣中心坐標（經度, 緯度）
-      zoom: 10,              // 設定初始縮放等級
+      zoom: 10,                // 設定初始縮放等級
       constraints: {
         rotationEnabled: false,
         snapToZoom: false
@@ -291,7 +370,7 @@
     });
 
     // 在地圖視圖加載完成後執行
-    mapView.when(() => {
+    await mapView.value?.when(() => {
       // 如果遮罩還開著，就把它關掉
       if (loader) {
         loader.hide();
