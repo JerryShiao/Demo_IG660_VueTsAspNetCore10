@@ -1,0 +1,77 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <script src="./dist/dxf-parser.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    
+    <!-- Three.js version r89 -->
+    <script src="./libs/js/three.min.js"></script>
+    <!-- Three.js extras -->
+    <script src="./libs/js/OrbitControls.js"></script>
+    
+    <script src="./dist/three-dxf.js"></script>
+    <script>
+        function SentToMap4(results) {
+            parent.SentToMapDXF(results, '匯入圖層', $('#coorid').val());
+        }
+    </script>
+</head>
+<body>
+<style>
+
+    #cad-view {
+        display: inline-block;
+        margin: 10px 0;
+        /*			border: 1px solid #666;*/
+    }
+    #cad-view > canvas {
+        border: 1px solid #666;
+    }
+
+    .progress {
+        opacity: 0;
+        -webkit-transition: opacity 1s linear;
+        -moz-transition: opacity 1s linear;
+        -ms-transition: opacity 1s linear;
+        -o-transition: opacity 1s linear;
+        transition: opacity 1s linear;
+    }
+
+    .progress.loading {
+        opacity: 1;
+    }
+</style>
+
+
+<div class="container">
+    <div role="form">
+        <p>請先選擇此份圖資坐標系統：</p>
+        <select id="coorid">
+            <option value="3826" selected>TWD97 TM2 121</option>
+            <option value="3828">TWD67 TM2 121</option>
+            <option value="4326">WGS84經緯度</option>
+        </select>
+        <br>
+        <br>
+        <div class="form-group">
+            <label for="exampleInputFile">請選擇您要加入的DXF檔案</label>
+            <input type="file" accept=".dxf" id="dxf" name="file">
+            <div class="progress progress-striped" style="width: 300px;">
+                <div id="file-progress-bar" class="progress-bar progress-bar-success" role="progressbar" style="width: 0">
+                </div>
+            </div>
+            <div id="file-description" class="help-block"></div>
+        </div>
+        <p>選擇檔案後，請靜候進度讀取至100%</p>
+        <p>讀取完畢後，關閉本面板即可瀏覽。</p>
+    </div>
+    <div id="cad-view">
+
+    </div>
+</div>
+
+<script src="index.js"></script>
+</body>
+</html>

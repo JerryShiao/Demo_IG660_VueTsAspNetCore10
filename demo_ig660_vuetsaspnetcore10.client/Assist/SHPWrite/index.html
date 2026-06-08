@@ -1,0 +1,40 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="A layout example that shows off a responsive product landing page.">
+    <title>TRYDEMO</title>
+    <script async defer src="require.js" data-main="shpwrite.js" charset="utf-8"></script>
+    <script src="src/FileSaver.js"></script>
+
+    <script>
+        function tryshp() {
+            var shpwrite = require('shpwrite');
+            var options = {
+                folder: 'myshapes_utf8',
+                types: {
+                    point: 'mypoints_utf8',
+                    polygon: 'mypolygons_utf8',
+                    line: 'mylines_utf8'
+                }
+            }
+            shpwrite.download({
+                type: 'FeatureCollection',
+                features: parent.gjfeadatas
+            }, options);
+        }
+    </script>
+</head>
+<body>
+    <h2>下載SHP</h2>
+    <div>
+        <button onclick="tryshp()">檔案準備好了<br>~請按此下載</button>
+        <hr />
+        <p>提醒您，另存下來的SHP可以用GIS軟體打開再做利用</p>
+    </div>
+</body>
+</html>
+
+
+

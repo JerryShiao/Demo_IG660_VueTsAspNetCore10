@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading csv file using javascript</title>
+    <meta name="description" content="Reading csv file using javascript" />
+    <meta name="author" content="Arkaprava Majumder" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="js/papaparse.js" charset="utf-8"></script>
+    <script src="js/reading-csv-file-using-javascript.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>請讀取CSV檔案</h2>
+        </div>
+        <div class="main">
+            請加入逗號分隔CSV：<a href="test.csv" target="_blank" rel="nofollow"> 範例檔</a>
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="file" id="files" class="form-control" style="padding:6px; height:unset" required accept=".csv" onchange="checkfile(this);"/>
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="submit" class="btn btn-primary">預覽資料</button>
+                </div>
+                <div id="connectnote" style="text-align:center;display:none">
+                    <p style="font-size:smaller;color:maroon;text-align: center;">請確定下表正常顯示再點匯入圖台<br>，編碼或格式不符會使系統錯誤。</p>
+                    <div class="form-group">
+                        <button id="connectmap" class="btn btn-danger" onclick="SentToMap()">匯入圖台</button>
+                    </div>
+                </div>
+            </div>
+            <div id="app" style="font-size:smaller"></div>
+        </div>
+    </div>
+    <script type="text/javascript" language="javascript">
+        function checkfile(sender) {
+            // 可接受的附檔名
+            var validExts = new Array(".csv");
+            var fileExt = sender.value;
+            fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+            if (validExts.indexOf(fileExt) < 0) {
+                alert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+                sender.value = null;
+                return false;
+            }
+            else return true;
+        }
+    </script>
+</body>
+</html>

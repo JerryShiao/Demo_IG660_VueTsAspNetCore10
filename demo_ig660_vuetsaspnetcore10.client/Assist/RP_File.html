@@ -1,0 +1,304 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>檔案上傳</title>
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../layui/layui.js"></script>
+</head>
+<body>
+    <form class="layui-form">
+        <div class="layui-form-item" style="text-align:center">
+            <h1>檔案上傳</h1>
+        </div>
+        <div class="layui-tab-card">
+            <table class="layui-table" id="file-table" lay-filter="file-table"></table>
+        </div>
+    </form>
+    <script>
+        var RPApi = 'http://localhost/';  ///https://landmap.tainan.gov.tw/RP_File/
+        if (window.location.href.indexOf('localhost') !== -1) { RPApi = './api/'; }
+        else { RPApi = 'https://landmap.tainan.gov.tw/RP/api/' }
+    </script>
+    <script>
+        var usid = '', uspower = '', usinfo = '', uspw = '';
+        var RPtoken = '';
+        $(document).ready(function () {
+            let tempCookie = document.cookie.split('; ')
+            //let usidFind = tempCookie.map(x => x.split('=')).find(x => x[0] == 'usid')
+            //if (usidFind) { usid = usidFind[1] }
+            let powerFind = tempCookie.map(x => x.split('=')).find(x => x[0] == 'power')
+            if (powerFind) { uspower = powerFind[1] }
+            let infoFind = tempCookie.map(x => x.split('=')).find(x => x[0] == 'info')
+            if (infoFind) { usinfo = infoFind[1] }
+            usid = parent.usid; uspw = parent.uspw;
+
+            try {
+                if (usid == '') { window.location = "login.html" }
+                if (uspower.split('|')[2]) {
+                    let powerCheck = uspower.split('|')[2].substr(4, 1)
+                    if (powerCheck == '0') { alert('無權限，將跳轉回登入頁面'); window.location = "login.html"; }
+                    else if (powerCheck == '2') { login(); }//retable();//全功能
+                    else if (powerCheck == '1') { login(); }//retable();
+                }
+                else {
+                    window.location = "login.html"
+                }
+            }
+            catch (e) {
+                alert('發生錯誤，請重新登入');
+                window.location = "login.html";
+            }
+
+            function login() {
+                if (parent.usid != 'nono' && parent.uspw != '') {
+                    //usid = parent.usid; uspw = parent.uspw;
+                    $.ajax({
+                        url: RPApi + 'admusers/Token' + '?帳號=' + usid + '&密碼=' + uspw,
+                        type: 'POST',
+                        cache: false,
+                        dataType: 'json',
+                        success: function (token_data) {
+                            RPtoken = token_data.token;
+                            retable();
+                        },
+                        error: function (data) { alert('發生錯誤，將跳轉回登入頁面'); window.location = "https://landmap.tainan.gov.tw/gis/Assist/login.html"; }
+                    })
+                }
+                else {
+                    alert('無權限，將跳轉回登入頁面'); window.location = "https://landmap.tainan.gov.tw/gis/Assist/login.html";
+                }
+            }
+            //retable();
+        })
+        function retable() {
+            layui.use(function () {
+                var form = layui.form;
+                $.ajax({
+                    url: RPApi + 'FileLists',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        let tempdata = []
+                        data.filter(x => x.公開與否 == '公開').map(x => tempdata.push(x))
+                        data.filter(x => x.公開與否 == '不公開' && x.上傳人員帳號 == usid).map(x => tempdata.push(x))
+                        file_retable(tempdata)
+                    },
+                    error: function (data) { console.log('發生錯誤') }
+                })
+
+                function file_retable(data) {
+                    qpower_data = data;
+                    let tempCols = [
+                        {
+                            fixed: 'left', title: '', toolbar: '<div>'
+                                + '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="download">下載</a>'
+                                + '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="delete">刪除</a>'
+                                + '</div>', width: 122
+                        },
+                        //{ field: 'ObjID', title: 'ObjID', sort: true, minWidth: 100 },
+                        { field: '檔案名稱', title: '檔案名稱', sort: true, minWidth: 100 },
+                        { field: '上傳人員', title: '上傳人員', sort: true, minWidth: 100 },
+                        //{ field: '上傳人員帳號', title: '上傳人員帳號', sort: true, minWidth: 100 },
+                        { field: '檔案時間', title: '檔案時間', sort: true, minWidth: 100 },
+                        { field: '上傳時間', title: '上傳時間', sort: true, minWidth: 100 },
+                        { field: '公開與否', title: '公開與否', sort: true, minWidth: 100 }
+                    ]
+                    layui.use('table', function () {
+                        var table = layui.table;
+                        table.render({
+                            elem: '#file-table',
+                            toolbar: '<div class="layui-btn-container"><div style="text-align:left">'
+                                + '<button type="button" class="layui-btn layui-btn-sm" lay-event="upload">上傳</button>'
+                                + '</div></div>',
+                            defaultToolbar: [''],
+                            cols: [tempCols],
+                            data: data,
+                            limit: 99999
+                        });
+                        table.on('tool(' + 'file-table' + ')', function (obj) {
+                            let chdata = obj.data;
+                            switch (obj.event) {
+                                case 'download': file_download(chdata); break;
+                                case 'delete': file_delete(chdata); break;
+                            };
+                        })
+                        table.on('toolbar(' + 'file-table' + ')', function (obj) {
+                            switch (obj.event) {
+                                case 'upload': file_upload(); break;
+                            };
+                        })
+                    })
+                    function file_upload() {
+                        let formhtmls = '';
+                        if (1) {
+                            formhtmls += '<div class="layui-form-item">'
+                                + '<div class="layui-inline">' + '<label class="layui-form-label">' + '檔案' + '</label>'
+                                + '<div class="layui-input-inline">'
+                                + '<input type="file" lay-filter="檔案" class="layui-input" id="檔案" onchange="checkfile(this);">'
+                                + '</div></div></div>'
+                        }
+                        if (1) {
+                            formhtmls += '<div class="layui-form-item"><div class="layui-inline">'
+                                + '<label class="layui-form-label">' + '公開與否' + '</label>'
+                                + '<div class="layui-input-inline">'
+                                + '<select id="' + '公開與否' + '" class="layui-input" >'
+                                + '<option value="公開">公開</option>' + '<option value="不公開">不公開</option>'
+                                + '</select>' + '</div>' + '</div></div>';
+                        }
+                        formhtmls = formhtmls + '<div class="layui-form-item"><label class="layui-form-label"> </label><button type="button" class="layui-btn" id="tempsave">儲存</button><button type="button" class="layui-btn layui-btn-primary" id="tempcencel">取消</button></div>'
+                        formhtmls = '<form class="layui-form" action="" id="form1" name="form1" style="layui-col-md9">' + formhtmls + '</form>'
+                        layer.open({
+                            type: 1,
+                            title: '上傳檔案',
+                            content: formhtmls,
+                            //area: ['425px', $(window).height() * 0.88 + 'px'],
+                            shade: 0.5,
+                            success: function (layero, index) {
+                                form.render('select');
+
+                                document.getElementById("tempsave").onclick = function () {
+                                    var file = $('#檔案').get(0).files[0];
+                                    if (!file) {
+                                        layer.msg('請選擇檔案')
+                                        return false
+                                    }
+                                    let tempFind = data.find(x => x.檔案名稱 == file.name);
+                                    if (tempFind) {
+                                        layer.msg('檔案名稱重複，請確認檔案')
+                                        return false
+                                    }
+                                    if (file.name.indexOf('.pdf') == -1 && file.name.indexOf('.jpg') == -1 && file.name.indexOf('.jpeg') == -1 && file.name.indexOf('.zip') == -1 && file.name.indexOf('.kml') == -1) {
+                                        layer.msg('請確認檔案類型，僅支援.pdf,.jpg,.zip,.kml')
+                                        return false
+                                    }
+
+
+                                    let PostData = {};
+                                    PostData.ObjID = 0;
+                                    PostData.檔案名稱 = file.name;
+                                    PostData.上傳人員帳號 = usid
+                                    PostData.上傳人員 = decodeURI(usinfo.split('|')[0]);
+                                    PostData.檔案時間 = NewDateTo14(file.lastModifiedDate)
+                                    PostData.上傳時間 = GetNowDate14()
+                                    PostData.公開與否 = $('#公開與否').val()
+
+                                    let formData = new FormData();
+                                    if ($("#檔案")[0].files.length > 0) {
+                                        formData.append("files", $("#檔案")[0].files[0]);
+                                    }
+
+                                    $.ajax({
+                                        url: RPApi + 'FileLists/FileUpload',
+                                        type: 'POST',
+                                        headers: { Authorization: 'Bearer ' + RPtoken },
+                                        data: formData,
+                                        dataType: "json",
+                                        contentType: false,
+                                        processData: false,
+                                        success: function (FileUpload_status) {
+                                            if (FileUpload_status.status) {
+                                                $.ajax({
+                                                    url: RPApi + 'FileLists',
+                                                    type: 'POST',
+                                                    headers: { Authorization: 'Bearer ' + RPtoken },
+                                                    data: JSON.stringify(PostData),
+                                                    contentType: 'application/json; charset=utf-8',
+                                                    dataType: 'json',
+                                                    success: function (data) {
+                                                        layer.msg('新增成功')
+                                                        layer.close(index);
+                                                        retable();
+                                                    },
+                                                    error: function (data) { layer.msg('發生錯誤') }
+                                                })
+                                            }
+                                            else { layer.msg('發生錯誤') }
+                                        },
+                                        error: function (data) { layer.msg('發生錯誤') }
+                                    })
+                                    return false;
+                                };
+                                document.getElementById("tempcencel").onclick = function () {
+                                    layer.close(index);
+                                    return false;
+                                }
+                            },
+                            cancel: function (index, layero, that) {
+                                layer.close(index);
+                                return false;
+                            }
+                        })
+                    }
+                    function file_download(chdata) {
+                        var a = document.createElement('a');
+                        a.href = 'https://landmap.tainan.gov.tw/RP/Files/' + chdata.檔案名稱;
+                        a.download = chdata.檔案名稱;
+                        a.target = '    ';
+                        a.click();
+                    }
+                    function file_delete(chdata) {
+                        layer.confirm('確定刪除檔案?', function (index) {
+                            $.ajax({
+                                url: RPApi + 'FileLists/Delete' + '?fileName=' + chdata.檔案名稱,
+                                type: 'DELETE',
+                                headers: { Authorization: 'Bearer ' + RPtoken },
+                                dataType: "json",
+                                success: function (Delete_status) {
+                                    if (Delete_status.status) {
+                                        $.ajax({
+                                            url: RPApi + 'FileLists' + '/' + chdata.ObjID,
+                                            type: 'DELETE',
+                                            headers: { Authorization: 'Bearer ' + RPtoken },
+                                            dataType: 'json',
+                                            success: function (data) {
+                                                layer.msg('資料已刪除。')
+                                                layer.close(index);
+                                                retable()
+                                            },
+                                            error: function (xhr) { layer.msg('刪除失敗，請確認是否重複操作。') }
+                                        })
+                                    }
+                                    else { layer.msg('發生錯誤') }
+                                },
+                                error: function (data) { layer.msg('發生錯誤') }
+                            })
+                        });
+                    }
+                }
+            })
+        }
+        function checkfile(sender) {
+            // 可接受的附檔名
+            var validExts = new Array(".pdf", ".jpg", ".jpeg", ".zip", ".kml");
+            var fileExt = sender.value;
+            fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+            if (validExts.indexOf(fileExt) < 0) {
+                alert("檔案類型錯誤，可接受的副檔名有：" + validExts.toString());
+                sender.value = null;
+                return false;
+            }
+            else return true;
+        }
+        function NewDateTo14(val) {//new Date() ->  XXXX-XX-XXTXX:XX:XX
+            if (val == '' || val == null) { return '' }
+            else {
+                return (val.getFullYear().toString()) + '-' + (100 + val.getMonth() + 1).toString().substring(1, 3) + '-' + (100 + val.getDate()).toString().substring(1, 3) + 'T'
+                    + (100 + val.getHours()).toString().substring(1, 3) + ':'
+                    + (100 + val.getMinutes()).toString().substring(1, 3) + ':'
+                    + (100 + val.getSeconds()).toString().substring(1, 3);
+            }
+        }
+        function GetNowDate14() {
+            let today = new Date();
+            let DateTime = ((today.getFullYear()).toString()) + '-' + (100 + today.getMonth() + 1).toString().substring(1, 3) + '-'
+                + (100 + today.getDate()).toString().substring(1, 3) + 'T'
+                + (100 + today.getHours()).toString().substring(1, 3) + ':'
+                + (100 + today.getMinutes()).toString().substring(1, 3) + ':'
+                + (100 + today.getSeconds()).toString().substring(1, 3);
+            return DateTime
+        }
+    </script>
+</body>
+</html>

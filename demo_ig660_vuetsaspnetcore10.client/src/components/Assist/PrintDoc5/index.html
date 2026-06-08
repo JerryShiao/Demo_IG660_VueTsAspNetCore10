@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不動產經紀人證書申請書</title>
+    <!--↓logo更換↓-->
+    <link rel="icon" href="../../icons/png/logo_tn_icon.png" type="image/x-icon" />
+    <!--↑logo更換↑-->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <nav></nav>
+    </header>
+    <div class="container">
+        <h3>不動產經紀人證書申請書</h3>
+        <div class="block" id="government">
+            <div class="top">
+                <p class="subtitle">受理機關</p>
+            </div>
+            <div class="main">
+                <p>臺南市政府地政處</p>
+            </div>
+        </div>
+        <div class="block" id="person-info01">
+            <div class="top">
+                <p class="subtitle">申請人資料</p>
+            </div>
+            <div class="main">
+                <form action="" id="form1">
+                    <div class="col">
+
+                        <label class="gender-group">
+                            <p class="input-title">性別</p>
+                            <div class="gender-group-item">
+                                <div>
+                                    <input type="radio" name="gender" value="M">男
+                                    <input type="radio" name="gender" value="F">女
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="row">
+                        <div class="col-left">
+                            <label class="label-group">
+                                <p class="input-title">國籍</p>
+                                <input type="text" name="applicant_citizenship" placeholder="中華民國">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">中文姓名</p>
+                                <input type="text" name="applicant_name" placeholder="李大華">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">英文姓名</p>
+                                <input type="text" name="applicant_name_en" placeholder="LI,TA HUA">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">身分證號碼</p>
+                                <input type="text" maxlength="10"  name="applicant_ID" placeholder="請輸入身分證共十碼">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">出生日期</p>
+                                <div class="row-3">
+                                    <input type="number" name="applicant_year" placeholder="年(民國)">
+                                    <input type="number" name="applicant_month" placeholder="月">
+                                    <input type="number" name="applicant_day" placeholder="日">
+                                </div>
+                            </label>
+                        </div>
+                        <div class="col-right">
+                            <label class="label-group">
+                                <p class="input-title">連絡電話</p>
+                                <div class="row-3">
+                                    <input type="tel" maxlength="10" name="applicant_office_tel" placeholder="辦公室">
+                                    <input type="tel" maxlength="10" name="applicant_home_tel" placeholder="住家">
+                                    <input type="tel" maxlength="10" name="applicant_phone" placeholder="手機">
+                                </div>
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">電子郵件</p>
+                                <input type="email" name="applicant_email">
+                            </label>
+                            <div id="address">
+                                <label class="label-group">
+                                    <p class="input-title">戶籍地址</p>
+                                    <input type="text" name="applicant_addr">
+                                </label>
+                                <label class="label-group double">
+                                    <p class="input-title">通訊地址</p>
+                                    <div class="address">
+                                        <div>
+                                            <input type="radio" name="address" value="1">同戶籍地址
+                                        </div>
+                                        <input type="text" name="applicant_addr1">
+                                    </div>
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="block" id="reason">
+            <div class="top">
+                <p class="subtitle">申請事由</p>
+            </div>
+
+            <div class="main">
+                <form id="form2">
+                    <!-- 申請事由select -->
+                    <label>
+                        <p class="input-title">申請事由</p>
+                        <select name="reason" id="selectreason">
+                            <option value="申請證書">申請證書</option>
+                            <option value="補發證書">補發證書</option>
+                            <option value="換發證書">換發證書</option>
+                        </select>
+                    </label>
+                    <!-- //變更項目為申請證書時展開 -->
+                    <div class="apply" id="apply">
+                        <p class="input-title">是否曾請領證書</p>
+                        <label>
+                            <input type="radio" name="apply" value="0">否
+                        </label>
+                        <label>
+                            <input type="radio" name="apply" value="1">曾於<input type="text" name="application_city">縣(市)政府請領<input type="text" name="application_office">市政府地政處請領
+                        </label>
+                    </div>
+
+                    <!-- //變更項目為補發證書時展開 -->
+                    <div class="change disable" id="change">
+                        <div class="label-group">
+                            <label>
+                                <p class="input-title">原因</p>
+                                <input type="text" name="reissue_reason">
+                            </label>
+                            <label>
+                                <p class="input-title">證書字號</p>
+                                <div class="row-3">
+                                    <input type="text" placeholder="字" name="reissue_word">
+                                    <input type="text" placeholder="號" name="reissue_num">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- //變更項目為換發證書時展開 -->
+                    <div class="new disable" id="new">
+                        <div class="label-group">
+                            <label>
+                                <p class="input-title">原因</p>
+                                <input type="radio" name="fullfill" value="0">有效期限屆滿
+                                <div>
+                                    <input type="radio" name="fullfill" value="1">其他
+                                    <input type="text" name="fullfill_reason">
+                                </div>
+                            </label>
+
+                            <label>
+                                <p class="input-title">證書字號</p>
+                                <div class="row-3">
+                                    <input type="text" placeholder="字" name="renewal_word">
+                                    <input type="text" placeholder="號" name="renewal_num">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="block" id="document">
+            <div class="top">
+                <p class="subtitle">附繳文件</p>
+            </div>
+            <div class="main">
+                <form action="" id="form3">
+                    <label>
+                        <input type="checkbox" name="document" value="document_A">身分證明文件影本
+                    </label>
+                    <label>
+                        <input type="checkbox" name="document" value="document_B">申請人最近1年內直4公分﹑寬2.8公分正面脫帽半身相片1式2張
+                    </label>
+                    <label>
+                        <input type="checkbox" name="document" value="document_C">考試院不動產經紀人考試及格證書<input type="number" name="exam_pass_certificate_word">字第<input type="number" name="exam_pass_certificate_num">號及其影本各1份
+                    </label>
+                    <label>
+                        <input type="checkbox" id="moredoc" name="document" value="document_D">具備1年以上經紀營業員經驗證明及其影本各1份，詳如下
+                    </label>
+                    <div class="expinfo" id="expinfo">
+                        <label>
+                            1. 薪資或執行業務所得扣繳資料證明影本<input type="number" class="min-input" name="experience_proves_1_quantity" min="0">份
+                        </label>
+                        <label>
+                            2.1 任職公司或商業登記證明文件影本<input type="number" name="experience_proves_2_1_quantity" class="min-input" min="0">份
+                        </label>
+                        <label>
+                            2.2 任職公司或商號業經內政部備案者：內經審字第<input type="number" name="experience_proves_2_2_num" class="min-input">號
+                        </label>                        
+                        <label>3. 代銷業者與起造人或建築業者訂立之委託書或合約書影本<input type="number"  name="experience_proves_3_quantity" class="min-input" min="0">份</label>
+
+                        <label>4. 其他證明文件<input type="text" name="experience_proves_4_other" class="min-input"></label>
+                    </div>
+                    <label>
+                        <input type="checkbox" name="document" value="document_E">完成專業訓練30個小時以上證明及其影本各<input type="number" name="professional_training_certificate_quantity">份
+                    </label>
+                    <label>
+                        <input type="checkbox" name="document" value="document_F">原核發之不動產經紀人證書及其影本各1份
+                    </label>
+                    <label>
+                        <input type="checkbox" name="document" value="document_G">證書費新臺幣1千元現金或匯票1張
+                    </label>
+                    <label>
+                        <input type="checkbox" name="document" value="document_H">證書費新臺幣5百元現金或匯票1張
+                    </label>
+                    <label>
+                        <input type="checkbox" name="document" value="document_I">其他證明文件
+                        <input type="text" name="other">
+                    </label>
+                </form>
+            </div>
+        </div>
+
+        <button id="download">下載申請書</button>        
+    </div>
+    <footer></footer>
+
+    <script src="js/index.js"></script>    
+    <!--Docx javascript 插件-->
+    <script src="js/docxtemplater.js"></script>
+    <script src="js/pizzip.js"></script>
+    <script src="js/pizzip-utils.js"></script>
+    <!--javascript檔案下載插件-->
+    <script src="js/FileSaver.js"></script>
+    <!--客製化javascript檔案-->
+    <script src="js/docx_load_save.js"></script>
+    <script src="js/docxReplace.js"></script>
+</body>
+
+
+</html>

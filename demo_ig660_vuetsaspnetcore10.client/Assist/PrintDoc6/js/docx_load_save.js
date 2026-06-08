@@ -1,0 +1,45 @@
+﻿let zip;
+let doc;
+loadDocx('地政士登記助理員備查申請.docx');
+let docx;
+
+function loadFile(url, callback) {
+    PizZipUtils.getBinaryContent(url, callback);
+}
+
+function loadDocx(path) {
+    loadFile(
+        path,
+        function (error, content) {
+            if (error) {
+                throw error;
+            }
+            zip = new PizZip(content);
+            doc = new window.docxtemplater(zip);
+            //.setOptions({
+            //    nullGetter: function () {
+            //        return '';
+            //    }
+            //})
+            //let text = doc.getFullText();
+            //console.log(doc);
+            //alert("Text is " + text);
+
+
+        }
+    );
+
+
+}
+
+function saveDocx() {
+
+    // 產生一個代表docxtemplater物件的zip檔（不是一個真實的文件，而是在記憶體中的表示）
+    docx = doc.getZip().generate({
+        type: "blob",
+        mimeType:
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    });
+    // 將目標文件物件儲存為目標類型的文件，並命名
+    saveAs(docx, '地政士登記助理員備查申請');
+}

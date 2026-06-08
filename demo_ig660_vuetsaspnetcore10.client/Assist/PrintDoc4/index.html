@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不動產經紀業備查申請書</title>
+    <!--↓logo更換↓-->
+    <link rel="icon" href="../../icons/png/logo_tn_icon.png" type="image/x-icon" />
+    <!--↑logo更換↑-->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <nav></nav>
+    </header>
+    <div class="container">
+        <h3>不動產經紀業備查申請書</h3>
+        <div class="block" id="government">
+            <div class="top">
+                <p class="subtitle">受理機關</p>
+            </div>
+            <div class="main">
+                <p>臺南市政府地政處</p>
+            </div>
+        </div>
+
+        <!-- 經紀業資料 -->
+        <div class="block" id="company">
+            <div class="top">
+                <p class="subtitle">經紀業</p>
+            </div>
+            <div class="main">
+                <form id="form01">
+                    <div class="row">
+                        <div class="col-left">
+                            <label class="label-group">
+                                <p class="input-title">名稱</p>
+                                <input type="text" name="name">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">許可日期</p>
+                                <input type="date" name="date">
+
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">統一編號</p>
+                                <input type="number" name="ID">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">消費者服務專線</p>
+                                <input type="tel" name="tel">
+                            </label>
+
+                        </div>
+                        <div class="col-right">
+                            <label class="label-group">
+                                <p class="input-title">電子郵件</p>
+                                <input type="email" name="email">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">所在地</p>
+                                <input type="text" name="address">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">網址</p>
+                                <input type="text" name="webURL">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">文號</p>
+                                <input type="text" name="docNum">
+                            </label>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 申請事由 -->
+        <div class="block" id="reason">
+            <div class="top">
+                <p class="subtitle">申請備查事由</p>
+            </div>
+
+            <div class="main">
+                <form id="form02">
+                    <!-- 申請事由select選單 -->
+                    <label>
+                        <p class="input-title">申請備查事由</p>
+                        <select name="reason" id="selectreason">
+                            <option value="經紀業設立備查">經紀業設立備查</option>
+                            <option value="經紀業變更備查">經紀業變更備查</option>
+                            <option value="營業處所分設備查">營業處所分設備查</option>
+                            <option value="委託代銷契約（簽訂）備查">委託代銷契約（簽訂）備查</option>
+                            <option value="營業處所變更備查">營業處所變更備查</option>
+                            <option value="委託代銷契約變更備查">委託代銷契約變更備查</option>
+                        </select>
+                    </label>
+
+                    <!-- !變更項目為經紀業設立備查時展開 -->
+                    <div class="set" id="set">
+                        <div class="line"></div>
+                        <div class="label-group">
+                            <div class="row">
+                                <div class="col-left">
+                                    <label class="label-group">
+                                        <p class="input-title">經紀人員數</p>
+                                        <input type="number" name="經紀人員數">
+                                    </label>
+                                </div>
+                                <div class="col-right">
+                                    <label class="label-group">
+                                        <p class="input-title">加入同業公會名稱</p>
+                                        <input type="text" name="同業公會名稱">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- !變更項目為經紀業變更備查時展開 -->
+                    <div class="companychange disable" id="companychange">
+                        <div class="line"></div>
+                        <div class="label-group" id="adddiv01">
+                            <div class="row">
+                                <div class="col-left" id="addChange">
+                                    <div class="label-group">
+                                        <p class="input-title" style="margin-top: 16px;">變更事項(可複選)</p>
+                                        <div class="row col-left">
+                                            <div class="row col-left">
+                                                <div class="col-left">
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="名稱">名稱
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="所在地">所在地
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="組織型態">組織型態
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="組織解散或終止營業">組織解散或終止營業
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="經營型態">經營型態
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="營業項目">營業項目
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="加入之同業公會">加入之同業公會
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="僱用之經紀人員">僱用之經紀人員
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="負責人、董事、監察人或經理人變更">負責人、董事、監察人或經理人變更
+                                                    </label>
+                                                </div>
+                                                <div class="col-right">
+
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="遷入">遷入
+                                                    </label>
+                                                    <label>
+                                                        <input id="checkbox_stop" type="checkbox" name="變更事項" value="停業">停業
+                                                    </label>
+                                                    <div id="div_stop" class="spec disable">
+                                                        <p class="input-title">停業期間</p>
+                                                        <div class="row">
+                                                            <input type="date" name="停業起">至<input type="date"
+                                                                name="停業終">
+                                                        </div>
+                                                    </div>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="經營國外不動產仲介或代銷業務">
+                                                        經營國外不動產仲介或代銷業務
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="個人資料檔案安全維護計畫及業務終止後個人資料處理方法">
+                                                        個人資料檔案安全維護計畫及業務終止後個人資料處理方法
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="變更事項" value="復業">復業
+                                                    </label>
+                                                    <label>
+                                                        <input id="checkbox_other" type="checkbox" name="變更事項" value="其他">其他
+                                                    </label>
+                                                    <div id="div_other" class="spec disable">
+                                                        <p class="input-title">其他變更事項</p>
+                                                        <input type="text" name="經紀業變更備查_其他">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row col-right">
+                                            <label class="label-group">
+                                                <p class="input-title">變更前事項內容</p>
+                                                <input type="text" name="變更前事項內容">
+                                            </label>
+                                            <label class="label-group">
+                                                <p class="input-title">變更後事項內容</p>
+                                                <input type="text" name="變更後事項內容">
+                                            </label>
+                                        </div>
+                                        <!-- <select name="變更事項" id="companyChangeReason">
+                                            <option value="">請選擇變更事項</option>
+                                            <option value="名稱">名稱</option>
+                                            <option value="所在地">所在地</option>
+                                            <option value="組織型態">組織型態</option>
+                                            <option value="組織解散或終止營業">組織解散或終止營業</option>
+                                            <option value="經營型態">經營型態</option>
+                                            <option value="營業項目">營業項目</option>
+                                            <option value="加入之同業公會">加入之同業公會</option>
+                                            <option value="僱用之經紀人員">僱用之經紀人員</option>
+                                            <option value="負責人、董事、監察人或經理人變更">負責人、董事、監察人或經理人變更</option>
+                                            <option value="遷入">遷入</option>
+                                            <option value="停業">停業</option>
+                                            <option value="經營國外不動產仲介或代銷業務">經營國外不動產仲介或代銷業務</option>
+                                            <option value="個人資料檔案安全維護計畫及業務終止後個人資料處理方法">
+                                                個人資料檔案安全維護計畫及業務終止後個人資料處理方法
+                                            </option>
+                                            <option value="復業">復業</option>
+                                            <option value="其他">其他</option>
+                                        </select> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- !變更項目為營業處所分設備查時展開 -->
+                    <div class="new disable" id="new">
+                        <div class="line"></div>
+                        <div class="label-group" id="forAdd">
+                            <div class="row">
+                                <div class="radio-group">
+                                    <p class="input-title">營業處所型態</p>
+                                    <label>
+                                        <input type="radio" name="time" value="常態">
+                                        <p>常態</p>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="time" value="非常態">
+                                        <p>非常態</p>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-left">
+                                    <label class="label-group">
+                                        <p class="input-title">營業處所名稱</p>
+                                        <input type="text" name="營業處所名稱">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">經紀人員數</p>
+                                        <input type="number" name="經紀人員數1">
+                                    </label>
+                                </div>
+                                <div class="col-right">
+                                    <label class="label-group">
+                                        <p class="input-title">營業處所所在地</p>
+                                        <input type="number" name="營業處所所在地">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">設立日期</p>
+                                        <input type="date" name="設立日期">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="disable" id="showMoreSign">
+                                <div class="col-left">
+                                    <label class="label-group">
+                                        <p class="input-title">代理銷售戶(棟)數</p>
+                                        <input type="text" name="代理銷售戶">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">銷售總金額</p>
+                                        <input type="text" name="銷售總金額">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">不動產所在地</p>
+                                        <input type="text" name="不動產所在地">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">建造執照核發日期</p>
+                                        <input type="date" name="建造執照核發日期">
+                                        <p class="input-title">字號</p>
+                                        <input type="text" name="字號">
+                                    </label>
+                                </div>
+                                <div class="col-right">
+                                    <label class="label-group">
+                                        <p class="input-title">非常態營業處所設立目的</p>
+                                        <input type="text" name="非常態營業處所設立目的">
+                                    </label>
+                                    <label class="label-group" id="非常態營業處所設立期間">
+                                        <p class="input-title">非常態營業處所設立期間</p>
+                                        <div class="row-3">
+                                            <input type="date" name="設立起">
+                                            <span>至</span>
+                                            <input type="date" name="設立終">
+                                        </div>
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">代理銷售不動產名稱(建案名稱)</p>
+                                        <input type="text" name="不動產名稱">
+                                    </label>
+                                    <label class="label-group" id="委託代銷期間">
+                                        <p class="input-title">委託代銷期間</p>
+                                        <div class="row-3">
+                                            <input type="date" name="委託代銷起">
+                                            <span>至</span>
+                                            <input type="date" name="委託代銷終">
+                                        </div>
+                                        <input type="text" name="委託代銷_其他內容" placeholder="輸入其他時間">
+                                    </label>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- !變更項目為委託代銷契約（簽訂）備查時展開 -->
+                    <div class="sign disable" id="sign">
+                        <div class="line"></div>
+                        <div class="label-group">
+                            <!-- <div class="row">
+                                <div class="radio-group">
+                                    <p class="input-title">營業處所型態</p>
+                                    <label>
+                                        <input type="radio" name="time1" value="常態">
+                                        <p>常態</p>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="time1" value="非常態">
+                                        <p>非常態</p>
+                                    </label>
+                                </div>
+                            </div> -->
+                            <!-- <div class="row">
+                                <div class="col-left">
+                                    <label class="label-group">
+                                        <p class="input-title">營業處所名稱</p>
+                                        <input type="text" name="營業處所名稱1">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">經紀人員數</p>
+                                        <input type="number" name="經紀人員數11">
+                                    </label>
+                                </div>
+                                <div class="col-right">
+                                    <label class="label-group">
+                                        <p class="input-title">營業處所所在地</p>
+                                        <input type="number" name="營業處所所在地1">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">設立日期</p>
+                                        <input type="date" name="設立日期1">
+                                    </label>
+                                </div>
+                            </div> -->
+                            <div class="row">
+                                <div class="col-left">
+                                    <!-- <label class="label-group">
+                                        <p class="input-title">代理銷售戶(棟)數</p>
+                                        <input type="text" name="代理銷售戶1">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">銷售總金額</p>
+                                        <input type="text" name="銷售總金額1">
+                                    </label> -->
+                                    <label class="label-group">
+                                        <p class="input-title">不動產所在地</p>
+                                        <input type="text" name="不動產所在地1">
+                                    </label>
+                                    <label class="label-group">
+                                        <p class="input-title">建造執照核發日期</p>
+                                        <input type="date" name="建造執照核發日期1">
+                                        <p class="input-title">字號</p>
+                                        <input type="text" name="字號1">
+                                    </label>
+                                </div>
+                                <div class="col-right">
+                                    <!-- <label class="label-group">
+                                        <p class="input-title">非常態營業處所設立目的</p>
+                                        <input type="text" name="非常態營業處所設立目的1">
+                                    </label>
+                                    <label class="label-group" id="非常態營業處所設立期間1">
+                                        <p class="input-title">非常態營業處所設立期間</p>
+                                        <div class="row-3">
+                                            <input type="date" name="設立起1">
+                                            <span>至</span>
+                                            <input type="date" name="設立終1">
+                                        </div>
+                                    </label> -->
+                                    <label class="label-group">
+                                        <p class="input-title">代理銷售不動產名稱(建案名稱)</p>
+                                        <input type="text" name="不動產名稱1">
+                                    </label>
+                                    <label class="label-group" id="委託代銷期間1">
+                                        <p class="input-title">委託代銷期間</p>
+                                        <div class="row-3">
+                                            <input type="date" name="委託代銷起1">
+                                            <span>至</span>
+                                            <input type="date" name="委託代銷終1">
+                                        </div>
+                                        <input type="text" name="委託代銷_其他內容1" placeholder="輸入其他時間">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- !變更項目為營業處所變更備查時展開 -->
+                    <div class="change disable" id="change">
+                        <div class="line"></div>
+                        <div class="label-group">
+                            <p class="input-title" style="margin-top: 16px;">變更事項(可複選)</p>
+                            <div class="row col-left">
+                                <div class="row col-left">
+                                    <div class="col-left">
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="名稱">名稱
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="所在地">所在地
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="僱用之經紀人員">僱用之經紀人員
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="遷入">遷入
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="裁撤">裁撤
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="設立目的">設立目的
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="銷售總金額">銷售總金額
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="設立期間">設立期間
+                                        </label>
+                                    </div>
+                                    <div class="col-right">
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="代理銷售不動產名稱">代理銷售不動產名稱
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="建造執照（日期或字號）">建造執照（日期或字號）
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="代理銷售戶(棟)數">代理銷售戶(棟)數
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="委託代銷契約終止或解除">委託代銷契約終止或解除
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="委託代銷期間">委託代銷期間
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="營業處所變更事項" value="委託代銷之營業處所">委託代銷之營業處所
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" id="checkbox_other1" name="營業處所變更事項" value="其他">其他
+                                        </label>
+                                        <div id="div_other1" class="spec disable">
+                                            <p class="input-title">其他變更事項</p>
+                                            <input type="text" name="營業處所變更備查_其他">
+                                        </div>
+                                    </div>
+                                    <!-- <label class="label-group">
+                                        <select name="營業處所變更事項" id="placeChangeReason">
+                                            <option value="請選擇變更事項">請選擇變更事項</option>
+                                            <option value="名稱">名稱</option>
+                                            <option value="所在地">所在地</option>
+                                            <option value="僱用之經紀人員">僱用之經紀人員</option>
+                                            <option value="遷入">遷入</option>
+                                            <option value="裁撤">裁撤</option>
+                                            <option value="設立目的">設立目的</option>
+                                            <option value="銷售總金額">銷售總金額</option>
+                                            <option value="設立期間">設立期間</option>
+                                            <option value="代理銷售不動產名稱">代理銷售不動產名稱</option>
+                                            <option value="建造執照（日期或字號）">建造執照（日期或字號）</option>
+                                            <option value="代理銷售戶(棟)數">代理銷售戶(棟)數</option>
+                                            <option value="委託代銷契約終止或解除">委託代銷契約終止或解除</option>
+                                            <option value="委託代銷期間">委託代銷期間</option>
+                                            <option value="委託代銷之營業處所">委託代銷之營業處所</option>
+                                            <option value="其他">其他</option>
+                                        </select>
+                                    </label> -->
+
+                                </div>
+                            </div>
+                            <div class="col-right">
+                                <label class="label-group">
+                                    <p class="input-title">營業處所名稱</p>
+                                    <input type="text" name="營業處所名稱1">
+                                </label>
+                                <label class="label-group">
+                                    <p class="input-title">變更前事項內容</p>
+                                    <input type="text" name="變更前事項內容1">
+                                </label>
+                                <label class="label-group">
+                                    <p class="input-title">變更後事項內容</p>
+                                    <input type="text" name="變更後事項內容1">
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- !變更項目為委託代銷契約變更備查時展開 -->
+                    <div class="change disable" id="signchange">
+                        <div class="line"></div>
+                        <div class="label-group">
+                            <p class="input-title" style="margin-top: 16px;">變更事項(可複選)</p>
+                            <div class="row col-left">
+                                <div class="row col-left">
+                                    <div class="col-left">
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="名稱">名稱
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="所在地">所在地
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="僱用之經紀人員">僱用之經紀人員
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="遷入">遷入
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="裁撤">裁撤
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="設立目的">設立目的
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="銷售總金額">銷售總金額
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="設立期間">設立期間
+                                        </label>
+                                    </div>
+                                    <div class="col-right">
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="代理銷售不動產名稱">代理銷售不動產名稱
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="建造執照（日期或字號）">建造執照（日期或字號）
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="代理銷售戶(棟)數">代理銷售戶(棟)數
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="委託代銷契約終止或解除">委託代銷契約終止或解除
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="委託代銷期間">委託代銷期間
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="委託代銷契約變更事項" value="委託代銷之營業處所">委託代銷之營業處所
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" id="checkbox_other2" name="委託代銷契約變更事項" value="其他">其他
+                                        </label>
+                                        <div id="div_other2" class="spec disable">
+                                            <p class="input-title">其他變更事項</p>
+                                            <input type="text" name="營業處所變更備查_其他1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <select name="委託代銷契約變更事項" id="signChangeReason">
+                                            <option value="請選擇變更事項">請選擇變更事項</option>
+                                            <option value="名稱">名稱</option>
+                                            <option value="所在地">所在地</option>
+                                            <option value="僱用之經紀人員">僱用之經紀人員</option>
+                                            <option value="遷入">遷入</option>
+                                            <option value="裁撤">裁撤</option>
+                                            <option value="設立目的">設立目的</option>
+                                            <option value="銷售總金額">銷售總金額</option>
+                                            <option value="設立期間">設立期間</option>
+                                            <option value="代理銷售不動產名稱">代理銷售不動產名稱</option>
+                                            <option value="建造執照（日期或字號）">建造執照（日期或字號）</option>
+                                            <option value="代理銷售戶(棟)數">代理銷售戶(棟)數</option>
+                                            <option value="委託代銷契約終止或解除">委託代銷契約終止或解除</option>
+                                            <option value="委託代銷期間">委託代銷期間</option>
+                                            <option value="委託代銷之營業處所">委託代銷之營業處所</option>
+                                            <option value="其他">其他</option>
+                                        </select> -->
+                            </div>
+                            <div class="row col-right">
+                                <label class="label-group">
+                                    <p class="input-title">變更前事項內容</p>
+                                    <input type="text" name="變更前事項內容2">
+                                </label>
+                                <label class="label-group">
+                                    <p class="input-title">變更後事項內容</p>
+                                    <input type="text" name="變更後事項內容2">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- 負責人資料 -->
+        <div class="block" id="person-info01">
+            <div class="top">
+                <p class="subtitle">負責人資料</p>
+            </div>
+            <div class="main">
+                <form id="form04">
+
+                    <div class="row">
+                        <div class="col-left">
+                            <label class="label-group">
+                                <p class="input-title">中文姓名</p>
+                                <input type="text" name="Name" placeholder="李大華">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">連絡電話</p>
+                                <div class="row-3">
+                                    <input type="tel" maxlength="10" name="telOffice" placeholder="辦公室">
+                                    <input type="tel" maxlength="10" name="telHome" placeholder="住家">
+                                    <input type="tel" maxlength="10" name="phoneNumber" placeholder="手機">
+                                </div>
+                            </label>
+
+                        </div>
+                        <div class="col-right">
+                            <label class="label-group">
+                                <p class="input-title">電子郵件</p>
+                                <input type="email" name="Email">
+                            </label>
+                            <div id="address">
+                                <label class="label-group">
+                                    <p class="input-title">戶籍地址</p>
+                                    <input type="text" id="applicant_addr" name="applicant_addr">
+                                </label>
+                                <label class="label-group double">
+                                    <p class="input-title">通訊地址</p>
+                                    <div class="address">
+                                        <div>
+                                            <input type="radio" name="Address">同戶籍地址
+                                        </div>
+                                        <input type="text" id="applicant_addr1" name="applicant_addr1">
+                                    </div>
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 代理人資料 -->
+        <div class="block" id="person-info02">
+            <div class="top">
+                <p class="subtitle">代理人資料</p>
+            </div>
+            <div class="main">
+                <form id="form05">
+                    <div class="row">
+                        <div class="col-left">
+                            <label class="label-group">
+                                <p class="input-title">中文姓名</p>
+                                <input type="text" name="Name2" placeholder="李大華">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">連絡電話</p>
+                                <div class="row-3">
+                                    <input type="tel" maxlength="10" name="telOffice2" placeholder="辦公室">
+                                    <input type="tel" maxlength="10" name="telHome2" placeholder="住家">
+                                    <input type="tel" maxlength="10" name="phoneNumber2" placeholder="手機">
+                                </div>
+                            </label>
+                        </div>
+                        <div class="col-right">
+
+                            <label class="label-group">
+                                <p class="input-title">電子郵件</p>
+                                <input type="email" name="Email2">
+                            </label>
+                            <label class="label-group">
+                                <p class="input-title">通訊地址</p>
+                                <input type="text" name="applicant_addr2">
+                            </label>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 附繳文件 -->
+        <div class="block" id="document">
+            <div class="top">
+                <p class="subtitle">附繳文件</p>
+                <p>(可複選 / 最多8份)</p>
+            </div>
+            <div class="main">
+                <form id="form03">
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">不動產經紀業備查申請書2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">代理人身分證明文件影本2份
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">公司或商業登記證明文件影本2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">營業保證金繳存證明影本2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">同業公會會員證明影本2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">不動產經紀人員名冊2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">不動產經紀人員證書（明）影本1份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">及業務終止後個人資料處理方法個人資料檔案安全維護計畫2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">其名冊及身分證明文件影本負責人、董事、監察人、經理人2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">停業或復業登記證明文件影本2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">加盟或退盟文件影本2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">委託代銷契約書影本2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">原許可文件2份
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="document">建造執照影本2份
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <button id="download">下載申請書</button>
+    </div>
+    <footer></footer>
+    <!-- 基本動態js -->
+    <script src="js/index.js"></script>
+    <!--Docx javascript 插件-->
+    <script src="js/docxtemplater.js"></script>
+    <script src="js/pizzip.js"></script>
+    <script src="js/pizzip-utils.js"></script>
+    <!--javascript檔案下載插件-->
+    <script src="js/FileSaver.js"></script>
+    <!--客製化javascript檔案-->
+    <script src="js/docx_load_save.js"></script>
+    <script src="js/docxReplace.js"></script>
+
+</body>
+
+
+</html>

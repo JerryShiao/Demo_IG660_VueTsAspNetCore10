@@ -1,0 +1,400 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;200;400;500;600;700&display=swap');
+
+:root {
+    --primary-default: #3c90cd;
+    --primary-tint: #aebcc3;
+    --primary-dark: #4281b9;
+    --secondary-light: #F7D98C;
+    --alert-default: #C95940;
+    --alert-dark: #A4361D;
+    --gray-gray100: #8B8984;
+    --gray-tint: #E7E7E7;
+    --background: #F9F9F9;
+    --maintitle: 30px;
+    --subtitle: 22px;
+    --content: 16px;
+    --body: 14px;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    font-size: 18px;
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--background);
+
+}
+
+header,
+footer {
+    width: 100%;
+    height: 50px;
+    background-color: var(--primary-tint);
+}
+
+/* 全區域 */
+
+.container {
+    width: calc(100%-480px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin: 36px 0;
+}
+
+/* 變更項目選擇時展開項目 */
+.change,
+.new {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+}
+
+
+
+/* show disable切換 */
+.disable {
+    display: none;
+}
+
+/* 標題 */
+
+h3 {
+    font-size: var(--maintitle);
+    color: var(--primary-dark);
+    text-align: center;
+    margin: 2% 0;
+}
+
+/* 單一表單區塊 */
+
+.block {
+    margin: auto;
+    width: 1194px;
+    height: fit-content;
+    border-radius: 30px;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+}
+
+.subtitle {
+    font-size: var(--subtitle);
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.top {
+    width: 100%;
+    padding: 28px 68px;
+    background-color: var(--secondary-light);
+    border-radius: 30px 30px 0 0;
+}
+
+.main {
+    margin: 32px 68px 56px;
+    color: var(--gray-gray100);
+}
+
+label {
+    width: 90%;
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+    align-items: center;
+}
+
+.label-group {
+    justify-content: space-between;
+}
+
+label:hover {
+    color: var(--primary-default);
+}
+
+.input-title {
+    color: #000000;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.active {
+    display: block;
+}
+
+[type=text].reasonblock {
+    width: 200px;
+}
+
+#city {
+    width: 100px;
+}
+
+#download {
+    width: 159px;
+    height: 45px;
+    font-size: 20px;
+    letter-spacing: 2px;
+    background-color: var(--primary-default);
+    border-radius: 4px;
+    border: 0;
+    color: #FFFFFF;
+    margin: auto;
+}
+
+#download:hover {
+    background-color: var(--alert-default);
+
+}
+
+#reason .parent div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+
+/* radio style */
+[type=radio] {
+    accent-color: var(--primary-default);
+    width: 20px;
+    height: 20px;
+}
+
+/* checkbox style */
+[type=checkbox] {
+    width: 24px;
+    height: 24px;
+    color: var(--primary-default);
+    vertical-align: middle;
+    -webkit-appearance: none;
+    background: none;
+    border: 0;
+    outline: 0;
+    flex-grow: 0;
+    background-color: #FFFFFF;
+    transition: 300ms;
+    cursor: pointer;
+}
+
+[type=checkbox]::before {
+    content: "";
+    color: transparent;
+    display: block;
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+    border: 0;
+    background-color: transparent;
+    background-size: contain;
+    box-shadow: inset 0 0 0 1px #CCD3D8;
+}
+
+[type=checkbox]:checked {
+    background-color: currentcolor;
+}
+
+[type=checkbox]:checked::before {
+    box-shadow: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E %3Cpath d='M15.88 8.29L10 14.17l-1.88-1.88a.996.996 0 1 0-1.41 1.41l2.59 2.59c.39.39 1.02.39 1.41 0L17.3 9.7a.996.996 0 0 0 0-1.41c-.39-.39-1.03-.39-1.42 0z' fill='%23fff'/%3E %3C/svg%3E");
+}
+
+/* input style */
+[type=text],
+select,
+[type=tel],
+[type=email],
+[type=number] {
+    width: 80%;
+    height: 44px;
+    border: 0;
+    background-color: var(--gray-tint);
+    padding-left: 8px;
+    border-radius: 4px;
+}
+
+#apply input[type=text] {
+    width: 100px;
+}
+
+#apply .input-title {
+    margin-top: 2%;
+    font-size: 18px;
+    color: var(--primary-default);
+}
+
+.label-group .input-title {
+    margin-right: 16px;
+}
+
+.expinfo {
+    margin: 16px 0 0 24px;
+    width: 65%;
+    padding: 20px;
+    background-color: var(--gray-tint);
+    border-radius: 8px;
+    /* display: flex; */
+    flex-direction: column;
+    gap: 16px;
+    display: none;
+}
+
+.expinfo label {
+    font-size: 16px;
+    margin-top: 0;
+}
+
+.min-input {
+    background-color: white;
+    height: 30px;
+}
+
+/* 申請資料表格 */
+.col {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.col-left,
+.col-right {
+    width: 90%;
+
+}
+
+.inline-col {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.row-3 {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+#document input[type=number] {
+    width: 70px;
+}
+
+#document input[type="text"] {
+    width: 300px;
+}
+
+
+/* 通訊地址欄 */
+.address {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.address [type=text] {
+    width: 100%;
+}
+
+.address div {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+.double {
+    align-items: flex-start;
+    padding-top: 8px;
+}
+
+/* 性別欄 */
+.gender-group {
+    justify-content: space-between;
+}
+
+.gender-group-item {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.gender-group div {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* mobile */
+
+@media (max-width:1280px) {
+
+    header,
+    footer {
+        width: 100%;
+    }
+
+    .block {
+        width: 90%;
+    }
+}
+
+@media(max-width:425px) {
+    h3 {
+        font-size: 22px;
+    }
+
+    .subtitle {
+        font-size: var(--subtitle);
+    }
+
+    .top {
+        padding: 20px 32px;
+    }
+
+    .main {
+        margin: 16px 32px 28px;
+    }
+
+    .row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    label {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .input-title {
+        width: 30%;
+        justify-content: space-between;
+    }
+
+    .col-left,
+    .col-right {
+        width: 100%;
+    }
+
+    .col {
+        width: 100%;
+    }
+}

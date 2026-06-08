@@ -296,7 +296,7 @@
             </div>
 
             <div class="checkbox-container">
-              <Checkbox v-model="isTaichungLayerVisible" inputId="tc-layer-checkbox" :binary="true" @change="onTcLayerToggle" />
+              <Checkbox v-model="isTaichungLayerVisible" inputId="tc-layer-checkbox" :binary="true" disabled />同時顯示臺中市圖資
               <label for="tc-layer-checkbox"> 同時顯示臺中市圖資 </label>
             </div>
           </TabPanel>
@@ -308,20 +308,40 @@
           <TabPanel value="import">
             <div class="import-grid">
               <Button label="SHP" severity="contrast" raised @click="importshp()" />
-              <Button label="KML" severity="contrast" raised @click="importkml()" />
-              <Button label="DXF" severity="contrast" raised @click="handleDxfImport" />
-              <Button label="CSV 地號" severity="contrast" raised @click="importcsv()" />
-              <Button label="CSV 坐標" severity="contrast" raised @click="importcsv2()" />
-              <Button label="XML(建物模型)" severity="secondary" raised @click="importxml()" />
-              <Button label="ZPB(建物平面圖)" severity="secondary" raised @click="importzpb()" />
-              <Button label="載入地圖服務" severity="warn" raised @click="loadMapService()" />
-              <Button label="資料說明" severity="warn" raised @click="AddLayer_InstructionsForUse()" />
+              <Button label="KML" severity="contrast" raised @click="NofunctionAlert()" />
+              <Button label="DXF" severity="contrast" raised @click="NofunctionAlert()" />
+              <Button label="CSV 地號" severity="contrast" raised @click="NofunctionAlert()" />
+              <Button label="CSV 坐標" severity="contrast" raised @click="NofunctionAlert()" />
+              <Button label="XML(建物模型)" severity="secondary" raised @click="NofunctionAlert()" />
+              <Button label="ZPB(建物平面圖)" severity="secondary" raised @click="NofunctionAlert()" />
+              <Button label="載入地圖服務" severity="warn" raised @click="NofunctionAlert()" />
+              <Button label="資料說明" severity="warn" raised @click="NofunctionAlert()" />
             </div>
           </TabPanel>
         </TabPanels>
       </Tabs>
-</Dialog>
+    </Dialog>
     <!--圖層控制 跳窗 END ============================================================== -->
+    <!--SHP 跳窗 BEGIN ================================================================= -->
+    <template>
+      <div>
+        <button @click="importshp">載入 Shapefile</button>
+
+        <Dialog v-model:visible="isDialogVisible"
+                  :header="dialogTitle"
+                  :modal="true"
+                 :draggable="true" :resizable="true" :maximizable="true"
+                  :style="{ width: dialogWidth }"
+                  :breakpoints="{ '960px': '95vw' }"
+                  :contentStyle="{ height: '560px', padding: '0' }">
+          <iframe id="tempshpfile"
+                  :src="iframeSrc"
+                  style="border: 0; width: 100%; height: 100%;"
+                  scrolling="no"></iframe>
+        </Dialog>
+      </div>
+    </template>
+    <!--SHP 跳窗 END =================================================================== -->
   </div>
 </template>
 
@@ -345,6 +365,12 @@
 
   // 套件
   import Swal from 'sweetalert2'; //sweetalert2
+
+  // ---  SHP 跳窗 ---
+  const isDialogVisible = ref(false);
+  const dialogTitle = ref("Shapefile載入與預覽");
+  const iframeSrc = ref("./Assist/SHPtoGeoJson/index.html");
+  const dialogWidth = ref("364px");
 
   //【宣告】=====================================================================
   const mapElement = ref(null);     // 用於綁定地圖容器的ref
@@ -449,6 +475,24 @@
       text: '此 Demo 尚未實作此功能！',
       icon: 'warning',
     });
+  }
+  //#endregion
+
+  //#region ◆開啟 SHP 跳窗 [importshp]
+  /**
+   * 開啟 SHP 跳窗
+   */
+  function importshp() {
+    try {
+      // 關閉前一個 dialog（在 Vue 中直接將 visible 設為 false）
+      isDialogVisible.value = false;
+    }
+    catch (e) {
+      console.error("清理事件失敗:", e);
+    }
+
+    // 開啟 PrimeVue Dialog
+    isDialogVisible.value = true;
   }
   //#endregion
 
@@ -751,10 +795,6 @@
   .p-dialog[data-pc-name="dialog"] {
     resize: both !important;
     overflow: auto !important;
-  }
-
-  .p-dialog .p-resizable-handle {
-    cursor: se-resize !important;
   }
 
   /* ✅ 新增：確保 Swal 永遠在 Dialog 上方 */

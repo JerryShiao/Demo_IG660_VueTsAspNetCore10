@@ -1,0 +1,322 @@
+﻿<!doctype html>
+<html>
+<head>
+    <title>shp2geojson</title>    
+    <meta http-equiv="Content-Type" content="charset=UTF-8" />
+    <meta name="author" content="Gipong">
+    <meta name="keywords" content="shapefile,dbf,geojson,preview,shp2geojson">
+</head>
+<body>
+
+    <div id="wrap" class="wrap">
+        <div id="map"></div>
+        <div id="attr">
+            <div class="tableDisplay">
+                <table id="attribute" class="ui small celled unstackable table">
+                    <thead id="attrHead">
+                        <tr class="center aligned">
+                            <th>Attribute</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody class="tbodyContent"></tbody>
+                </table>
+            </div>
+            <div class="ui red icon button" id="cancelAttr">Close</div>
+        </div>
+        <footer id="footer">
+            <div class="ui page grid">
+                <div class="sixteen wide column center aligned">
+                    <div id="addZipfile" class="tips large ui positive right labeled icon button">
+                        <i class="file archive icon"></i>上傳SHP
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div id="shp" class="shp-modal">
+        <div class="ui page grid">
+            <div class="sixteen wide aligned column">
+                <div class="ui form segment">
+                    <div class="field">
+                        <div class="ui teal fluid labeled icon button upload" id="zipfile" data-content="ZIP內須包含.shp與.dbf檔各一" data-variation="inverted large">
+                            選擇zip檔案
+                            <i class="file archive outline icon"></i>
+                            <input type="file" id="file" accept=".zip">
+                        </div>
+                    </div>
+                    <div class="field" id="dataInfo"></div>
+                    <div id="option">
+                        <div class="field ui labeled input" id="epsgField">
+                            <div class="ui label">坐標系統</div>
+                            <select id="epsg">
+                                <option value="3826">3826(TWD97)</option>
+                                <option value="4326">4326(WGS84)</option>
+                                <option value="3857">3857(WebMercator)</option>
+                            </select>
+                        </div>
+                        <div class="summary" style="font-size:small">
+                            EPSG數值說明如下：
+                            <br>
+                            3826:TWD97/TM2_121
+                            <br>
+                            4326:WGS84經緯度
+                            <br>
+                            3857:Web Mercator
+                            <br>
+                            *請注意本線上系統藉由瀏覽器執行，效能無法與一般單機程式相同，過多的圖徵可能會讀取失敗或不穩。
+                            <br>
+                            *讀取後屬性若出現亂碼可能是編碼錯誤，請切換編碼後重新載入看看，欄位名稱使用中文時big5欄名最多5字，utf8欄名最多3字。
+                        </div>
+                        <br>
+                        <div class="field ui labeled input">
+                            <div class="ui label">選擇編碼</div>
+                            <select id="encoding">
+                                <option value="utf-8">UTF-8</option>
+                                <option value="big5">BIG5</option>
+                            </select>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <div class="ui teal fluid labeled icon disabled button" id="preview">
+                                開始讀取圖資
+                                <i class="add icon"></i>
+                            </div>
+                        </div>
+                        <!--<div class="field">
+                            <div class="ui teal fluid labeled icon disabled button" id="preview2">
+                                寫入道路地段率
+                                <i class="add icon"></i>
+                            </div>
+                        </div>-->
+                        <div id="cancel" class="negative right ui button">取消</div>
+                    </div>
+                </div>
+                <div class="ui inverted dimmer">
+                    <div class="ui large text loader">載入中</div>
+                </div>
+            </div>
+            <div class="ui small modal">
+                <i class="close icon"></i>
+                <div class="header">Error Messages</div>
+                <div class="content">
+                    <div class="image">
+                        <i class="file archive outline icon"></i>
+                    </div>
+                    <div class="description">
+                        <p>不好意思，您的資料格式不支援</p>
+                    </div>
+                </div>
+                <div class="actions">
+                    <div class="ui red button">
+                        <i class="remove icon"></i>結束
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overlay"></div>
+    <link rel="stylesheet" href="demo/leaflet.css" />
+    <link rel="stylesheet" href="demo/semantic.min.css">
+    <link rel="stylesheet" href="demo/demo.css">
+    <script src="demo/proj4.js"></script>
+    <script src="demo/jquery-3.7.0.min.js"></script>
+    <script src="demo/jquery-ui.js"></script>
+    <script src="demo/leaflet.js"></script>
+    <script src="lib/jszip.js"></script>
+    <script src="lib/jszip-utils.js"></script>
+    <script src="demo/semantic.min.js"></script>
+    <script src="preprocess.js"></script>
+    <script src="preview.js"></script>
+    <script src="../../layui/layui.js"></script>
+    <script type="text/javascript" charset="UTF-8">
+        $(document).ready(function () {
+            var map = L.map('map').setView([24, 121], 5),
+                file,
+                vector;
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { maxZoom: 13 }).addTo(map);
+
+            function initVector() {
+                vector = L.geoJson([], {
+                    style: function (feature) {
+                        return feature.properties.style;
+                    },
+                    onEachFeature: function (feature, layer) {
+                        layer.on({
+                            click: function (e) {
+                                vector.eachLayer(function (l) {
+                                    vector.resetStyle(l);
+                                });
+
+                                $('.tbodyContent').remove();
+                                var tbody = '<tbody class="tbodyContent">';//裡面塞的資訊就是attribute  key=欄位   e.target.feature.properties[key]=內容
+                                for (var key in e.target.feature.properties) {
+                                    tbody +=
+                                        ('<tr class="center aligned"><td>' + key + '</td><td>' + e.target.feature.properties[key] + '</td></tr>');
+                                }
+                                $('#attribute').append(tbody + '</tbody>');
+                                $('#attr').fadeIn(300);
+                                map.panTo(e.latlng);
+                                if ('setStyle' in e.target) e.target.setStyle({
+                                    fillColor: '#FF0',
+                                    fillOpacity: 0.6
+                                });
+                            }
+                        });
+                    }
+                }).addTo(map);
+            }
+
+            function loadShpZip() {
+                var epsg = ($('#epsg').val() == '') ? 4326 : $('#epsg').val(),
+                    encoding = ($('#encoding').val() == '') ? 'utf-8' : $('#encoding').val();
+                if (file.name.split('.')[1] == 'zip') {
+                    if (file) $('.dimmer').addClass('active');
+                    loadshp({
+                        url: file,
+                        encoding: encoding,
+                        EPSG: epsg,
+                        RType: "Normal"
+                    }, function (data) {
+                        var URL = window.URL || window.webkitURL || window.mozURL || window.msURL,
+                            url = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: "application/json" }));
+                        $('.shp-modal').toggleClass('effect');
+                        $('.overlay').toggleClass('effect');
+                        $('#wrap').toggleClass('blur');
+                        vector.addData(data);
+                        map.fitBounds([
+                            [data.bbox[1], data.bbox[0]], [data.bbox[3], data.bbox[2]]
+                        ]);
+                        $('.dimmer').removeClass('active');
+                        $('#preview').addClass('disabled');
+                        //$('#preview2').addClass('disabled');
+                        $('#epsg').val('');
+                        $('#encoding').val('');
+                        $('#info').addClass('picInfo');
+                        $('#option').slideUp(500);
+                        layer.msg("讀取完成，您可以關閉預覽視窗，回到主圖台")
+                    });
+                } else {
+                    $('.modal').modal('show');
+                }
+            }
+            var tempdata;
+            var tempi = 0;
+            function loadShpZip2() {
+                var epsg = ($('#epsg').val() == '') ? 4326 : $('#epsg').val(),
+                    encoding = ($('#encoding').val() == '') ? 'utf-8' : $('#encoding').val();
+                if (file.name.split('.')[1] == 'zip') {
+                    if (file) $('.dimmer').addClass('active');
+                    loadshp({
+                        url: file,
+                        encoding: encoding,
+                        EPSG: epsg,
+                        RType: "SentTo"
+                    }, function (data) {
+                        tempi = 0;
+                        tempdata = data
+                        loadShpZip2Sub(JSON.stringify(tempdata[0]));
+                    });
+                } else {
+                    $('.modal').modal('show');
+                }
+            }
+            function loadShpZip2Sub(jsonToSQL) {
+                $.ajax({
+                    url: "https://www.ltgis.info/OldBuilding/api/RoadSHFs",
+                    type: 'POST',
+                    data: jsonToSQL,
+                    contentType: 'application/json; charset=utf-8',
+                    cache: false,
+                    success: function () {
+                        tempi = tempi + 1;
+                        if (tempi < tempdata.length) {
+                            loadShpZip2Sub(JSON.stringify(tempdata[tempi]));
+                            layer.msg(tempi);
+                        }
+                        else {
+                            parent.qLoaded();
+                            $('.shp-modal').toggleClass('effect');
+                            $('.overlay').toggleClass('effect');
+                            $('#wrap').toggleClass('blur');
+                            $('.dimmer').removeClass('active');
+                            $('#preview').addClass('disabled');
+                            //$('#preview2').addClass('disabled');
+                            $('#epsg').val('');
+                            $('#encoding').val('');
+                            $('#info').addClass('picInfo');
+                            $('#option').slideUp(500);
+                            layer.msg("測試寫入完成，請工程師檢索API端")
+                        }
+                    }
+                });
+            }
+
+            initVector();
+            $("#file").change(function (evt) {
+                file = evt.target.files[0];
+                if (file.size > 0) {
+                    $('#dataInfo').text(' ').append(file.name + ' , ' + file.size + ' kb');
+                    $('#option').slideDown(500);
+                    $('#preview').removeClass('disabled');
+                }
+            });
+            $('#preview').click(function () {
+                loadShpZip();
+            });
+            $('#preview2').click(function () {
+                loadShpZip2();
+            });
+            $('.button').popup({
+                inline: true,
+                position: 'bottom left'
+            });
+            $('.tips').popup({
+                target: '#addZipfile',
+                position: 'top center',
+                title: '請按此開始!',
+                variation: 'huge'
+            });
+            $('#entireLayer').click(function () {
+                map.fitBounds(vector.getBounds());
+            });
+            $('#downloadfile').click(function () {
+                window.location.href = 'demo/10tnvillage.zip';
+            });
+            $('#addZipfile').click(function () {
+                $('.shp-modal').toggleClass('effect');
+                $('.overlay').toggleClass('effect');
+                $('#wrap').toggleClass('blur');
+            });
+            $('#cancel').click(function () {
+                $('.shp-modal').toggleClass('effect');
+                $('.overlay').toggleClass('effect');
+                $('#wrap').toggleClass('blur');
+            });
+            $('#removeLayer').click(function () {
+                $('#attr').fadeOut(300);
+                window.location.reload();
+            });
+            $('#epsg').dropdown();
+            $('#encoding').dropdown();
+            $('.v').change(function () {
+                var msg = '<div class="msg" id="msg" style="display: none;"><div class="ui primary inverted red segment">' +
+                    '<p>You can find the EPSG Code of your Shapefile on <strong>spatialreference.org</strong></p></div><br /></div>';
+                if ($('#epsg').val().match(/^\d{4}$/) != null) {
+                    $('#zipfile').removeClass('disabled');
+                    $('.msg').slideUp(750);
+                } else {
+                    if ($('.msg')[0] == undefined) {
+                        $('#epsgField').after(msg);
+                        $('.msg').slideDown(1500);
+                    }
+                }
+            });
+            $("#attr").draggable({ containment: $(this).parent().parent(), scroll: false, cursor: "move" });
+            $('#cancelAttr').click(function () { $('#attr').slideUp(300); });
+        });
+    </script>
+</body>
+</html>

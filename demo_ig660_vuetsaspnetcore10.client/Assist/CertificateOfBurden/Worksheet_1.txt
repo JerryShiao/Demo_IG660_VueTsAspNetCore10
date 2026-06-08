@@ -1,0 +1,141 @@
+        <Row ss:AutoFitHeight="0">
+            <Cell ss:Index="9" ss:MergeAcross="4" ss:StyleID="s180">
+                <Data ss:Type="String" x:Ticked="1">Ａ０</Data>
+            </Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0">
+            <Cell ss:StyleID="s67" />
+            <Cell ss:StyleID="s68" />
+            <Cell ss:StyleID="s68" />
+            <Cell ss:StyleID="s68" />
+            <Cell ss:StyleID="s69" />
+            <Cell ss:StyleID="s68" />
+            <Cell ss:StyleID="s68" />
+            <Cell ss:StyleID="s69" />
+            <Cell ss:MergeAcross="4" ss:StyleID="m2256121135108">
+                <Data ss:Type="String"
+                      x:Ticked="1">Ａ１</Data>
+            </Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0">
+            <Cell ss:MergeAcross="7" ss:StyleID="s185"><Data ss:Type="String" x:Ticked="1">Ａ２</Data></Cell>
+            <Cell ss:MergeAcross="4" ss:StyleID="m2256121133068">
+                <Data ss:Type="String" x:Ticked="1">Ａ３</Data>
+            </Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0">
+            <Cell ss:StyleID="s70" />
+            <Cell ss:StyleID="s71" />
+            <Cell ss:StyleID="s71" />
+            <Cell ss:StyleID="s71" />
+            <Cell ss:StyleID="s72" />
+            <Cell ss:StyleID="s71" />
+            <Cell ss:StyleID="s71" />
+            <Cell ss:StyleID="s72" />
+            <Cell ss:MergeAcross="4" ss:StyleID="m2256121135128" />
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:MergeAcross="6" ss:StyleID="m2256121138624"><Data ss:Type="String">土地標示</Data></Cell>
+            <Cell ss:MergeAcross="4" ss:StyleID="m2256121138644"><Data ss:Type="String">負擔總費用</Data></Cell>
+            <Cell ss:MergeDown="2" ss:StyleID="m2256121138664"><Data ss:Type="String">備註</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0">
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121138684"><Data ss:Type="String">鄉鎮市區</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121138704"><Data ss:Type="String">段</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121138724"><Data ss:Type="String">小段</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121138744"><Data ss:Type="String">地號</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121135228"><Data ss:Type="String">面積          （㎡）</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121135248"><Data ss:Type="String">持  分</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121135268">
+                <ss:Data ss:Type="String"
+                         xmlns="http://www.w3.org/TR/REC-html40">
+                    持分面積  <Font html:Size="8">（</Font><Font>㎡</Font><Font html:Size="8">）</Font>
+                </ss:Data>
+            </Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121138764">
+                <ss:Data ss:Type="String"
+                         xmlns="http://www.w3.org/TR/REC-html40">
+                    本筆負擔&#10;總金額&#10;<Font html:Size="8">（</Font><Font>元</Font><Font html:Size="8">）</Font>
+                </ss:Data>
+            </Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121138784"><Data ss:Type="String">本筆負擔&#10;持分金額&#10;（元）</Data></Cell>
+            <Cell ss:MergeAcross="2" ss:StyleID="m2256121138804"><Data ss:Type="String">公告確定日期</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0">
+            <Cell ss:Index="10" ss:StyleID="s74"><Data ss:Type="String">年</Data></Cell>
+            <Cell ss:StyleID="s74"><Data ss:Type="String">月</Data></Cell>
+            <Cell ss:StyleID="s74"><Data ss:Type="String">日</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121132128">
+                <Data ss:Type="String" x:Ticked="1">Ａ４</Data>
+            </Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121132148">
+                <Data ss:Type="String" x:Ticked="1">Ａ５</Data>
+            </Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121135148">
+                <Data ss:Type="String" x:Ticked="1">Ａ６</Data>
+            </Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121135168">
+                <Data ss:Type="String" x:Ticked="1">Ａ７</Data>
+            </Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121135188"><Data ss:Type="Number">Ａ８</Data></Cell>
+            <Cell ss:StyleID="s75"><Data ss:Type="Number">Ａ９</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121135208"><Data ss:Type="Number">Ａ１１</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121132008"><Data ss:Type="Number">Ａ１２</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121132028"><Data ss:Type="Number">Ａ１３</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121132048"><Data ss:Type="Number">Ａ１４</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121133108"><Data ss:Type="Number">Ａ１５</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121133128"><Data ss:Type="Number">Ａ１６</Data></Cell>
+            <Cell ss:MergeDown="1" ss:StyleID="m2256121133148"><Data ss:Type="String">Ａ１７</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:Index="6" ss:StyleID="s75"><Data ss:Type="Number">Ａ１０</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:StyleID="s90"><Data ss:Type="String">一、</Data></Cell>
+            <Cell ss:MergeAcross="3" ss:StyleID="s158"><Data ss:Type="String">上列土地重劃負擔總費用新臺幣</Data></Cell>
+            <Cell ss:MergeAcross="7" ss:StyleID="s160"><Data ss:Type="String">Ａ１８</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:StyleID="s76" />
+            <Cell ss:StyleID="s89"><Data ss:Type="String">業經依照平均地權條例第60條規定扣繳完畢特予證明。</Data></Cell>
+            <Cell ss:Index="5" ss:StyleID="s77" />
+            <Cell ss:Index="8" ss:StyleID="s77" />
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:StyleID="s91"><Data ss:Type="String">二、</Data></Cell>
+            <Cell ss:MergeAcross="11" ss:MergeDown="2" ss:StyleID="s78">
+                <Data ss:Type="String">土地所有權人於重劃後第一次土地所有權移轉時，提出本重劃負擔總費用證明書，申請稅捐稽徵機關依平均地權條例第36條、第38條暨同條例施行細則第54條規定，自土地漲價總數額減去上開重劃負擔總費用後計徵土地增值稅。</Data>
+            </Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73" ss:Span="1" />
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:Index="2" ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+            <Cell ss:StyleID="s79" />
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:MergeAcross="3" ss:StyleID="s80"><Data ss:Type="String">上給 土地所有權人 ：</Data></Cell>
+            <Cell ss:MergeAcross="8" ss:StyleID="s152"><Data ss:Type="String">Ａ１９</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:MergeAcross="3" ss:StyleID="s80"><Data ss:Type="String">國民身分證統一編號：</Data></Cell>
+            <Cell ss:MergeAcross="8" ss:StyleID="s152"><Data ss:Type="String">Ａ２０</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:StyleID="s73">
+            <Cell ss:MergeAcross="3" ss:StyleID="s80"><Data ss:Type="String">住                    址：</Data></Cell>
+            <Cell ss:MergeAcross="8" ss:StyleID="s152"><Data ss:Type="String">Ａ２１</Data></Cell>
+        </Row>
+        <Row ss:AutoFitHeight="0" ss:Height="16.2" ss:StyleID="s89">
+            <Cell ss:MergeAcross="12" ss:StyleID="s204"><Data ss:Type="String">Ａ２２</Data></Cell>
+        </Row>

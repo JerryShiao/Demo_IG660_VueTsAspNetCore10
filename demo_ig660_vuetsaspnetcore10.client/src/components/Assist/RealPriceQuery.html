@@ -1,0 +1,1008 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>實價登錄查詢</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+    <style>
+        .layui-form-pane .layui-form-label {
+            width: 102px;
+            background-color: #f3f0e4;
+        }
+
+        .layui-form-item {
+            margin-bottom: 4px;
+        }
+
+            .layui-form-item .layui-input-inline {
+                margin-right: 4px;
+            }
+
+        .layui-form-pane .layui-form-checkbox {
+            margin: 4px 0 4px 7px;
+        }
+    </style>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+</head>
+<body>
+    <form id="form1" name="form1" class="layui-form layui-form-pane" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="font-weight: bolder;color:maroon;font-size:larger;">交易類別</label>
+            <div class="layui-input-inline" style="width: 180px;">
+                <select name="RPTYPE1" lay-filter="RPTYPE1">
+                    <option value='買賣'>買賣</option>
+                    <option value='預售'>預售屋</option>
+                    <option value='租賃'>租賃</option>
+                </select>
+            </div>
+            <p style="padding:10px;font-weight:bolder; color:darkgoldenrod">請先選擇交易類別，買賣/預售/租賃在更多搜尋條件會有不同。</p>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">交易標的</label>
+            <div class="layui-input-inline" style="width: 415px;">
+                <input type="checkbox" name="RPTYPE2[房地車]" title="房地(車)" checked="" lay-filter="RPtradeTargetChoose">
+                <input type="checkbox" name="RPTYPE2[土地]" title="土地" lay-filter="RPtradeTargetChoose">
+                <input type="checkbox" name="RPTYPE2[建物]" title="建物" lay-filter="RPtradeTargetChoose">
+                <input type="checkbox" name="RPTYPE2[車位]" title="車位" lay-filter="RPtradeTargetChoose">
+            </div>
+        </div>
+        <div class="layui-form-item" id="RPTOWN1div" style="margin-bottom:0px;">
+            <label class="layui-form-label">區域選擇</label>
+            <div class="layui-input-block">
+                <input type="radio" name="RPTOWN1[map]" title="指定行政區" checked="" lay-filter="openChoose" value="2">
+                <input type="radio" name="RPTOWN1[map]" title="依據目前地圖顯示範圍" lay-filter="closeChoose" value="1">
+            </div>
+        </div>
+        <div class="layui-form-item" id="RPTOWNsub1div" style="margin-bottom:0px;">
+            <label class="layui-form-label" style="height: 36px;"><button style="border: 0px; color: blue; cursor: pointer; font-weight: bolder; " lay-submit="" lay-filter="opensub">行政區</button></label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="RPTOWN1[中寮鄉]" title="中寮鄉" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[仁愛鄉]" title="仁愛鄉" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[水里鄉]" title="水里鄉" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[名間鄉]" title="名間鄉" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[竹山鎮]" title="竹山鎮" lay-filter="antiChoose">
+            </div>
+            <label class="layui-form-label" style="height: 36px;"><button style="border: 0px; color: blue; cursor: pointer; font-weight: bolder; " lay-submit="" lay-filter="opensub"></button></label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="RPTOWN1[信義鄉]" title="信義鄉" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[南投市]" title="南投市" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[埔里鎮]" title="埔里鎮" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[草屯鎮]" title="草屯鎮" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[國姓鄉]" title="國姓鄉" lay-filter="antiChoose">
+            </div>
+            <label class="layui-form-label" style="height: 36px;"><button style="border: 0px; color: blue; cursor: pointer; font-weight: bolder; " lay-submit="" lay-filter="opensub"></button></label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="RPTOWN1[魚池鄉]" title="魚池鄉" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[鹿谷鄉]" title="鹿谷鄉" lay-filter="antiChoose">
+                <input type="checkbox" name="RPTOWN1[集集鎮]" title="集集鎮" lay-filter="antiChoose">
+            </div>
+        </div>
+        <div class="layui-form-item" id="RPTOWN1div2">
+            <label class="layui-form-label">框選範圍</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="RPTOWN1[map2]" title="交集繪圖範圍" checked="">
+                <button type="button" class="layui-btn layui-btn-sm" onclick="DrawCheck('Rectangle');">矩形框選</button>
+                <button type="button" class="layui-btn layui-btn-sm" onclick="DrawCheck('Circle');">圓形框選</button>(點擊框選按鈕後可在地圖按住再拖曳)
+            </div>
+        </div>
+        <div class="layui-form-item" style="display:none" id="RPTOWN1div3">
+            <label class="layui-form-label" style="width:auto">依據查詢範圍外擴(公尺)</label>
+            <div class="layui-input-inline" style="width: 160px;">
+                <input type="number" name="GEObuffer" placeholder="請輸入範圍" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" id="RPBUILD5div">
+            <label class="layui-form-label">建物型態</label>
+            <div class="layui-input-block">
+                <p>*109年7月1日後買賣案件僅有透天、公寓、華廈、大樓四種類型</p>
+                <input type="checkbox" name="RPBUILD5[all]" title="不拘" checked="" lay-filter="allChoose">
+                <input type="checkbox" name="RPBUILD5[公寓]" title="公寓" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[透天]" title="透天" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[店面]" title="店面" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[辦公]" title="辦公商業大樓" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[住宅]" title="住宅大樓" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[華廈]" title="華廈" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[套房]" title="套房" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[工廠]" title="工廠" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[廠辦]" title="廠辦" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[農舍]" title="農舍" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[倉庫]" title="倉庫" checked="" lay-filter="antiChoose">
+                <input type="checkbox" name="RPBUILD5[其他]" title="其他" checked="" lay-filter="antiChoose">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">起始交易日</label>
+            <div class="layui-input-inline" style="width: 78px;">
+                <select name="RPYear" id="RPYear">
+                    <option value='100'>100年</option>
+                    <option value='101'>101年</option>
+                    <option value='102'>102年</option>
+                    <option value='103'>103年</option>
+                    <option value='104'>104年</option>
+                    <option value='105'>105年</option>
+                    <option value='106'>106年</option>
+                    <option value='107'>107年</option>
+                    <option value='108'>108年</option>
+                    <option value='109'>109年</option>
+                    <option value='110'>110年</option>
+                    <option value='111'>111年</option>
+                    <option selected value='112'>112年</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width: 72px;">
+                <select name="RPMonth" id="RPMonth">
+                    <option selected value='01'>01月</option>
+                    <option value='02'>02月</option>
+                    <option value='03'>03月</option>
+                    <option value='04'>04月</option>
+                    <option value='05'>05月</option>
+                    <option value='06'>06月</option>
+                    <option value='07'>07月</option>
+                    <option value='08'>08月</option>
+                    <option value='09'>09月</option>
+                    <option value='10'>10月</option>
+                    <option value='11'>11月</option>
+                    <option value='12'>12月</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width: 72px;">
+                <select name="RPDay" id="RPDay">
+                    <option selected value='01'>01日</option>
+                    <option value='02'>02日</option>
+                    <option value='03'>03日</option>
+                    <option value='04'>04日</option>
+                    <option value='05'>05日</option>
+                    <option value='06'>06日</option>
+                    <option value='07'>07日</option>
+                    <option value='08'>08日</option>
+                    <option value='09'>09日</option>
+                    <option value='10'>10日</option>
+                    <option value='11'>11日</option>
+                    <option value='12'>12日</option>
+                    <option value='13'>13日</option>
+                    <option value='14'>14日</option>
+                    <option value='15'>15日</option>
+                    <option value='16'>16日</option>
+                    <option value='17'>17日</option>
+                    <option value='18'>18日</option>
+                    <option value='19'>19日</option>
+                    <option value='20'>20日</option>
+                    <option value='21'>21日</option>
+                    <option value='22'>22日</option>
+                    <option value='23'>23日</option>
+                    <option value='24'>24日</option>
+                    <option value='25'>25日</option>
+                    <option value='26'>26日</option>
+                    <option value='27'>27日</option>
+                    <option value='28'>28日</option>
+                    <option value='29'>29日</option>
+                    <option value='30'>30日</option>
+                    <option value='31'>31日</option>
+                </select>
+            </div>
+            <label class="layui-form-label">結束交易日</label>
+            <div class="layui-input-inline" style="width: 78px;">
+                <select name="RPYear2" id="RPYear2">
+                    <option value='100'>100年</option>
+                    <option value='101'>101年</option>
+                    <option value='102'>102年</option>
+                    <option value='103'>103年</option>
+                    <option value='104'>104年</option>
+                    <option value='105'>105年</option>
+                    <option value='106'>106年</option>
+                    <option value='107'>107年</option>
+                    <option value='108'>108年</option>
+                    <option value='109'>109年</option>
+                    <option value='110'>110年</option>
+                    <option value='111'>111年</option>
+                    <option selected value='112'>112年</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width: 72px;">
+                <select name="RPMonth2" id="RPMonth2">
+                    <option value='01'>01月</option>
+                    <option value='02'>02月</option>
+                    <option value='03'>03月</option>
+                    <option value='04'>04月</option>
+                    <option value='05'>05月</option>
+                    <option value='06'>06月</option>
+                    <option value='07'>07月</option>
+                    <option value='08'>08月</option>
+                    <option value='09'>09月</option>
+                    <option value='10'>10月</option>
+                    <option value='11'>11月</option>
+                    <option selected value='12'>12月</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width: 72px;">
+                <select name="RPDay2" id="RPDay2">
+                    <option selected value='01'>01日</option>
+                    <option value='02'>02日</option>
+                    <option value='03'>03日</option>
+                    <option value='04'>04日</option>
+                    <option value='05'>05日</option>
+                    <option value='06'>06日</option>
+                    <option value='07'>07日</option>
+                    <option value='08'>08日</option>
+                    <option value='09'>09日</option>
+                    <option value='10'>10日</option>
+                    <option value='11'>11日</option>
+                    <option value='12'>12日</option>
+                    <option value='13'>13日</option>
+                    <option value='14'>14日</option>
+                    <option value='15'>15日</option>
+                    <option value='16'>16日</option>
+                    <option value='17'>17日</option>
+                    <option value='18'>18日</option>
+                    <option value='19'>19日</option>
+                    <option value='20'>20日</option>
+                    <option value='21'>21日</option>
+                    <option value='22'>22日</option>
+                    <option value='23'>23日</option>
+                    <option value='24'>24日</option>
+                    <option value='25'>25日</option>
+                    <option value='26'>26日</option>
+                    <option value='27'>27日</option>
+                    <option value='28'>28日</option>
+                    <option value='29'>29日</option>
+                    <option value='30'>30日</option>
+                    <option selected value='31'>31日</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item sadmm_display" id="RPFAGEdiv" style="display: none;">
+            <label class="layui-form-label" id="TYPEB_1_label">社區名稱</label>
+            <div class="layui-input-inline" style="width: 128px; z-index: 2;">
+                <input type="text" name="TYPEB_1" placeholder="社區關鍵字" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">屋齡區間</label>
+            <div class="layui-input-block" style=" z-index: 1;">
+                <input type="checkbox" name="RPFAGE_TYPE_new" title="新成屋" lay-filter="RPFAGE_TYPE">
+                <input type="checkbox" name="RPFAGE_TYPE_old" title="中古屋" lay-filter="RPFAGE_TYPE">
+                <div class="layui-input-inline" style="width: 72px;">
+                    <select name="RPFAGEmin">
+                        <option selected value="0">0年</option>
+                        <option value="5">5年</option>
+                        <option value="10">10年</option>
+                        <option value="15">15年</option>
+                        <option value="20">20年</option>
+                        <option value="25">25年</option>
+                        <option value="30">30年</option>
+                        <option value="35">35年</option>
+                        <option value="40">40年</option>
+                        <option value="45">45年</option>
+                        <option value="50">50年</option>
+                        <option value="55">55年</option>
+                        <option value="60">60年</option>
+                        <option value="65">65年</option>
+                        <option value="70">70年</option>
+                    </select>
+                </div>
+                <div class="layui-form-mid">至</div>
+                <div class="layui-input-inline" style="width: 72px;">
+                    <select name="RPFAGEmax">
+                        <option value="5">05年</option>
+                        <option value="10">10年</option>
+                        <option value="15">15年</option>
+                        <option value="20">20年</option>
+                        <option value="25">25年</option>
+                        <option value="30">30年</option>
+                        <option value="35">35年</option>
+                        <option value="40">40年</option>
+                        <option value="45">45年</option>
+                        <option value="50">50年</option>
+                        <option value="55">55年</option>
+                        <option value="60">60年</option>
+                        <option value="65">65年</option>
+                        <option value="70">70年</option>
+                        <option selected value="100">不限</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item sadmm_display RPTYPE1_B" style="display: none;">
+            <label class="layui-form-label">起造人</label>
+            <div class="layui-input-inline" style="width: 128px; z-index: 2;">
+                <input type="text" name="CREATEMAN" placeholder="起造人" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item sadmm_display" style="display: none;">
+            <label class="layui-form-label">移轉面積</label>
+            <div class="layui-input-block">
+                <div id="LAreadiv">
+                    <label class="layui-form-label">土地坪數</label>
+                    <div class="layui-input-inline" style="width: 64px;">
+                        <input type="text" name="RPAreaLs" placeholder="最小值" autocomplete="off" class="layui-input" value="0">
+                    </div>
+                    <div class="layui-form-mid">至</div>
+                    <div class="layui-input-inline" style="width: 64px;">
+                        <input type="text" name="RPAreaLe" placeholder="最大值" autocomplete="off" class="layui-input" value="100000">
+                    </div>
+                </div>
+                <div id="BAreadiv">
+                    <label class="layui-form-label">建物坪數</label>
+                    <div class="layui-input-inline" style="width: 64px;">
+                        <input type="text" name="RPAreaBs" placeholder="最小值" autocomplete="off" class="layui-input" value="0">
+                    </div>
+                    <div class="layui-form-mid">至</div>
+                    <div class="layui-input-inline" style="width: 64px;">
+                        <input type="text" name="RPAreaBe" placeholder="最大值" autocomplete="off" class="layui-input" value="100000">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item sadmm_display" style="display: none;">
+            <label class="layui-form-label">價格限制</label>
+            <div class="layui-input-block">
+                <label class="layui-form-label">每坪單價</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <select name="RPPricemin">
+                        <option selected value="0">0</option>
+                        <option value="100000">每坪10萬</option>
+                        <option value="200000">每坪20萬</option>
+                        <option value="300000">每坪30萬</option>
+                        <option value="400000">每坪40萬</option>
+                        <option value="500000">每坪50萬</option>
+                        <option value="600000">每坪60萬</option>
+                        <option value="700000">每坪70萬</option>
+                        <option value="800000">每坪80萬</option>
+                    </select>
+                </div>
+                <label class="layui-form-label">至</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <select name="RPPricemax">
+                        <option value="100000">每坪10萬</option>
+                        <option value="200000">每坪20萬</option>
+                        <option value="300000">每坪30萬</option>
+                        <option value="400000">每坪40萬</option>
+                        <option value="500000">每坪50萬</option>
+                        <option value="600000">每坪60萬</option>
+                        <option value="700000">每坪70萬</option>
+                        <option value="800000">每坪80萬</option>
+                        <option selected value="10000000">不限</option>
+                    </select>
+                </div>
+                <label class="layui-form-label">交易總價</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <select name="RPPriceminAll">
+                        <option selected value="0">0</option>
+                        <option value="2000000">200萬</option>
+                        <option value="4000000">400萬</option>
+                        <option value="6000000">600萬</option>
+                        <option value="8000000">800萬</option>
+                        <option value="10000000">1000萬</option>
+                        <option value="12000000">1200萬</option>
+                        <option value="15000000">1500萬</option>
+                        <option value="20000000">2000萬</option>
+                        <option value="25000000">2500萬</option>
+                        <option value="30000000">3000萬</option>
+                    </select>
+                </div>
+                <label class="layui-form-label">至</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <select name="RPPricemaxAll">
+                        <option value="2000000">200萬</option>
+                        <option value="4000000">400萬</option>
+                        <option value="6000000">600萬</option>
+                        <option value="8000000">800萬</option>
+                        <option value="10000000">1000萬</option>
+                        <option value="12000000">1200萬</option>
+                        <option value="15000000">1500萬</option>
+                        <option value="20000000">2000萬</option>
+                        <option value="25000000">2500萬</option>
+                        <option value="30000000">3000萬</option>
+                        <option value="30000000">6000萬</option>
+                        <option selected value="99900000000">不限</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item sadmm_display" style="display: none;">
+            <label class="layui-form-label">樓層過濾</label>
+            <div class="layui-input-inline" style="width: 150px;">
+                <select name="RPLEVEL">
+                    <option selected value="層">不拘</option>
+                    <option value="一層">1樓</option>
+                    <option value="二層">2樓</option>
+                    <option value="三層">3樓</option>
+                    <option value="四層">4樓</option>
+                    <option value="五層">5樓</option>
+                    <option value="六層">6樓</option>
+                    <option value="七層">7樓</option>
+                    <option value="八層">8樓</option>
+                    <option value="九層">9樓</option>
+                    <option value="十">10樓以上</option>
+                </select>
+            </div>
+            <label class="layui-form-label">特殊案件</label>
+            <div class="layui-input-inline" style="width: 278px;">
+                <select name="spcase" lay-search="" lay-filter="spcase">
+                    <option selected value="">不拘</option>
+                    <option value="排除特殊案例">排除特殊案例</option>
+                    <option value="急買急賣">急買急賣</option>
+                    <option value="私權爭執">私權爭執</option>
+                    <option value="占用">占用</option>
+                    <option value="附條件買賣">附條件買賣</option>
+                    <option value="親友、員工、共有人或其他特殊關係間之交易">親友關係人交易</option>
+                    <option value="具重建或重劃、都更等效益">土地開發形成特殊交易</option>
+                    <option value="政府機關標讓售">政府讓售</option>
+                    <option value="預售屋、或土地及建物分次登記案件">預售當時之價格</option>
+                    <option value="受民情風俗因素影響">有民情風俗因素之交易</option>
+                    <option value="其他增建">含增違建</option>
+                    <option value="地上權房屋">地上權</option>
+                    <option value="申報日期與實際交易不同">申報日期與實際交易不同</option>
+                    <option value="解約撤案等">解約撤案等</option>
+                    <option value="夾層">有夾層</option>
+                    <option value="違反使用管制或未申請變更格局">違反使用管制或未申請變更格局</option>
+                    <option value="瑕疵物件">瑕疵物件之交易</option>
+                    <option value="贈與">贈與</option>
+                    <option value="土地增值稅或其他稅費">稅費</option>
+                    <option value="賣清買清">賣清買清</option>
+                    <option value="買方負擔">買方負擔</option>
+                    <!--<option value="含裝潢及傢俱設備等">含裝潢及傢俱設備等</option>-->
+                    <option value="裝潢費">含裝潢</option>
+                    <option value="傢俱設備費">含傢俱設備</option>
+                    <option value="其他可能影響價格">其他可能影響價格</option>
+                    <option value="土地所有權特殊不拆分">土地所有權特殊不拆分</option>
+                    <!--<option value="親友關係人交易">親友關係人交易</option>
+                    <option value="附條件買賣">附條件買賣</option>
+                    <option value="瑕疵物件之交易">瑕疵物件之交易</option>
+                    <option value="畸零地及合併使用之交易">畸零地及合併使用之交易</option>
+                    <option value="含地上物">含地上物</option>
+                    <option value="開發前中_預期效益">開發前中_預期效益</option>
+                    <option value="政府標售案件">政府標售案件</option>
+                    <option value="開發後_開發區範圍內交易">開發後_開發區範圍內交易</option>
+                    <option value="公地讓售、專案承購或協議價購案件">公地讓售、專案承購或協議價購案件</option>
+                    <option value="持分">持分</option>
+                    <option value="包含公共設施交易">包含公共設施交易</option>
+                    <option value="農地交易_興建農舍_375租約">農地交易_興建農舍_375租約</option>
+                    <option value="土地開發形成特殊交易">土地開發形成特殊交易</option>
+                    <option value="墓地">墓地</option>
+                    <option value="祭祀公業地籍清理">祭祀公業地籍清理</option>
+                    <option value="開發區範圍內_政府標售案件">開發區範圍內_政府標售案件</option>
+                    <option value="國宅_軍宅">國宅_軍宅</option>
+                    <option value="店面">店面</option>
+                    <option value="其他可能影響價格">其他可能影響價格</option>-->
+                </select>
+            </div>
+            <div style="display: none;" id="SPNOTEdiv">
+                <label class="layui-form-label">備註關鍵字</label>
+                <div class="layui-input-inline" style="z-index: 2;">
+                    <input type="text" name="SPNOTE" placeholder="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item sadmm_display" style="display: none;">
+            <label class="layui-form-label">關鍵字過濾</label>
+            <div class="layui-input-block">
+                <label class="layui-form-label">指定地段</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <input type="text" name="RPSECT" placeholder="地段關鍵字" autocomplete="off" class="layui-input">
+                </div>
+                <label class="layui-form-label">指定道路</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <input type="text" name="RPROAD" placeholder="路名關鍵字" autocomplete="off" class="layui-input">
+                </div>
+                <label class="layui-form-label">主要用途</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <input type="text" name="RPUSE" placeholder="如住家用" autocomplete="off" class="layui-input">
+                </div>
+                <label class="layui-form-label">使用分區</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <input type="text" name="RPZONE" placeholder="使用分區關鍵字" autocomplete="off" class="layui-input">
+                </div>
+                <label class="layui-form-label">非都編定</label>
+                <div class="layui-input-inline" style="width: 160px;">
+                    <input type="text" name="RPZONE2" placeholder="非都編定關鍵字" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item sadmm_display" style="display: none;">
+            <label class="layui-form-label">建物格局</label>
+            <div class="layui-input-block">
+                <div class="layui-form-mid">房數</div>
+                <div class="layui-input-inline" style="width: 54px;">
+                    <input type="text" name="build_1" placeholder="最小值" autocomplete="off" class="layui-input" value="0">
+                </div>
+                <label class="layui-form-mid">廳數</label>
+                <div class="layui-input-inline" style="width: 54px;">
+                    <input type="text" name="build_2" placeholder="最小值" autocomplete="off" class="layui-input" value="0">
+                </div>
+                <label class="layui-form-mid">衛數</label>
+                <div class="layui-input-inline" style="width: 54px;">
+                    <input type="text" name="build_3" placeholder="最小值" autocomplete="off" class="layui-input" value="0">
+                </div>
+                <label class="layui-form-mid">有無隔間</label>
+                <div class="layui-input-inline">
+                    <input type="checkbox" name="build_YN" lay-skin="switch" lay-text="有隔間|無隔間">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item sadmm_display adm" style="display: none;">
+            <label class="layui-form-label">揭露狀態</label>
+            <div class="layui-input-inline">
+                <select name="STATUS" lay-filter="STATUS">
+                    <option value="">不拘</option>
+                    <option value="揭露">揭露</option>
+                    <option value="不揭露">不揭露</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button id="sentquery" class="layui-btn" lay-submit="" lay-filter="sadmq">查詢</button>
+                <!--<button type="button" style="background-color:#895C40" class="g-recaptcha layui-btn" data-sitekey="6LcwU5gpAAAAABPf5Mf_Lbrf5bt5oKgIh8gbbUPG" data-callback="recaptchaV3" data-action="RealPriceQuery" id="sentquery_v3">查詢</button>
+                <button id="sentquery" lay-submit="" lay-filter="sadmq" hidden>查詢</button>-->
+                <button id="settingquery" name="settingquery" class="layui-btn layui-btn-danger" lay-submit="" lay-filter="sadmm">更多搜尋條件</button>
+                <!--<button id="sentsta" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="sadms">住宅類買賣價量統計</button>-->
+            </div>
+            <div>
+                <p style="margin: 10px;">
+                    *本項查詢的資料更新時間為每月1,11,21日<a style="color: #8b0000;">(配合內政部實價登錄官網揭露期程)，惟本系統資料庫與中央有1日之時間差，查詢數量可能有微量落差</a>
+                </p>
+                <p style="margin: 10px;">
+                    查詢後實價登錄交易的物件會直接繪製在圖面上(依據該交易的其中一筆地號中心點)，直接點擊圖面上的物件會顯示物件的交易細節或物件清單
+                </p>
+            </div>
+        </div>
+    </form>
+
+    <script src="../layui/layui.js" charset="utf-8"></script>
+
+    <script>
+        var RPtype = 'default', GEOtype = '', sadmmType = false;
+        var YMD1 = '', YMD2 = '';
+        $(document).ready(function () {
+            let url = window.location.toString();
+            if (url.indexOf('?') != -1) {
+                let ary = url.split("?")[1].split("&");
+                $.each(ary, function (key, par) {
+                    if (par.indexOf('type=') != -1) {
+                        RPtype = par.split('=')[1];
+                    }
+                    if (par.indexOf('YMD1=') != -1) {
+                        YMD1 = par.split('=')[1];
+                    }
+                    if (par.indexOf('YMD2=') != -1) {
+                        YMD2 = par.split('=')[1];
+                    }
+                })
+            }
+            if (RPtype == 'loc') {
+                GEOtype = parent.startRPQ_Loc_geometry.type;
+                radio_closeChoose();
+            }
+            RPTOWN1()
+            //grecaptcha.render('sentquery')
+
+            var today = new Date();
+            var nowYear = ((today.getFullYear() - 1911).toString());
+            var nowMonth = (100 + today.getMonth() + 1).toString().substring(1, 3);
+            var nowDay = (100 + today.getDate()).toString().substring(1, 3);
+            $('#RPYear2').val(nowYear)
+            if (!$('#RPYear2').val()) {
+                let YearList = []
+                $.each($('#RPYear2 option'), function (key, option) { YearList.push(option.value) })
+                let maxYear = Math.max(...YearList)
+                if (parseInt(nowYear) > maxYear) {
+                    var LastYear = maxYear
+                    while (parseInt(nowYear) > LastYear) {
+                        $("#RPYear").append('<option value="' + (LastYear + 1) + '">' + (LastYear + 1) + '年</option>');
+                        $("#RPYear2").append('<option value="' + (LastYear + 1) + '">' + (LastYear + 1) + '年</option>');
+                        LastYear++
+                    }
+                }
+                $("#RPYear").val(nowYear)
+                $("#RPYear2").val(nowYear)
+            }
+            $('#RPMonth2').val(nowMonth)
+            $('#RPDay2').val(nowDay)
+            if (1) {
+                let StartYear, StartMonth;
+                if (((today.getMonth() + 1) - 6) < 1) {
+                    StartYear = ((today.getFullYear() - 1911 - 1).toString());
+                    StartMonth = ((today.getMonth() + 1) - 6 + 12 + 100).toString().substring(1, 3);
+                }
+                else {
+                    StartYear = ((today.getFullYear() - 1911).toString());
+                    StartMonth = ((today.getMonth() + 1) - 6 + 100).toString().substring(1, 3);
+                }
+                $('#RPYear').val(StartYear);
+                $('#RPMonth').val(StartMonth);
+                $('#RPDay').val(nowDay);
+            }
+            if (YMD1 != '') {
+                $('#RPYear').val(YMD1.substring(0, 3));
+                $('#RPMonth').val(YMD1.substring(3, 5));
+                $('#RPDay').val(YMD1.substring(5, 7));
+            }
+            if (YMD2 != '') {
+                $('#RPYear2').val(YMD2.substring(0, 3));
+                $('#RPMonth2').val(YMD2.substring(3, 5));
+                $('#RPDay2').val(YMD2.substring(5, 7));
+            }
+            layui.use(['form'], function () { let form = layui.form; form.render('select'); form.render('radio'); form.render('checkbox'); })
+
+
+            if (parent.queryRPnew_reQuery_check) {
+                let lastqj = JSON.parse(parent.queryRPnew_str);
+
+                $('select[name="RPTYPE1"]').val(lastqj.RPTYPE1);
+
+                function InputCheckboxChange(name) {
+                    if (lastqj[name]) { $('input[name="' + name + '"]').attr('checked', true) }
+                    else { $('input[name="' + name + '"]').attr('checked', false) }
+                }
+                $.each(['房地車', '土地', '建物', '車位'], function (key, RPTYPE2) {
+                    InputCheckboxChange('RPTYPE2[' + RPTYPE2 + ']')
+                })
+
+                if (RPtype == 'loc') {
+                    $('input[name="GEObuffer"]').val(lastqj.GEObuffer)
+                }
+                else {
+                    $.each($('input[name="RPTOWN1[map]"]'), function (key, val) {
+                        if (val.value == lastqj['RPTOWN1[map]']) { val.checked = true }
+                    })
+                    if (lastqj['RPTOWN1[map]'] == '2') {
+                        let townList = ['中寮鄉', '仁愛鄉', '水里鄉', '名間鄉', '竹山鎮', '信義鄉', '南投市', '埔里鎮', '草屯鎮', '國姓鄉', '魚池鄉', '鹿谷鄉', '集集鎮'];
+                        $.each(townList, function (key, town) { InputCheckboxChange('RPTOWN1[' + town + ']') })
+                    }
+                    else {
+                        radio_closeChoose();
+                    }
+
+                    InputCheckboxChange('RPTOWN1[map2]')
+                }
+
+                $.each(['all', '公寓', '透天', '店面', '辦公', '住宅', '華廈', '套房', '工廠', '廠辦', '農舍', '倉庫', '其他'], function (key, RPBUILD5) {
+                    InputCheckboxChange('RPBUILD5[' + RPBUILD5 + ']')
+                })
+
+                $.each(['RPYear', 'RPMonth', 'RPDay', 'RPYear2', 'RPMonth2', 'RPDay2', 'RPFAGEmin', 'RPFAGEmax'], function (key, name) {
+                    $('select[name="' + name + '"]').val(lastqj[name])
+                })
+
+                $('input[name="TYPEB_1"]').val(lastqj['TYPEB_1'])
+
+                InputCheckboxChange('RPFAGE_TYPE_new')
+                InputCheckboxChange('RPFAGE_TYPE_old')
+
+                if (lastqj.sadmmType) {
+                    button_sadmm();
+                    $.each(['RPAreaLs', 'RPAreaLe', 'RPAreaBs', 'RPAreaBe', 'RPSECT', 'RPROAD', 'RPUSE', 'RPZONE', 'RPZONE2', 'build_1', 'build_2', 'build_3'], function (key, name) {
+                        $('input[name="' + name + '"]').val(lastqj[name])
+                    })
+                    $('input[name="' + 'CREATEMAN' + '"]').val(lastqj['CREATEMAN'])
+                    $.each(['RPPricemin', 'RPPricemax', 'RPPriceminAll', 'RPPricemaxAll', 'RPLEVEL', 'spcase'], function (key, name) {
+                        $('select[name="' + name + '"]').val(lastqj[name])
+                    })
+
+                    if (lastqj.build_YN == '有') {
+                        $('input[name="build_YN"]').attr('checked', true)
+                    }
+
+                }
+                else { }
+
+                layui.use(['form'], function () {
+                    let form = layui.form;
+                    form.render('select');
+                    form.render('radio');
+                    form.render('checkbox');
+                })
+                parent.queryRPnew_reQuery_check = false;
+            }
+        })
+        function recaptchaV3(token) {
+            $.ajax({
+                url: "HandlerREC.ashx?secret=6LcwU5gpAAAAAO4PDYW9QPSuKKSoeJkj7SwW3avF&resp=" + token,
+                type: 'GET',
+                success: function (data) {
+                    let obj = JSON.parse(data);
+                    if (obj.success) {
+                        if (obj.score > 0.5) {
+                            if (obj.action == "RealPriceQuery") {
+                                document.getElementById("sentquery").click();
+                            }
+                        }
+                        else { layer.msg('系統忙碌，請重新操作一次') }
+                    }
+                    else { layer.msg('系統忙碌，請重新操作一次') }
+                },
+                error: function (xhr) { }
+            });
+        }
+        function RPTOWN1() {
+            if (RPtype == 'loc') {
+                $('#RPTOWN1div')['0'].style.display = 'none'
+                $('#RPTOWN1div2')['0'].style.display = 'none'
+                $('#RPTOWN1div3')['0'].style.display = ''
+            }
+            else {
+                $('#RPTOWN1div')['0'].style.display = ''
+                $('#RPTOWN1div2')['0'].style.display = ''
+                $('#RPTOWN1div3')['0'].style.display = 'none'
+            }
+            if (GEOtype != '') {
+                if (GEOtype == 'point') {
+                    $('input[name="GEObuffer"]').val(100)
+                }
+                else if (GEOtype == 'polyline') {
+                    $('input[name="GEObuffer"]').val(100)
+                }
+                else if (GEOtype == 'polygon') {
+                    $('input[name="GEObuffer"]').val(5)
+                }
+            }
+        }
+        function radio_closeChoose() {
+            $("#RPTOWNsub1div")[0].style.display = 'none'
+            //$("#RPTOWNsub2div")[0].style.display = 'none'
+            //$("#RPTOWNsub3div")[0].style.display = 'none'
+            //$("#RPTOWNsub4div")[0].style.display = 'none'
+            //$("#RPTOWNsub5div")[0].style.display = 'none'
+            //$("#RPTOWNsub6div")[0].style.display = 'none'
+            $('#RPTOWNsub1div').find('div input[type="checkbox"]').each(function (index, item) { item.checked = false; });
+            //$('#RPTOWNsub2div').find('div input[type="checkbox"]').each(function (index, item) { item.checked = false; });
+            //$('#RPTOWNsub3div').find('div input[type="checkbox"]').each(function (index, item) { item.checked = false; });
+            //$('#RPTOWNsub4div').find('div input[type="checkbox"]').each(function (index, item) { item.checked = false; });
+            //$('#RPTOWNsub5div').find('div input[type="checkbox"]').each(function (index, item) { item.checked = false; });
+            //$('#RPTOWNsub6div').find('div input[type="checkbox"]').each(function (index, item) { item.checked = false; });
+            layui.use(['form'], function () { let form = layui.form; form.render('select'); form.render('radio'); form.render('checkbox'); })
+        }
+        function radio_openChoose() {
+            $("#RPTOWNsub1div")[0].style.display = ''
+            //$("#RPTOWNsub2div")[0].style.display = ''
+            //$("#RPTOWNsub3div")[0].style.display = ''
+            //$("#RPTOWNsub4div")[0].style.display = ''
+            //$("#RPTOWNsub5div")[0].style.display = ''
+            //$("#RPTOWNsub6div")[0].style.display = ''
+            layui.use(['form'], function () { let form = layui.form; form.render('select'); form.render('radio'); form.render('checkbox'); })
+        }
+        function button_sadmm() {
+            if (sadmmType) {
+                $('.sadmm_display').css('display', 'none');
+                $('#settingquery').html('更多搜尋條件');
+                sadmmType = false;
+            }
+            else {
+                $('.sadmm_display').css('display', '');
+                $('#settingquery').html('簡易搜尋條件');
+                if ($('select[name="RPTYPE1"]').val() == '預售') { $('.RPTYPE1_B').css('display', ''); }
+                else { $('.RPTYPE1_B').css('display', 'none'); }
+                if (parent.usid != 'nono') { $('.adm').css('display', ''); }
+                else { $('.adm').css('display', 'none'); }
+                sadmmType = true;
+            }
+            ELSEcheck();
+            layui.use(['form'], function () { let form = layui.form; form.render('select'); form.render('radio'); form.render('checkbox'); })
+        }
+        function ELSEcheck() {
+            RPTOWN1();
+        }
+        function DrawCheck(type) {
+            $.each($('input[name="RPTOWN1[map]"]'), function (key, val) { if (val.value == '1') { val.checked = true } })
+            layui.use(['form'], function () { let form = layui.form; form.render('select'); form.render('radio'); form.render('checkbox'); })
+            radio_closeChoose();
+            parent.queryRPnew_Draw(type);
+        }
+    </script>
+    <script>
+        layui.use(['form', 'laydate'], function () {
+            var form = layui.form
+                , layer = layui.layer
+                , laydate = layui.laydate;
+            laydate.render({
+                elem: '#date'
+            });
+            laydate.render({
+                elem: '#date1'
+            });
+
+            form.on('submit(sadmq)', function (data) {
+                if (RPtype == 'loc') {
+                    if ($('input[name="GEObuffer"]').val() == '') {
+                        layer.msg('請填寫查詢範圍')
+                        return false;
+                    }
+                    else { sadmq_(); }
+                }
+                else { sadmq_(); }
+                function sadmq_() {
+                    let tempField = JSON.parse(JSON.stringify(data.field))
+                    if (!sadmmType) {
+                        tempField.RPAreaLs = '0'
+                        tempField.RPAreaLe = '100000'
+                        tempField.RPAreaBs = '0'
+                        tempField.RPAreaBe = '100000'
+                        tempField.RPPricemin = '0'
+                        tempField.RPPricemax = '10000000'
+                        tempField.RPPriceminAll = '0'
+                        tempField.RPPricemaxAll = '99900000000'
+                        tempField.RPLEVEL = '層'
+                        tempField.spcase = ''
+                        tempField.SPNOTE = ''
+                        tempField.RPSECT = ''
+                        tempField.RPROAD = ''
+                        tempField.RPUSE = ''
+                        tempField.RPZONE = ''
+                        tempField.RPZONE2 = ''
+                        tempField.build_1 = '0'
+                        tempField.build_2 = '0'
+                        tempField.build_3 = '0'
+                        tempField.build_YN = ''
+                        tempField.STATUS = ''
+                        //
+                        tempField.CREATEMAN = ''
+                    }
+                    tempField.sadmmType = sadmmType;
+                    let build_YN = $('input[name="build_YN"]').is(':checked')
+                    if (build_YN) { tempField.build_YN = '有' }
+                    else { tempField.build_YN = '隔間' }
+                    SentToMap(JSON.stringify(tempField));
+                }
+                return false;
+            });
+            form.on('submit(sadms)', function (data) {
+                SentToChart()
+                return false;
+            });
+            form.on('submit(sadmm)', function (data) {
+                button_sadmm();
+                return false;
+            });
+            form.on('submit(opensub)', function (data) {
+                $(data.elem).parents('div').find('div input[type="checkbox"]').each(function (index, item) {
+                    if (item.checked === false) {
+                        item.checked = true;
+                    }
+                    else {
+                        item.checked = false;
+                    }
+                });
+                form.render('checkbox');
+                return false;
+            });
+            form.on('radio(closeChoose)', function (data) { radio_closeChoose(); });
+            form.on('radio(openChoose)', function (data) { radio_openChoose(); });
+            form.on('checkbox(allChoose)', function (data) {
+                var child = $(data.elem).parents('div').find('div input[type="checkbox"]');
+                child.each(function (index, item) {
+                    if (item.name !== "RPTOWN1[map]") {
+                        item.checked = data.elem.checked;
+                    }
+                });
+                form.render('checkbox');
+            });
+            form.on('checkbox(antiChoose)', function (data) {
+                var child = $(data.elem).parents('div').find('div input[type="checkbox"]');
+                child.each(function (index, item) {
+                    if (item.title === '不拘') {
+                        item.checked = false;
+                    }
+                });
+                form.render('checkbox');
+            });
+            form.on('checkbox(RPFAGE_TYPE)', function (data) {
+                let child = $(data.elem).parents('div').find('div input[type="checkbox"]');
+                let checkedList = [];
+                child.each(function (index, item) {
+                    if (item.checked) { checkedList.push(item.title) }
+                });
+                if (checkedList.length > 0) {
+                    if (checkedList[0] == '新成屋') {
+                        $('select[name="RPFAGEmin"]').val(0)
+                        $('select[name="RPFAGEmax"]').val(5)
+                        if (checkedList[1] == '中古屋') {
+                            $('select[name="RPFAGEmax"]').val(100)
+                        }
+                    }
+                    else {
+                        if (checkedList[0] == '中古屋') {
+                            $('select[name="RPFAGEmin"]').val(5)
+                            $('select[name="RPFAGEmax"]').val(100)
+                        }
+                    }
+                    form.render('select');
+                }
+            });
+            form.on('select(spcase)', function (data) {
+                if (data.value == '排除特殊案例') {
+                    $('#SPNOTEdiv').css('display', 'none');
+                    $('input[name="SPNOTE"]').val('');
+                }
+                else {
+                    $('#SPNOTEdiv').css('display', '');
+                }
+            });
+            form.on('select(RPTYPE1)', function (data) {
+                if (sadmmType) {
+                    if (data.value == '預售') { $('.RPTYPE1_B').css('display', ''); }
+                    else { $('.RPTYPE1_B').css('display', 'none'); }
+                }
+                if (data.value == '預售') {
+                    $('#TYPEB_1_label').html('建案名稱');
+                    $('input[name="TYPEB_1"]').prop('placeholder', '建案關鍵字')
+                }
+                else {
+                    $('#TYPEB_1_label').html('社區名稱');
+                    $('input[name="TYPEB_1"]').prop('placeholder', '社區關鍵字')
+                }
+            });
+
+            form.on('checkbox(RPtradeTargetChoose)', () => {
+                let form1 = document.getElementById('form1');
+                let tradeAll = form1['RPTYPE2[房地車]'].checked;
+                let tradeLand = form1['RPTYPE2[土地]'].checked;
+                let tradeBuild = form1['RPTYPE2[建物]'].checked;
+                let tradeParkspace = form1['RPTYPE2[車位]'].checked;
+                let buildType = document.getElementById('RPBUILD5div');
+                if (tradeLand && (!tradeAll && !tradeBuild && !tradeParkspace)) {
+                    buildType.style.display = 'none';
+                } else {
+                    buildType.style.display = '';
+                }
+            });
+        });
+
+
+        function SentToMap(str) {
+            if (parent.usid == 'nono') {
+                if (str.indexOf('"RPTOWN1[map]":"1"') !== -1) {//目前圖面範圍
+                    let tempscale
+                    if (parent.M2S3 == "S3") { tempscale = parent.SView.scale; }
+                    else { tempscale = parent.MView.scale; }
+                    if (tempscale > 145000) {
+                        layer.msg('查詢範圍過大，請再放大圖面到局部區域做查詢');
+                        return false;
+                    }
+                    else if (tempscale <= 145000 && tempscale >= 72500) {
+                        if (parent.M2S3 == "S3") { parent.SView.scale = tempscale / 2; }
+                        else { parent.MView.scale = tempscale / 2; }
+                    }
+                }
+                if (str.indexOf('"RPTOWN1[map]":"2"') !== -1) {//指定行政區
+                    let count = (str.match(/RPTOWN1/g) || []).length;
+                    let tempContains = 0
+                    if (str.indexOf('"RPTOWN1[map2]":"on"') !== -1) { tempContains = 1 }
+                    count = count - 1 - tempContains
+
+                    if (str.indexOf('"RPTYPE1":"買賣"') !== -1) {
+                        if (count > 1) {
+                            let qj = JSON.parse(str);
+                            let startDay = (parseInt(qj.RPYear) + 1911) + '-' + qj.RPMonth + '-' + qj.RPDay;
+                            let endDay = (parseInt(qj.RPYear2) + 1911) + '-' + qj.RPMonth2 + '-' + qj.RPDay2;
+                            let calDay = (new Date(endDay) - new Date(startDay)) / 86400000;
+                            calDay += 1;
+                            if (calDay > (365 * 3)) {
+                                layer.msg('多區域查詢時，起訖年度上限為３年');
+                                return false;
+                            }
+                        }
+                    }
+
+                    if (count > 7) {
+                        layer.msg('行政區最大查詢為７區');
+                        return false;
+                    } else if (count === 0) {
+                        if ($("#RPTOWNsub1div")[0].style.display !== 'none') {
+                            layer.msg('請選擇行政區');//實價登錄視覺化調整
+                            return false;
+                        }
+                    }
+                }
+            }
+            parent.queryRPnew_TN(str);
+        }
+        function SentToChart() {
+            parent.RPAstaDraw();
+        }
+    </script>
+
+</body>
+</html>
