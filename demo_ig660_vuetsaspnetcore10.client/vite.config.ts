@@ -49,9 +49,15 @@ export default defineConfig({
       resolvers: [
         PrimeVueResolver() // 👈 這會完美識別 v4 的 Tabs, TabList, Tab 等所有新元件！
       ],
-      dts: true
+      dts: true,
+      deep: false,
+      skipScan: true  // 禁用自動掃描！
     })
   ],
+  optimizeDeps: {
+    // 完全排除所有容易導致問題的大型函式庫
+    exclude: ['@arcgis/core', '@tmcw/togeojson']
+  },
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -64,7 +70,7 @@ export default defineConfig({
                 secure: false
             }
         },
-        port: parseInt(env.DEV_SERVER_PORT || '54628'),
+      port: parseInt(env.DEV_SERVER_PORT || '5173'),
         https: {
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),

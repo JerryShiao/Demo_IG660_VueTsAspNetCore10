@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "新增設定檔",
+    "Projects": [
+      {
+        "Path": "Demo_IG660_VueTsAspNetCore10.Server\\Demo_IG660_VueTsAspNetCore10.Server.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "demo_ig660_vuetsaspnetcore10.client\\demo_ig660_vuetsaspnetcore10.client.esproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
