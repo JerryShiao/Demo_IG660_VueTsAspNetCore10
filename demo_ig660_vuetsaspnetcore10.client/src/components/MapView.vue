@@ -344,8 +344,8 @@
    * 點擊 [圖層控制] 按鈕時觸發
    */
   const HandleToggleLayerPanel = () => {
-    // 直接呼叫子元件暴露出來的 openDialog() 方法
-    layerDialogRef.value?.openDialog();
+    // 直接呼叫子元件暴露出來的 toggleDialog() 方法
+    layerDialogRef.value?.toggleDialog();
   };
   //#endregion
 
@@ -561,36 +561,6 @@
 </style>
 
 <style>
-  /*【跳窗】BEGIN =====================================================*/
-  /* 確保關閉 PrimeVue 內建溢出限制，讓外層可以觸發 interact 邊緣 */
-  .layer-resizable-dialog {
-    touch-action: none; /* 防止手機板瀏覽器預設拖動行為 */
-    box-sizing: border-box;
-    position: absolute !important;
-    right: auto !important; /* 👈 強制解除右邊錨點定死的問題 */
-  }
-
-    /* 移除 PrimeVue 原本右下角的單一縮放控制點圖示 */
-    .layer-resizable-dialog .p-dialog-resizable-handle {
-      display: none !important;
-    }
-
-    /* 當 Dialog 處於最大化狀態時的強制覆寫 */
-    .layer-resizable-dialog.p-dialog-maximized {
-      /* 強制將原本覆蓋在行內的寬高與位移移除，還原給 PrimeVue 的 100% 滿版設定 */
-      width: 100vw !important;
-      height: 100vh !important;
-      top: 0 !important;
-      left: 0 !important;
-      transform: none !important; /* 👈 清除 translate 偏移動作 */
-    }
-
-      /* 最大化時，隱藏四周縮放的鼠標指針，避免干擾 */
-      .layer-resizable-dialog.p-dialog-maximized .p-dialog-header {
-        cursor: default !important; /* 標題列不可拖拽，滑鼠改回普通指標 */
-      }
-  /*【跳窗】END =======================================================*/
-
   /*【Swal】BEGIN =====================================================*/
   /* ✅ 新增：確保 Swal 永遠在 Dialog 上方 */
   .swal2-container {
