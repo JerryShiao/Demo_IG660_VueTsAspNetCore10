@@ -563,7 +563,7 @@
 <style>
   /*【跳窗】BEGIN =====================================================*/
   /* 確保關閉 PrimeVue 內建溢出限制，讓外層可以觸發 interact 邊緣 */
-  .resizable-dialog {
+  .layer-resizable-dialog {
     touch-action: none; /* 防止手機板瀏覽器預設拖動行為 */
     box-sizing: border-box;
     position: absolute !important;
@@ -571,12 +571,12 @@
   }
 
     /* 移除 PrimeVue 原本右下角的單一縮放控制點圖示 */
-    .resizable-dialog .p-dialog-resizable-handle {
+    .layer-resizable-dialog .p-dialog-resizable-handle {
       display: none !important;
     }
 
     /* 當 Dialog 處於最大化狀態時的強制覆寫 */
-    .resizable-dialog.p-dialog-maximized {
+    .layer-resizable-dialog.p-dialog-maximized {
       /* 強制將原本覆蓋在行內的寬高與位移移除，還原給 PrimeVue 的 100% 滿版設定 */
       width: 100vw !important;
       height: 100vh !important;
@@ -586,7 +586,7 @@
     }
 
       /* 最大化時，隱藏四周縮放的鼠標指針，避免干擾 */
-      .resizable-dialog.p-dialog-maximized .p-dialog-header {
+      .layer-resizable-dialog.p-dialog-maximized .p-dialog-header {
         cursor: default !important; /* 標題列不可拖拽，滑鼠改回普通指標 */
       }
   /*【跳窗】END =======================================================*/

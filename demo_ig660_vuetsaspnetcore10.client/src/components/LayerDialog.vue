@@ -1,5 +1,4 @@
 <!--圖層控制 跳窗-->
-
 <template>
   <Dialog v-model:visible="isLayerPanelVisible"
           header="圖層管理選單"
@@ -15,7 +14,7 @@
             top: '72px',
             left: 'calc(100vw - 470px)'
           }"
-          class="resizable-dialog"
+          class="layer-resizable-dialog"
           @hide="isLayerPanelVisible = false">
     <template #header>
       <div class="dialog-header-custom">
@@ -184,7 +183,7 @@
   // 初始化 interactjs (從原本 MapView 移過來)
   const initInteractDialog = () => {
     nextTick(() => {
-      const dialogElem = document.querySelector('.resizable-dialog') as HTMLElement;
+      const dialogElem = document.querySelector('.layer-resizable-dialog') as HTMLElement;
       if (!dialogElem) return;
 
       interact(dialogElem).unset();
