@@ -192,11 +192,16 @@
     <Dialog v-model:visible="isLayerPanelVisible"
             header="圖層管理選單"
             :modal="false"
-            :draggable="true" :resizable="true" :maximizable="true" position="topright"
+            :draggable="false"
+            :resizable="false"
+            :maximizable="true"
+            position="topright"
             :style="{
+              position: 'absolute',
               width: '450px',
-              minWidth: '350px',
-              minHeight: '400px'
+              height: '500px',
+              top: '72px',
+              left: 'calc(100vw - 470px)' /* 2. 改用 left 定位初始位置在右側 */
             }"
             class="resizable-dialog"
             @hide="isLayerPanelVisible = false">
@@ -336,9 +341,11 @@
   //【引入】=====================================================================
   // Vue
   import {
-    ref,      // 引入ref函數以創建響應式變量
+    ref,        // 引入ref函數以創建響應式變量
     shallowRef, // 引入shallowRef函數以創建淺響應式變量
-    onMounted // 引入onMounted函數以在組件掛載後執行代碼
+    onMounted,  // 引入onMounted函數以在組件掛載後執行代碼
+    watch,      // 引入watch函數以監視變量的變化
+    nextTick    // 記得引入 nextTick
   } from 'vue';
 
   // Loading 遮罩使用官方提供的 useLoading 函式
@@ -351,7 +358,8 @@
   import Popup from '@arcgis/core/widgets/Popup';
 
   // 套件
-  import Swal from 'sweetalert2'; //sweetalert2
+  import Swal from 'sweetalert2';   
+  import interact from 'interactjs';
 
   // ---  SHP 跳窗 ---
   import ShpDialog from './ShpDialog.vue'; // 引入ShpDialog組件
@@ -401,6 +409,16 @@
     });
 
     await CreateMap(); // 創建地圖
+
+    // 啟動 Windows 視窗功能
+    initInteractDialog();
+  });
+
+  // 監聽器：當使用者關閉又打開圖層選單時，必須重新綁定
+  watch(isLayerPanelVisible, (newVal) => {
+    if (newVal) {
+      initInteractDialog();
+    }
   });
 
   //【方法】=====================================================================
@@ -472,6 +490,82 @@
     shpDialogRef.value?.openDialog();
   };
   //#endregion
+
+  // 初始化 interactjs
+  const initInteractDialog = () => {
+    // 確保 DOM 已經渲染
+    nextTick(() => {
+      const dialogElem = document.querySelector('.resizable-dialog') as HTMLElement;
+      if (!dialogElem) return;
+
+      // 清除舊的綁定避免重複初始化
+      interact(dialogElem).unset();
+
+      interact(dialogElem)
+        .resizable({
+          // 關鍵：開啟上下左右四個邊、以及四個角
+          edges: { left: true, right: true, bottom: true, top: true },
+          listeners: {
+            start(event) {
+              // 檢查 PrimeVue 是否幫視窗加上了最大化的 class (常見為 p-dialog-maximized)
+              if (event.target.classList.contains('p-dialog-maximized')) {
+                return false; // 阻斷事件
+              }
+            },
+            move(event) {
+              const target = event.target;
+
+              // 如果是最大化狀態，不執行任何縮放計算
+              if (target.classList.contains('p-dialog-maximized')) return;
+
+              // 從 dataset 讀取目前的累計位移，若沒有則初始化為 0
+              let x = parseFloat(target.getAttribute('data-x') || '0');
+              let y = parseFloat(target.getAttribute('data-y') || '0');
+
+              // 根據拖拽方向，動態調整寬高
+              target.style.width = event.rect.width + 'px';
+              target.style.height = event.rect.height + 'px';
+
+              // 如果拉動的是「左邊」或「上邊」，除了改寬高，視窗本體也需要跟著位移
+              x += event.deltaRect.left;
+              y += event.deltaRect.top;
+
+              target.style.transform = `translate(${x}px, ${y}px)`;
+
+              // 存回屬性中記錄
+              target.setAttribute('data-x', x.toString());
+              target.setAttribute('data-y', y.toString());
+            }
+          },
+          modifiers: [
+            // 限制最小與最大尺寸
+            interact.modifiers.restrictSize({
+              min: { width: 350, height: 400 },
+              max: { width: 800, height: 800 }
+            })
+          ]
+        })
+        .draggable({
+          // 限制：只有滑鼠點擊標題列 (.p-dialog-header) 才能拖動視窗
+          allowFrom: '.p-dialog-header',
+          listeners: {
+            move(event) {
+              const target = event.target;
+              let x = parseFloat(target.getAttribute('data-x') || '0');
+              let y = parseFloat(target.getAttribute('data-y') || '0');
+
+              x += event.dx;
+              y += event.dy;
+
+              target.style.transform = `translate(${x}px, ${y}px)`;
+
+              target.setAttribute('data-x', x.toString());
+              target.setAttribute('data-y', y.toString());
+            }
+          }
+        });
+    });
+  };
 
 </script>
 
@@ -768,18 +862,45 @@
 </style>
 
 <style>
-  /* 直接控制全域的 PrimeVue Dialog 縮放行為 */
-  .p-dialog[data-pc-name="dialog"] {
-    resize: both !important;
-    overflow: auto !important;
+  /*【跳窗】BEGIN =====================================================*/
+  /* 確保關閉 PrimeVue 內建溢出限制，讓外層可以觸發 interact 邊緣 */
+  .resizable-dialog {
+    touch-action: none; /* 防止手機板瀏覽器預設拖動行為 */
+    box-sizing: border-box;
+    position: absolute !important;
+    right: auto !important; /* 👈 強制解除右邊錨點定死的問題 */
   }
 
+    /* 移除 PrimeVue 原本右下角的單一縮放控制點圖示 */
+    .resizable-dialog .p-dialog-resizable-handle {
+      display: none !important;
+    }
+
+    /* 當 Dialog 處於最大化狀態時的強制覆寫 */
+    .resizable-dialog.p-dialog-maximized {
+      /* 強制將原本覆蓋在行內的寬高與位移移除，還原給 PrimeVue 的 100% 滿版設定 */
+      width: 100vw !important;
+      height: 100vh !important;
+      top: 0 !important;
+      left: 0 !important;
+      transform: none !important; /* 👈 清除 translate 偏移動作 */
+    }
+
+      /* 💡 新增：最大化時，隱藏四周縮放的鼠標指針，避免干擾 */
+      .resizable-dialog.p-dialog-maximized .p-dialog-header {
+        cursor: default !important; /* 標題列不可拖拽，滑鼠改回普通指標 */
+      }
+  /*【跳窗】END =======================================================*/
+
+  /*【Swal】BEGIN =====================================================*/
   /* ✅ 新增：確保 Swal 永遠在 Dialog 上方 */
   .swal2-container {
     z-index: 10000 !important;
   }
 
+    /* 💡 如果發現 Swal 被其他元素覆蓋，可以強制提升它的 z-index */
     .swal2-container.swal2-shown {
       z-index: 10000 !important;
     }
+  /*【Swal】END =======================================================*/
 </style>
