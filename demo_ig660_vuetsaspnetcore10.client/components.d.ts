@@ -23,6 +23,7 @@ declare module 'vue' {
     IconEcosystem: typeof import('./src/components/icons/IconEcosystem.vue')['default']
     IconSupport: typeof import('./src/components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
+    LayerDialog: typeof import('./src/components/LayerDialog.vue')['default']
     MapView: typeof import('./src/components/MapView.vue')['default']
     ShpDialog: typeof import('./src/components/ShpDialog.vue')['default']
     Tab: typeof import('primevue/tab')['default']

@@ -178,7 +178,7 @@
 
     <!--圖層控制-->
     <div class="layer-trigger-container">
-      <div class="layer-control-btn" @click="isLayerPanelVisible = !isLayerPanelVisible">
+      <div class="layer-control-btn" @click="HandleToggleLayerPanel">
         <div class="btn-content">
           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="28" viewBox="0 0 24 24" fill="none">
             <path d="M10.9827 0.222385C11.6277 -0.0741283 12.3724 -0.0741283 13.0174 0.222385L22.4809 4.56265C22.8488 4.73025 23.0826 5.09552 23.0826 5.49946C23.0826 5.90341 22.8488 6.26868 22.4809 6.43627L13.0174 10.7765C12.3724 11.0731 11.6277 11.0731 10.9827 10.7765L1.51923 6.43627C1.15125 6.26438 0.91748 5.89911 0.91748 5.49946C0.91748 5.09981 1.15125 4.73025 1.51923 4.56265L10.9827 0.222385ZM20.1778 9.00606L22.4809 10.0632C22.8488 10.2308 23.0826 10.5961 23.0826 11C23.0826 11.4039 22.8488 11.7692 22.4809 11.9368L13.0174 16.2771C12.3724 16.5736 11.6277 16.5736 10.9827 16.2771L1.51923 11.9368C1.15125 11.7649 0.91748 11.3996 0.91748 11C0.91748 10.6004 1.15125 10.2308 1.51923 10.0632L3.82232 9.00606L10.4026 12.0228C11.4156 12.4869 12.5845 12.4869 13.5975 12.0228L20.1778 9.00606ZM13.5975 17.5233L20.1778 14.5066L22.4809 15.5637C22.8488 15.7313 23.0826 16.0966 23.0826 16.5005C23.0826 16.9045 22.8488 17.2698 22.4809 17.4373L13.0174 21.7776C12.3724 22.0741 11.6277 22.0741 10.9827 21.7776L1.51923 17.4373C1.15125 17.2655 0.91748 16.9002 0.91748 16.5005C0.91748 16.1009 1.15125 15.7313 1.51923 15.5637L3.82232 14.5066L10.4026 17.5233C11.4156 17.9874 12.5845 17.9874 13.5975 17.5233Z" fill="#3c90cd" />
@@ -188,152 +188,14 @@
       </div>
     </div>
 
-    <!--圖層控制 跳窗 BEGIN ============================================================ -->
-    <Dialog v-model:visible="isLayerPanelVisible"
-            header="圖層管理選單"
-            :modal="false"
-            :draggable="false"
-            :resizable="false"
-            :maximizable="true"
-            position="topright"
-            :style="{
-              position: 'absolute',
-              width: '450px',
-              height: '500px',
-              top: '72px',
-              left: 'calc(100vw - 470px)' /* 2. 改用 left 定位初始位置在右側 */
-            }"
-            class="resizable-dialog"
-            @hide="isLayerPanelVisible = false">
-      <template #header>
-        <div class="dialog-header-custom">
-          <span class="panel-title">圖層控制</span>
-        </div>
-      </template>
+    <!--圖層控制 跳窗 -->
+    <LayerDialog ref="layerDialogRef"
+                 @open-shp="handleOpenShp"
+                 @nofunction-alert="NofunctionAlert" />
 
-      <Tabs v-model:value="activeTab">
-        <TabList>
-          <Tab value="system">系統圖資</Tab>
-          <Tab value="history">操作歷程管理</Tab>
-          <Tab value="import">加入圖層</Tab>
-        </TabList>
+    <!--SHP 跳窗 -->
+    <ShpDialog ref="shpDialogRef" />
 
-        <TabPanels>
-          <TabPanel value="system">
-            <Accordion :value="activeAccordion">
-
-              <AccordionPanel value="3d-models">
-                <AccordionHeader>
-                  <span>三維模型與建物圖層</span>
-                  <i class="pi pi-info-circle info-icon"></i>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div id="layer-3d-models" class="layer-content-box"></div>
-                </AccordionContent>
-              </AccordionPanel>
-
-              <AccordionPanel value="regions">
-                <AccordionHeader>
-                  <span>區域範圍與圖面標註</span>
-                  <i class="pi pi-info-circle info-icon"></i>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div id="layer-regions" class="layer-content-box"></div>
-                </AccordionContent>
-              </AccordionPanel>
-
-              <AccordionPanel value="cadastral">
-                <AccordionHeader>
-                  <span>地段與地籍相關圖資</span>
-                  <i class="pi pi-info-circle info-icon"></i>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div id="layer-cadastral" class="layer-content-box"></div>
-                </AccordionContent>
-              </AccordionPanel>
-
-              <AccordionPanel value="environment">
-                <AccordionHeader>
-                  <span>自然環境與管制資訊</span>
-                  <i class="pi pi-info-circle info-icon" ></i>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div id="layer-environment" class="layer-content-box"></div>
-                </AccordionContent>
-              </AccordionPanel>
-
-              <AccordionPanel value="urban-planning">
-                <AccordionHeader>
-                  <span>都計與非都土地使用</span>
-                  <i class="pi pi-info-circle info-icon"></i>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div id="layer-urban-planning" class="layer-content-box"></div>
-                </AccordionContent>
-              </AccordionPanel>
-
-              <AccordionPanel value="satellite">
-                <AccordionHeader>
-                  <span>航拍與衛星影像圖資</span>
-                  <i class="pi pi-info-circle info-icon"></i>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div id="layer-satellite" class="layer-content-box"></div>
-                </AccordionContent>
-              </AccordionPanel>
-
-              <AccordionPanel value="electronic-maps">
-                <AccordionHeader>
-                  <span>電子地圖與歷史底圖</span>
-                  <i class="pi pi-info-circle info-icon"></i>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div id="layer-electronic-maps" class="layer-content-box"></div>
-                </AccordionContent>
-              </AccordionPanel>
-
-            </Accordion>
-
-            <div class="action-button-group">
-              <Button label="更多歷史底圖" size="small" severity="info" @click="NofunctionAlert();" />
-              <Button label="回到預設底圖" size="small" severity="secondary" @click="NofunctionAlert();" />
-              <Button label="目前開啟圖層" size="small" severity="success" @click="NofunctionAlert();" />
-            </div>
-
-            <div class="checkbox-container">
-              <Checkbox v-model="isTaichungLayerVisible" inputId="tc-layer-checkbox" :binary="true" disabled />同時顯示臺中市圖資
-              <label for="tc-layer-checkbox"> 同時顯示臺中市圖資 </label>
-            </div>
-          </TabPanel>
-
-          <TabPanel value="history">
-            <p class="empty-text">暫無歷程紀錄</p>
-          </TabPanel>
-
-          <TabPanel value="import">
-            <div class="import-grid">
-              <Button label="SHP" severity="contrast" raised @click="handleOpenShp()" />
-              <Button label="KML" severity="contrast" raised @click="NofunctionAlert()" />
-              <Button label="DXF" severity="contrast" raised @click="NofunctionAlert()" />
-              <Button label="CSV 地號" severity="contrast" raised @click="NofunctionAlert()" />
-              <Button label="CSV 坐標" severity="contrast" raised @click="NofunctionAlert()" />
-              <Button label="XML(建物模型)" severity="secondary" raised @click="NofunctionAlert()" />
-              <Button label="ZPB(建物平面圖)" severity="secondary" raised @click="NofunctionAlert()" />
-              <Button label="載入地圖服務" severity="warn" raised @click="NofunctionAlert()" />
-              <Button label="資料說明" severity="warn" raised @click="NofunctionAlert()" />
-            </div>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </Dialog>
-    <!--圖層控制 跳窗 END ============================================================== -->
-    <!--SHP 跳窗 BEGIN ================================================================= -->
-    <template>
-      <div>
-        <ShpDialog ref="shpDialogRef" />
-      </div>
-    </template>
-    <!--SHP 跳窗 END =================================================================== -->
   </div>
 </template>
 
@@ -355,37 +217,33 @@
   import Map from '@arcgis/core/Map';
   import MapView from '@arcgis/core/views/MapView';
   import SceneView from '@arcgis/core/views/SceneView';
-  import Popup from '@arcgis/core/widgets/Popup';
 
   // 套件
-  import Swal from 'sweetalert2';   
-  import interact from 'interactjs';
+  import Swal from 'sweetalert2';
 
-  // ---  SHP 跳窗 ---
-  import ShpDialog from './ShpDialog.vue'; // 引入ShpDialog組件
-  const shpDialogRef = ref < InstanceType < typeof ShpDialog > | null > (null); // 創建對ShpDialog組件的引用
+  // 子組件引入
+  import ShpDialog from './ShpDialog.vue';     // 引入 ShpDialog 組件
+  import LayerDialog from './LayerDialog.vue'; // 引入 LayerDialog 組件
 
   //【宣告】=====================================================================
-  const mapElement = ref(null);     // 用於綁定地圖容器的ref
-  const mapView = shallowRef < MapView | SceneView | null > (null); // 地圖視圖的響應式引用
-  const mapInstance = shallowRef < Map | null > (null);             // 抽取 Map 實例
+  //【組件引用 Ref】
+  const shpDialogRef = ref<InstanceType<typeof ShpDialog> | null>(null);     // 創建對 ShpDialog 組件的引用
+  const layerDialogRef = ref<InstanceType<typeof LayerDialog> | null>(null); // 創建對 LayerDialog 組件的引用
 
-  const activeMenu = ref < string | null > (null);     // 控制當前顯示哪一個下拉選單
-  const isSideOpen = ref(true);     // 控制左側選單的開合
-  const showDrawTools = ref(false); // 控制繪圖工具面板顯示/隱藏
+  //【地圖與基礎 UI 宣告】
+  const mapElement = ref(null);                                     // 用於綁定地圖容器的ref
+  const mapView = shallowRef<MapView | SceneView | null>(null); // 地圖視圖的響應式引用
+  const mapInstance = shallowRef<Map | null>(null);             // 抽取 Map 實例
 
-  // —— PrimeVue 控制響應式變數 ——
-  const isLayerPanelVisible = ref(true);           // 控制圖層控制跳窗的顯示隱藏
-  const activeTab = ref('import');                 // 預設開啟「加入圖層」頁籤
-  const activeAccordion = ref('electronic-maps');  // 預設展開「電子地圖與歷史底圖」面板
-  const isTaichungLayerVisible = ref(false);       // 臺中市圖資勾選狀態
-
+  const activeMenu = ref<string | null>(null); // 控制當前顯示哪一個下拉選單
+  const isSideOpen = ref(true);                    // 控制左側選單的開合
+  const showDrawTools = ref(false);                // 控制繪圖工具面板顯示/隱藏
 
   // —— 初始化 loading 控制器 ——
   const $loading = useLoading();
   let loader: any = null; // 用來記錄畫面上遮罩實體的變數
 
-  //【初始化】===================================================================
+  //【生命週期】===================================================================
   // 在組件掛載後執行
   onMounted(async () => {
 
@@ -400,7 +258,7 @@
     });
     mapInstance.value = mainMap;
 
-    // 2. 網頁一掛載，立刻開起遮罩，並將其實體存入 loader
+    // 網頁一掛載，立刻開起遮罩，並將其實體存入 loader
     loader = $loading.show({
       color: '#41b883',
       loader: 'spinner',
@@ -409,16 +267,6 @@
     });
 
     await CreateMap(); // 創建地圖
-
-    // 啟動 Windows 視窗功能
-    initInteractDialog();
-  });
-
-  // 監聽器：當使用者關閉又打開圖層選單時，必須重新綁定
-  watch(isLayerPanelVisible, (newVal) => {
-    if (newVal) {
-      initInteractDialog();
-    }
   });
 
   //【方法】=====================================================================
@@ -491,81 +339,15 @@
   };
   //#endregion
 
-  // 初始化 interactjs
-  const initInteractDialog = () => {
-    // 確保 DOM 已經渲染
-    nextTick(() => {
-      const dialogElem = document.querySelector('.resizable-dialog') as HTMLElement;
-      if (!dialogElem) return;
-
-      // 清除舊的綁定避免重複初始化
-      interact(dialogElem).unset();
-
-      interact(dialogElem)
-        .resizable({
-          // 關鍵：開啟上下左右四個邊、以及四個角
-          edges: { left: true, right: true, bottom: true, top: true },
-          listeners: {
-            start(event) {
-              // 檢查 PrimeVue 是否幫視窗加上了最大化的 class (常見為 p-dialog-maximized)
-              if (event.target.classList.contains('p-dialog-maximized')) {
-                return false; // 阻斷事件
-              }
-            },
-            move(event) {
-              const target = event.target;
-
-              // 如果是最大化狀態，不執行任何縮放計算
-              if (target.classList.contains('p-dialog-maximized')) return;
-
-              // 從 dataset 讀取目前的累計位移，若沒有則初始化為 0
-              let x = parseFloat(target.getAttribute('data-x') || '0');
-              let y = parseFloat(target.getAttribute('data-y') || '0');
-
-              // 根據拖拽方向，動態調整寬高
-              target.style.width = event.rect.width + 'px';
-              target.style.height = event.rect.height + 'px';
-
-              // 如果拉動的是「左邊」或「上邊」，除了改寬高，視窗本體也需要跟著位移
-              x += event.deltaRect.left;
-              y += event.deltaRect.top;
-
-              target.style.transform = `translate(${x}px, ${y}px)`;
-
-              // 存回屬性中記錄
-              target.setAttribute('data-x', x.toString());
-              target.setAttribute('data-y', y.toString());
-            }
-          },
-          modifiers: [
-            // 限制最小與最大尺寸
-            interact.modifiers.restrictSize({
-              min: { width: 350, height: 400 },
-              max: { width: 800, height: 800 }
-            })
-          ]
-        })
-        .draggable({
-          // 限制：只有滑鼠點擊標題列 (.p-dialog-header) 才能拖動視窗
-          allowFrom: '.p-dialog-header',
-          listeners: {
-            move(event) {
-              const target = event.target;
-              let x = parseFloat(target.getAttribute('data-x') || '0');
-              let y = parseFloat(target.getAttribute('data-y') || '0');
-
-              x += event.dx;
-              y += event.dy;
-
-              target.style.transform = `translate(${x}px, ${y}px)`;
-
-              target.setAttribute('data-x', x.toString());
-              target.setAttribute('data-y', y.toString());
-            }
-          }
-        });
-    });
+  //#region ◆點擊 [圖層控制] 按鈕時觸發 [HandleToggleLayerPanel]
+  /**
+   * 點擊 [圖層控制] 按鈕時觸發
+   */
+  const HandleToggleLayerPanel = () => {
+    // 直接呼叫子元件暴露出來的 openDialog() 方法
+    layerDialogRef.value?.openDialog();
   };
+  //#endregion
 
 </script>
 
@@ -744,7 +526,6 @@
   }
   /*【左側選單】END =====================================================*/
 
-
   /*【圖層控制】BEGIN =====================================================*/
   /* —— 圖層按鈕與新面板樣式 —— */
   .layer-trigger-container {
@@ -776,89 +557,7 @@
     align-items: center;
     padding-top: 10px;
   }
-
-  .btn-text {
-    text-align: center;
-    font-weight: bolder;
-    margin-top: -3px;
-    font-size: 12px;
-  }
-
-  /* PrimeVue 打造的新版圖層控制面板容器 */
-  .layer-control-panel {
-    width: 340px;
-    position: absolute;
-    left: 58px;
-    top: 72px;
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
-    z-index: 999;
-    padding: 16px;
-    border: 1px solid #e2e8f0;
-  }
-
-  .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-
-  .panel-title {
-    font-weight: bold;
-    font-size: 16px;
-    color: #334155;
-  }
-
-  /* 折疊面板內部小樣式 */
-  .info-icon {
-    color: #64748b;
-    margin-left: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-
-    .info-icon:hover {
-      color: #3b82f6;
-    }
-
-  .layer-content-box {
-    min-height: 20px;
-    padding: 4px 0;
-  }
-
-  /* 按鈕與排版優化 */
-  .action-button-group {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-top: 12px;
-  }
-
-  .checkbox-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-    padding: 4px;
-  }
-
-  .empty-text {
-    color: #94a3b8;
-    text-align: center;
-    padding: 20px 0;
-  }
-
-  /* 匯入外部資料網格系統 */
-  .import-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 4px 0;
-  }
-  /*【圖層控制】END =====================================================*/
+   /*【圖層控制】END =====================================================*/
 </style>
 
 <style>
@@ -886,7 +585,7 @@
       transform: none !important; /* 👈 清除 translate 偏移動作 */
     }
 
-      /* 💡 新增：最大化時，隱藏四周縮放的鼠標指針，避免干擾 */
+      /* 最大化時，隱藏四周縮放的鼠標指針，避免干擾 */
       .resizable-dialog.p-dialog-maximized .p-dialog-header {
         cursor: default !important; /* 標題列不可拖拽，滑鼠改回普通指標 */
       }
