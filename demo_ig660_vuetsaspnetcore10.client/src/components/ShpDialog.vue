@@ -18,36 +18,27 @@
 </template>
 
 <script setup lang="ts">
+  //【引入】=====================================================================
   import { ref, watch, nextTick } from 'vue';
   import interact from 'interactjs';
 
+  //【宣告】=====================================================================
   // 內部的響應式狀態
-  const isDialogVisible = ref(false); // 控制 Dialog 顯示
-  const dialogTitle = ref("Shapefile載入與預覽");
-  const iframeSrc = ref("./Assist/SHPtoGeoJson/index.html");
-  const dialogWidth = ref("364px");
+  const isDialogVisible = ref(false);                        // 控制 Dialog 顯示
+  const dialogTitle = ref("Shapefile載入與預覽");            // Dialog 標題
+  const iframeSrc = ref("./Assist/SHPtoGeoJson/index.html"); // 內嵌頁面 URL
+  const dialogWidth = ref("364px");                          // Dialog 預設寬度
 
-  /**
-   * 提供給外部元件呼叫的「開啟視窗」方法
-   */
-  const openDialog = () => {
-    try {
-      isDialogVisible.value = false; // 清理或重置狀態
-    } catch (e) {
-      console.error("清理事件失敗:", e);
-    }
-    isDialogVisible.value = true;
-  };
-
-    // 監聽器：當視窗打開時，重新綁定 interactjs 縮放與拖拽
+  //【生命週期】===================================================================
+  // 監聽器：當視窗打開時，重新綁定 interactjs 縮放與拖拽
   watch(
-    isDialogVisible,
-    (newVal) => {
+    isDialogVisible, // 監聽 Dialog 顯示狀態
+    (newVal) => {    // 當 Dialog 顯示狀態改變時觸發
       if (newVal) {
         // 使用 nextTick 確保 Vue 已將 Dialog 渲染至 DOM，
         nextTick(() => {
           setTimeout(() => {
-            initInteractDialog();
+            initInteractDialog(); // 初始化 interactjs 功能
           }, 50); // 延遲 50 毫秒，確保 PrimeVue Dialog 完全開起並掛載完畢
         });
       }
@@ -55,7 +46,12 @@
     { immediate: true } // 👈 加上 immediate: true，讓網頁一打開 (初次建立) 就立刻執行一次這個監聽器
   );
 
-  // 初始化 interactjs (從原本 MapView 移過來)
+  //【方法】===================================================================
+
+  //#region ◆初始化 interactjs [initInteractDialog]
+  /**
+   * 初始化 interactjs
+   */
   const initInteractDialog = () => {
     nextTick(() => {
       const dialogElem = document.querySelector('.shp-resizable-dialog') as HTMLElement;
@@ -118,10 +114,25 @@
         });
     });
   };
+  //#endregion
 
-  // 關鍵：利用 defineExpose 將 openDialog 方法暴露出去，讓父元件可以控制它
+  //#region ◆開啟視窗 [openDialog]
+  /**
+   * 開啟視窗 (提供給外部元件呼叫)
+   */
+  const openDialog = () => {
+    try {
+      isDialogVisible.value = false; // 清理或重置狀態
+    } catch (e) {
+      console.error("清理事件失敗:", e);
+    }
+    isDialogVisible.value = true; // 開啟 Dialog
+  };
+  //#endregion
+
+  // ※ 利用 defineExpose 將 openDialog 方法暴露出去，讓父元件可以控制它
   defineExpose({
-    openDialog
+    openDialog // 👈 讓父組件可以直接呼叫 openDialog 方法來開啟視窗
   });
 </script>
 

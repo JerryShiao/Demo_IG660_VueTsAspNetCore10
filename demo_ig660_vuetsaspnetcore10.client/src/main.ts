@@ -6,6 +6,9 @@ import Swal from 'sweetalert2'
 // 引入 vue-loading-overlay 的全域物件
 import 'vue-loading-overlay/dist/css/index.css';
 
+// 引入 PrimeIcons 圖示字體
+import 'primeicons/primeicons.css';
+
 // 引入 PrimeVue 與 主題設定
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'

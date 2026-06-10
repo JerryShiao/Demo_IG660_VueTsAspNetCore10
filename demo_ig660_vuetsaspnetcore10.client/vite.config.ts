@@ -50,8 +50,7 @@ export default defineConfig({
         PrimeVueResolver() // 👈 這會完美識別 v4 的 Tabs, TabList, Tab 等所有新元件！
       ],
       dts: true,
-      deep: false,
-      skipScan: true  // 禁用自動掃描！
+      deep: false
     })
   ],
   optimizeDeps: {

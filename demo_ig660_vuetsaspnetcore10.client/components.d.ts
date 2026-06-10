@@ -26,6 +26,7 @@ declare module 'vue' {
     LayerDialog: typeof import('./src/components/LayerDialog.vue')['default']
     MapView: typeof import('./src/components/MapView.vue')['default']
     ShpDialog: typeof import('./src/components/ShpDialog.vue')['default']
+    ShpImportDialog: typeof import('./src/components/ShpImportDialog.vue')['default']
     Tab: typeof import('primevue/tab')['default']
     TabList: typeof import('primevue/tablist')['default']
     TabPanel: typeof import('primevue/tabpanel')['default']

@@ -194,7 +194,7 @@
                  @nofunction-alert="NofunctionAlert" />
 
     <!--SHP 跳窗 -->
-    <ShpDialog ref="shpDialogRef" />
+    <ShpImportDialog ref="shpDialogRef" />
 
   </div>
 </template>
@@ -222,12 +222,12 @@
   import Swal from 'sweetalert2';
 
   // 子組件引入
-  import ShpDialog from './ShpDialog.vue';     // 引入 ShpDialog 組件
-  import LayerDialog from './LayerDialog.vue'; // 引入 LayerDialog 組件
+  import ShpImportDialog from './ShpImportDialog.vue'; // 引入 ShpImportDialog 組件
+  import LayerDialog from './LayerDialog.vue';         // 引入 LayerDialog 組件
 
   //【宣告】=====================================================================
   //【組件引用 Ref】
-  const shpDialogRef = ref<InstanceType<typeof ShpDialog> | null>(null);     // 創建對 ShpDialog 組件的引用
+  const shpDialogRef = ref<InstanceType<typeof ShpImportDialog> | null>(null);     // 創建對 ShpImportDialog 組件的引用
   const layerDialogRef = ref<InstanceType<typeof LayerDialog> | null>(null); // 創建對 LayerDialog 組件的引用
 
   //【地圖與基礎 UI 宣告】

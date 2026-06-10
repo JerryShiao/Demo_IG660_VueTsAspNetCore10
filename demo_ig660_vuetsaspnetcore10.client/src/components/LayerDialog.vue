@@ -16,13 +16,17 @@
           }"
           class="layer-resizable-dialog"
           @hide="isLayerPanelVisible = false">
+
+    <!--標題-->
     <template #header>
       <div class="dialog-header-custom">
         <span class="panel-title">圖層控制</span>
       </div>
     </template>
 
+    <!--內容-->
     <Tabs v-model:value="activeTab">
+      <!--功能頁籤-->
       <TabList>
         <Tab value="system">系統圖資</Tab>
         <Tab value="history">操作歷程管理</Tab>
@@ -30,6 +34,7 @@
       </TabList>
 
       <TabPanels>
+        <!--頁籤：系統圖資 ======================================================================================== -->
         <TabPanel value="system">
           <Accordion :value="activeAccordion">
             <AccordionPanel value="3d-models">
@@ -92,7 +97,7 @@
               </AccordionContent>
             </AccordionPanel>
 
-            <AccordionPanel value="electronic-maps">
+        *      <AccordionPanel value="electronic-maps">
               <AccordionHeader>
                 <span>電子地圖與歷史底圖</span>
                 <i class="pi pi-info-circle info-icon"></i>
@@ -115,10 +120,12 @@
           </div>
         </TabPanel>
 
+        <!--頁籤：操作歷程管理 ==================================================================================== -->
         <TabPanel value="history">
           <p class="empty-text">暫無歷程紀錄</p>
         </TabPanel>
 
+        <!--頁籤：加入圖層 ======================================================================================== -->
         <TabPanel value="import">
           <div class="import-grid">
             <Button label="SHP" severity="contrast" raised @click="triggerOpenShp" />
@@ -132,15 +139,18 @@
             <Button label="資料說明" severity="warn" raised @click="triggerNoFunctionAlert" />
           </div>
         </TabPanel>
+
       </TabPanels>
     </Tabs>
   </Dialog>
 </template>
 
 <script setup lang="ts">
+  //【引入】=====================================================================
   import { ref, watch, nextTick } from 'vue';
   import interact from 'interactjs';
 
+  //【宣告】=====================================================================
   // 宣告事件，用來通知父組件觸發對應功能（例如點擊 SHP 或未實作功能提示）
   const emit = defineEmits(['open-shp', 'nofunction-alert']);
 
@@ -150,20 +160,7 @@
   const activeAccordion = ref('electronic-maps');  // 預設展開「電子地圖與歷史底圖」面板
   const isTaichungLayerVisible = ref(false);       // 臺中市圖資勾選狀態
 
-  // 封裝與 ShpDialog 相同的控制方法，供父組件調用
-  const toggleDialog = () => {
-    isLayerPanelVisible.value = !isLayerPanelVisible.value;
-  };
-
-  // 允許外部直接打開
-  const openDialog = () => {
-    isLayerPanelVisible.value = true;
-  };
-
-  // 轉發點擊事件給父組件
-  const triggerNoFunctionAlert = () => emit('nofunction-alert');
-  const triggerOpenShp = () => emit('open-shp');
-
+  //【生命週期】===================================================================
   // 監聽器：當視窗打開時，重新綁定 interactjs 縮放與拖拽
   watch(
     isLayerPanelVisible,
@@ -180,7 +177,12 @@
     { immediate: true } // 👈 加上 immediate: true，讓網頁一打開 (初次建立) 就立刻執行一次這個監聽器
   );
 
-  // 初始化 interactjs (從原本 MapView 移過來)
+  //【方法】=======================================================================
+
+  //#region ◆初始化 interactjs [initInteractDialog]
+  /**
+   * 初始化 interactjs
+   */
   const initInteractDialog = () => {
     nextTick(() => {
       const dialogElem = document.querySelector('.layer-resizable-dialog') as HTMLElement;
@@ -243,11 +245,44 @@
         });
     });
   };
+  //#endregion
+
+  //#region ◆點擊 [圖層控制] 按鈕，切換圖層面板顯示狀態 [toggleDialog]
+  /**
+   * 點擊 [圖層控制] 按鈕，切換圖層面板顯示狀態 (提供給外部元件呼叫)
+   */
+  const toggleDialog = () => {
+    isLayerPanelVisible.value = !isLayerPanelVisible.value;
+  };
+  //#endregion
+
+  //#region ◆開啟視窗 [openDialog]
+  /**
+   * 開啟視窗 (提供給外部元件呼叫)
+   */
+  const openDialog = () => {
+    isLayerPanelVisible.value = true; // 打開視窗
+  };
+  //#endregion
+
+  //#region ◆功能停用提示 [triggerNoFunctionAlert]
+  /**
+   * 功能停用提示 (轉發事件給父組件)
+   */
+  const triggerNoFunctionAlert = () => emit('nofunction-alert');
+  //#endregion
+
+  //#region ◆開啟SHP檔案上傳對話框 [triggerOpenShp]
+  /**
+   * 開啟SHP檔案上傳對話框 (轉發事件給父組件)
+   */
+  const triggerOpenShp = () => emit('open-shp');
+  //#endregion
 
   // 暴露方法給父組件
   defineExpose({
-    toggleDialog,
-    openDialog
+    toggleDialog, // 👈 讓父組件可以直接呼叫 toggleDialog 方法來切換圖層面板顯示狀態
+    openDialog    // 👈 讓父組件可以直接呼叫 openDialog 方法來開啟視窗
   });
 </script>
 
