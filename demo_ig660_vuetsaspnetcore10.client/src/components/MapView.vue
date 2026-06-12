@@ -194,7 +194,7 @@
                  @nofunction-alert="NofunctionAlert" />
 
     <!--SHP 跳窗 -->
-    <ShpImportDialog ref="shpDialogRef" />
+    <ShpImportDialog ref="shpDialogRef" @onImportComplete="handleShpImportComplete"/>
 
   </div>
 </template>
@@ -217,6 +217,16 @@
   import Map from '@arcgis/core/Map';
   import MapView from '@arcgis/core/views/MapView';
   import SceneView from '@arcgis/core/views/SceneView';
+
+  // ArcGIS 圖層引入
+  import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer';
+  import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+  import Graphic from '@arcgis/core/Graphic';
+  import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+  import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+  import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
+  import SimpleLineSymbol from '@arcgis/core/symbols/SimpleLineSymbol';
+  import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
 
   // 套件
   import Swal from 'sweetalert2';
@@ -242,6 +252,10 @@
   // —— 初始化 loading 控制器 ——
   const $loading = useLoading();
   let loader: any = null; // 用來記錄畫面上遮罩實體的變數
+
+  //【GeoJSON 圖層管理】
+  // 使用普通 JavaScript Map，不通過 Vue 響應式系統
+  const geoJsonLayers: Map<string, GeoJSONLayer> = new Map();
 
   //【生命週期】===================================================================
   // 在組件掛載後執行
@@ -329,6 +343,18 @@
   }
   //#endregion
 
+  //#region ◆點擊 [圖層控制] 按鈕時觸發 [HandleToggleLayerPanel]
+  /**
+   * 點擊 [圖層控制] 按鈕時觸發
+   */
+  const HandleToggleLayerPanel = () => {
+    // 直接呼叫子元件暴露出來的 toggleDialog() 方法
+    layerDialogRef.value?.toggleDialog();
+  };
+  //#endregion
+
+  //#region 【SHP】匯入
+
   //#region ◆點擊 SHP 按鈕時觸發 [handleOpenShp]
   /**
    * 點擊 SHP 按鈕時觸發
@@ -339,14 +365,127 @@
   };
   //#endregion
 
-  //#region ◆點擊 [圖層控制] 按鈕時觸發 [HandleToggleLayerPanel]
+  //#region ◆處理 SHP 匯入完成 [handleShpImportComplete]
   /**
-   * 點擊 [圖層控制] 按鈕時觸發
+   * 處理 SHP 匯入完成事件
    */
-  const HandleToggleLayerPanel = () => {
-    // 直接呼叫子元件暴露出來的 toggleDialog() 方法
-    layerDialogRef.value?.toggleDialog();
+  const handleShpImportComplete = (importData: {
+    geoJson: any;
+    fileName: string;
+    shapeType: string;
+  }) => {
+    // ✅ 先驗證輸入資料
+    if (!importData.geoJson) {
+      Swal.fire({
+        icon: 'error',
+        title: '無效資料',
+        text: '未收到有效的 GeoJSON 資料'
+      });
+      return;
+    }
+    try {
+      // 創建臨時 Blob URL 用於 GeoJSONLayer
+      const geoJsonString = JSON.stringify(importData.geoJson);
+      const blob = new Blob([geoJsonString], { type: 'application/json' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      // 根據圖形類型設定符號樣式
+      const renderer = getRendererByShapeType(importData.shapeType);
+
+      // 創建 GeoJSON 圖層
+      const geoJsonLayer = new GeoJSONLayer({
+        url: blobUrl,
+        title: importData.fileName,
+        renderer: renderer,
+        popupTemplate: {
+          title: '{properties.name || "圖資"}',
+          content: [
+            {
+              type: 'fields',
+              fieldInfos: [] // 自動展示所有屬性
+            }
+          ]
+        }
+      });
+
+      // 將圖層加入地圖
+      if (mapInstance.value) {
+        mapInstance.value.add(geoJsonLayer);
+      }
+
+      // 直接存儲到普通 Map（不需要重新賦值）
+      geoJsonLayers.set(importData.fileName, geoJsonLayer);
+
+      // 視圖聚焦到新加入的圖層
+      geoJsonLayer.when(() => {
+        if (mapView.value && geoJsonLayer.fullExtent) {
+          mapView.value.goTo(geoJsonLayer.fullExtent);
+        }
+      });
+
+      // 顯示成功訊息
+      Swal.fire({
+        icon: 'success',
+        title: '圖層已加入',
+        text: `${importData.fileName} 已成功添加到地圖上`,
+        timer: 2000
+      });
+    } catch (error: any) {
+      console.error('添加 GeoJSON 圖層失敗:', error);
+
+      // ✅ 延遲顯示 Swal，確保它能被正確渲染
+      nextTick(() => {
+        Swal.fire({
+          icon: 'error',
+          title: '添加圖層失敗',
+          text: error.message || '無法將圖層添加到地圖',
+          confirmButtonText: '確定'
+        });
+      });
+    }
   };
+  //#endregion
+
+  //#region ◆根據圖形類型獲取渲染器 [getRendererByShapeType]
+  /**
+   * 根據圖形類型設定對應的符號樣式
+   */
+  const getRendererByShapeType = (shapeType: string): SimpleRenderer => {
+    // 安全地轉換為字符串並轉換為小寫
+    const shapeTypeLower = String(shapeType || '').toLowerCase().trim();
+
+    if (shapeTypeLower.includes('point')) {
+      // 點狀符號
+      const markerSymbol = new SimpleMarkerSymbol({
+        color: [0, 122, 194],
+        size: '8px',
+        outline: {
+          color: [255, 255, 255],
+          width: 1
+        }
+      });
+      return new SimpleRenderer({ symbol: markerSymbol });
+    } else if (shapeTypeLower.includes('polyline') || shapeTypeLower.includes('line')) {
+      // 線狀符號
+      const lineSymbol = new SimpleLineSymbol({
+        color: [0, 122, 194],
+        width: 2
+      });
+      return new SimpleRenderer({ symbol: lineSymbol });
+    } else {
+      // 面狀符號（預設）
+      const fillSymbol = new SimpleFillSymbol({
+        color: [0, 122, 194, 0.3], // 帶透明度的藍色
+        outline: {
+          color: [0, 122, 194],
+          width: 2
+        }
+      });
+      return new SimpleRenderer({ symbol: fillSymbol });
+    }
+  };
+  //#endregion
+
   //#endregion
 
 </script>

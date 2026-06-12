@@ -147,6 +147,7 @@
   import JSZip from 'jszip';            // 用於處理 ZIP 文件的庫
   import { ShpParserService } from '../services/shpParser'; // 自定義的 SHP 解析服務
   import { convertToGeoJson } from '../utils/geoUtils'; // 自定義的地理數據轉換工具
+  import Swal from 'sweetalert2'; // 用於顯示美觀的彈窗提示
 
   //【宣告】=====================================================================
   const emit = defineEmits(['onImportComplete', 'onError']); // 定義組件事件
@@ -315,9 +316,26 @@
         shapeType: parsedShp.shapeType
       });
 
+      // 重置狀態
+      selectedFile.value = null;
+
+      // 顯示成功訊息
+      Swal.fire({
+        icon: 'success',
+        title: '匯入成功',
+        text: '圖資已成功匯入！'
+      });
+
+      //關閉視窗
       isDialogVisible.value = false;
-    } catch (error: any) {
+    }
+    catch (error: any) {
       console.error(error);
+      Swal.fire({
+        icon: 'error',
+        title: '匯入失敗',
+        text: error.message || '讀取圖資失敗，請檢查檔案格式。'
+      });
       emit('onError', error.message || '讀取圖資失敗，請檢查檔案格式。');
     } finally {
       loading.value = false;
