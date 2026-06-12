@@ -255,7 +255,7 @@
 
   //【GeoJSON 圖層管理】
   // 使用普通 JavaScript Map，不通過 Vue 響應式系統
-  const geoJsonLayers: Map<string, GeoJSONLayer> = new Map();
+  const geoJsonLayers: globalThis.Map<string, GeoJSONLayer> = new globalThis.Map();
 
   //【生命週期】===================================================================
   // 在組件掛載後執行
@@ -384,6 +384,9 @@
       return;
     }
     try {
+      //測試
+      console.log('收到的 GeoJSON 資料：', importData.geoJson);
+
       // 創建臨時 Blob URL 用於 GeoJSONLayer
       const geoJsonString = JSON.stringify(importData.geoJson);
       const blob = new Blob([geoJsonString], { type: 'application/json' });

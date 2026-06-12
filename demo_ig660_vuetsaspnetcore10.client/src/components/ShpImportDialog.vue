@@ -136,12 +136,10 @@
 <script setup lang="ts">
   //【引入】=====================================================================
   import {
-    ref,         // Vue 3 的響應式引用
-    watch,       // 監聽響應式數據變化
-    nextTick,    // 在 DOM 更新後執行回調
-    defineEmits, // 定義組件事件
-    defineExpose // 定義組件暴露的方法
-  } from 'vue';  // Vue 3 Composition API
+    ref,        // Vue 3 的響應式引用
+    watch,      // 監聽響應式數據變化
+    nextTick    // 在 DOM 更新後執行回調
+  } from 'vue'; // Vue 3 Composition API
   import interact from 'interactjs';    // 用於實現拖放和調整大小的庫
   import Select from 'primevue/select'; // PrimeVue 的選擇組件
   import JSZip from 'jszip';            // 用於處理 ZIP 文件的庫
@@ -162,7 +160,7 @@
 
   // 預設坐標系與編碼
   const selectedEpsg = ref('3826');
-  const selectedEncoding = ref('big5');
+  const selectedEncoding = ref('utf-8');
 
   // 坐標系統選項
   const epsgOptions = [
@@ -173,8 +171,8 @@
 
   // 編碼選項
   const encodingOptions = [
-    { label: 'BIG5 (正體中文傳統編碼)', value: 'big5' },
-    { label: 'UTF-8 (萬國碼)', value: 'utf-8' }
+    { label: 'UTF-8 (萬國碼)', value: 'utf-8' },
+    { label: 'BIG5 (正體中文傳統編碼)', value: 'big5' }    
   ];
 
   // 自定義的 SHP 解析服務
@@ -306,8 +304,24 @@
       const parsedShp = parserService.parseShp(shpBuffer);
       const parsedDbfRecords = parserService.parseDbf(dbfBuffer, selectedEncoding.value);
 
+      // 判斷應該代入哪一個 EPSG 代碼
+      let targetEpsg = selectedEncoding.value;
+
+      // 💡 防呆機制：如果選了 3826 但發現檔案內座標數值很小 (小於 360)，代表其實是經緯度！
+      if (targetEpsg === 'EPSG:3826' && parsedDbfRecords.length > 0) {
+        const firstRecord = parsedDbfRecords[0];
+        // 隨便抓一筆點位資料看數值大小
+        if (firstRecord?.content && typeof firstRecord.content === 'object') {
+          const firstX = (firstRecord.content as any).points?.[0] ?? 0;
+          if (firstX > 119 && firstX < 123) {
+            // 數值落在 120 左右，絕對是經緯度而非二度分帶，強行修正為 EPSG:3824
+            targetEpsg = 'EPSG:3824';
+          }
+        }
+      }
+
       // 計算投影轉換並打包成 GeoJSON
-      const finalGeoJson = convertToGeoJson(parsedShp, parsedDbfRecords, selectedEpsg.value);
+      const finalGeoJson = convertToGeoJson(parsedShp, parsedDbfRecords, targetEpsg);
 
       // 發送成功事件給父元件
       emit('onImportComplete', {
