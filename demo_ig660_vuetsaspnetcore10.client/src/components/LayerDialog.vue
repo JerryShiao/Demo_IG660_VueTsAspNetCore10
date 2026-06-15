@@ -122,7 +122,39 @@
 
         <!--頁籤：操作歷程管理 ==================================================================================== -->
         <TabPanel value="history">
-          <p class="empty-text">暫無歷程紀錄</p>
+          <div v-if="layerStore.layerRecords.length === 0" class="empty-text">
+            暫無歷程紀錄
+          </div>
+          <div v-else class="history-list">
+            <div v-for="record in layerStore.layerRecords" :key="record.id" class="history-item">
+              <div class="item-header">
+                <div class="item-info">
+                  <p class="item-name">{{ record.fileName }}</p>
+                  <p class="item-meta">
+                    <span class="shape-type-badge" :title="getShapeTypeTooltip(record.shapeType)">
+                      <span class="shape-icon">{{ getShapeTypeIcon(record.shapeType) }}</span>
+                      {{ getShapeTypeName(record.shapeType) }}
+                    </span>
+                    · {{ formatDate(record.createdAt) }}
+                  </p>
+                </div>
+                <div class="item-actions">
+                  <button :class="['action-btn']"
+                          :title="record.visible ? '隱藏圖層' : '顯示圖層'"
+                          @click="toggleLayerVisibility(record.id)"
+                          aria-label="切換圖層顯示">
+                    <i :class="record.visible ? 'pi pi-eye' : 'pi pi-eye-slash'"></i>
+                  </button>
+                  <button class="action-btn delete-btn"
+                          title="刪除圖層"
+                          @click="deleteLayer(record.id)"
+                          aria-label="刪除圖層">
+                    <i class="pi pi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </TabPanel>
 
         <!--頁籤：加入圖層 ======================================================================================== -->
@@ -147,8 +179,14 @@
 
 <script setup lang="ts">
   //【引入】=====================================================================
-  import { ref, watch, nextTick } from 'vue';
-  import interact from 'interactjs';
+  import {
+    ref,        // 響應式變數
+    watch,      // 監聽變數變化
+    nextTick    // 在 DOM 更新後執行
+  } from 'vue'; // Vue核心功能
+  import interact from 'interactjs'; // 拖放與調整大小庫
+  import { useLayerStore } from '../stores/layerStore'; // 圖層狀態管理 
+  import Swal from 'sweetalert2'; // 美化彈窗庫
 
   //【宣告】=====================================================================
   // 宣告事件，用來通知父組件觸發對應功能（例如點擊 SHP 或未實作功能提示）
@@ -159,6 +197,21 @@
   const activeTab = ref('import');                 // 預設開啟「加入圖層」頁籤
   const activeAccordion = ref('electronic-maps');  // 預設展開「電子地圖與歷史底圖」面板
   const isTaichungLayerVisible = ref(false);       // 臺中市圖資勾選狀態
+  const layerStore = useLayerStore();              // 圖層狀態管理實例
+
+  /**
+ * ShapeType 列舉對應表
+ */
+  const ShapeTypeMap: Record<number | string, { name: string; icon: string; tooltip: string }> = {
+    0: { name: 'NULL', icon: '⚠️', tooltip: '空值類型' },
+    1: { name: 'POINT', icon: '🔵', tooltip: '點狀圖形' },
+    3: { name: 'POLYLINE', icon: '〰️', tooltip: '線狀圖形' },
+    5: { name: 'POLYGON', icon: '⬜', tooltip: '面狀圖形' },
+    8: { name: 'MULTIPOINT', icon: '⭕', tooltip: '多點圖形' },
+    11: { name: 'POINTZ', icon: '🔵', tooltip: '3D 點狀圖形' },
+    13: { name: 'POLYLINEZ', icon: '〰️', tooltip: '3D 線狀圖形' },
+    15: { name: 'POLYGONZ', icon: '⬜', tooltip: '3D 面狀圖形' }
+  };
 
   //【生命週期】===================================================================
   // 監聽器：當視窗打開時，重新綁定 interactjs 縮放與拖拽
@@ -279,6 +332,86 @@
   const triggerOpenShp = () => emit('open-shp');
   //#endregion
 
+  //#region ◆切換圖層顯示狀態 [toggleLayerVisibility]
+  /**
+   * 切換圖層顯示狀態
+   */
+  const toggleLayerVisibility = (layerId: string) => {
+    layerStore.toggleLayerVisibility(layerId);
+  };
+  //#endregion
+
+  //#region ◆刪除圖層 [deleteLayer]
+  /**
+   * 刪除圖層 (先確認後刪除)
+   */
+  const deleteLayer = (layerId: string) => {
+    const record = layerStore.getLayerRecord(layerId);
+    if (!record) return;
+
+    Swal.fire({
+      title: '確認刪除',
+      text: `確定要刪除圖層「${record.fileName}」嗎？此操作無法恢復。`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '刪除',
+      cancelButtonText: '取消',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        layerStore.removeLayerRecord(layerId);
+        Swal.fire({
+          title: '已刪除',
+          text: '圖層已從地圖移除',
+          icon: 'success',
+          timer: 1500
+        });
+      }
+    });
+  };
+  //#endregion
+
+  //#region ◆格式化日期 [formatDate]
+  /**
+   * 格式化日期為本地時間字符串
+   */
+  const formatDate = (date: Date): string => {
+    return new Date(date).toLocaleString('zh-TW', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+  //#endregion
+
+  /**
+  * 根據 shapeType 返回對應的圖示 class
+  */
+  const getShapeTypeIcon = (shapeType: number | string): string => {
+    const key = typeof shapeType === 'string' ? parseInt(shapeType, 10) : shapeType;
+    return ShapeTypeMap[key]?.icon || 'pi-question';
+  };
+
+  /**
+ * 根據 shapeType 返回對應的名稱
+ */
+  const getShapeTypeName = (shapeType: number | string): string => {
+    const key = typeof shapeType === 'string' ? parseInt(shapeType, 10) : shapeType;
+    return ShapeTypeMap[key]?.name || '未知類型';
+  };
+
+  /**
+   * 根據 shapeType 返回對應的 Tooltip 說明
+   */
+  const getShapeTypeTooltip = (shapeType: number | string): string => {
+    const key = typeof shapeType === 'string' ? parseInt(shapeType, 10) : shapeType;
+    return ShapeTypeMap[key]?.tooltip || '未知圖形類型';
+  };
+
   // 暴露方法給父組件
   defineExpose({
     toggleDialog, // 👈 讓父組件可以直接呼叫 toggleDialog 方法來切換圖層面板顯示狀態
@@ -338,6 +471,131 @@
     gap: 8px;
     padding: 4px 0;
   }
+
+  /*【歷程列表】樣式 BEGIN ========================*/
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .history-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px;
+    background-color: #f8fafc;
+    transition: all 0.2s;
+  }
+
+    .history-item:hover {
+      background-color: #eef2f5;
+      border-color: #cbd5e1;
+    }
+
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .item-info {
+    flex: 1;
+    min-width: 0; /* 允許文字省略 */
+  }
+
+  .item-name {
+    margin: 0;
+    font-weight: 600;
+    font-size: 13px;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .item-meta {
+    margin: 2px 0 0 0;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .action-btn {
+    padding: 4px 6px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #475569;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    min-height: 28px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+    .action-btn i {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .action-btn:hover {
+      background-color: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+
+    .action-btn.hidden {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: auto;
+    }
+
+      .action-btn.hidden:hover {
+        background-color: #ffffff;
+        border-color: #cbd5e1;
+      }
+
+  .delete-btn {
+    color: #ef4444;
+  }
+
+  .shape-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background-color: #f3f4f6;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: help;
+    transition: background-color 0.2s;
+  }
+
+    .shape-type-badge:hover {
+      background-color: #e5e7eb;
+    }
+
+    .shape-type-badge i {
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  /*【歷程列表】樣式 END ========================*/
 </style>
 
 <style>

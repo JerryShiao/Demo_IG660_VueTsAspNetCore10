@@ -235,6 +235,9 @@
   import ShpImportDialog from './ShpImportDialog.vue'; // 引入 ShpImportDialog 組件
   import LayerDialog from './LayerDialog.vue';         // 引入 LayerDialog 組件
 
+  // Store 引入
+  import { useLayerStore } from '../stores/layerStore';
+
   //【宣告】=====================================================================
   //【組件引用 Ref】
   const shpDialogRef = ref<InstanceType<typeof ShpImportDialog> | null>(null);     // 創建對 ShpImportDialog 組件的引用
@@ -256,6 +259,9 @@
   //【GeoJSON 圖層管理】
   // 使用普通 JavaScript Map，不通過 Vue 響應式系統
   const geoJsonLayers: globalThis.Map<string, GeoJSONLayer> = new globalThis.Map();
+
+  // ——【Pinia Store】——
+  const layerStore = useLayerStore(); // 獲取圖層管理的 Pinia store 實例
 
   //【生命週期】===================================================================
   // 在組件掛載後執行
@@ -419,6 +425,15 @@
       // 直接存儲到普通 Map（不需要重新賦值）
       geoJsonLayers.set(importData.fileName, geoJsonLayer);
 
+      // 添加到 Pinia Store 進行歷程管理
+      layerStore.addLayerRecord({
+        fileName: importData.fileName,
+        shapeType: importData.shapeType,
+        visible: true,
+        layer: geoJsonLayer,
+        mapInstance: mapInstance.value! // 傳入 Map 實例
+      });
+
       // 顯示成功訊息
       Swal.fire({
         icon: 'success',
@@ -429,7 +444,7 @@
     } catch (error: any) {
       console.error('添加 GeoJSON 圖層失敗:', error);
 
-      // ✅ 延遲顯示 Swal，確保它能被正確渲染
+      // 延遲顯示 Swal，確保它能被正確渲染
       nextTick(() => {
         Swal.fire({
           icon: 'error',

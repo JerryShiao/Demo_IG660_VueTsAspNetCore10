@@ -2,6 +2,7 @@ import './assets/main.css'
 import { createApp } from 'vue';
 import App from './App.vue';
 import Swal from 'sweetalert2'
+import { createPinia } from 'pinia';
 
 // 引入 vue-loading-overlay 的全域物件
 import 'vue-loading-overlay/dist/css/index.css';
@@ -14,6 +15,12 @@ import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 
 const app = createApp(App);
+
+// 建立 Pinia 實例
+const pinia = createPinia();
+
+// 在使用 PrimeVue 之前註冊 Pinia
+app.use(pinia);
 
 // 註冊 PrimeVue，並套用 Aura 主題
 app.use(PrimeVue, {
