@@ -419,13 +419,6 @@
       // 直接存儲到普通 Map（不需要重新賦值）
       geoJsonLayers.set(importData.fileName, geoJsonLayer);
 
-      // 視圖聚焦到新加入的圖層
-      geoJsonLayer.when(() => {
-        if (mapView.value && geoJsonLayer.fullExtent) {
-          mapView.value.goTo(geoJsonLayer.fullExtent);
-        }
-      });
-
       // 顯示成功訊息
       Swal.fire({
         icon: 'success',

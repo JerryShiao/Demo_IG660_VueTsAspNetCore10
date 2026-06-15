@@ -330,9 +330,6 @@
         shapeType: parsedShp.shapeType
       });
 
-      // 重置狀態
-      selectedFile.value = null;
-
       // 顯示成功訊息
       Swal.fire({
         icon: 'success',
@@ -344,15 +341,20 @@
       isDialogVisible.value = false;
     }
     catch (error: any) {
+     
+
+      // 顯示錯誤訊息
       console.error(error);
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: '匯入失敗',
         text: error.message || '讀取圖資失敗，請檢查檔案格式。'
       });
       emit('onError', error.message || '讀取圖資失敗，請檢查檔案格式。');
-    } finally {
-      loading.value = false;
+    }
+    finally {      
+      selectedFile.value = null; // 重置狀態
+      loading.value = false;     // 關閉Loading
     }
   };
 
