@@ -161,7 +161,7 @@
         <TabPanel value="import">
           <div class="import-grid">
             <Button label="SHP" severity="contrast" raised @click="triggerOpenShp" />
-            <Button label="KML" severity="contrast" raised @click="triggerNoFunctionAlert" />
+            <Button label="KML" severity="contrast" raised @click="triggerOpenKml" />
             <Button label="DXF" severity="contrast" raised @click="triggerNoFunctionAlert" />
             <Button label="CSV 地號" severity="contrast" raised @click="triggerNoFunctionAlert" />
             <Button label="CSV 坐標" severity="contrast" raised @click="triggerNoFunctionAlert" />
@@ -189,8 +189,11 @@
   import Swal from 'sweetalert2'; // 美化彈窗庫
 
   //【宣告】=====================================================================
-  // 宣告事件，用來通知父組件觸發對應功能（例如點擊 SHP 或未實作功能提示）
-  const emit = defineEmits(['open-shp', 'nofunction-alert']);
+  // 宣告事件，用來通知父組件觸發對應功能
+  const emit = defineEmits([
+    'open-shp', // 打開 SHP 上傳視窗事件
+    'open-kml', // 打開 KML 上傳視窗事件
+    'nofunction-alert']);
 
   // —— PrimeVue 控制響應式變數 ——
   const isLayerPanelVisible = ref(true);           // 預設開啟
@@ -325,11 +328,11 @@
   const triggerNoFunctionAlert = () => emit('nofunction-alert');
   //#endregion
 
-  //#region ◆開啟SHP檔案上傳對話框 [triggerOpenShp]
-  /**
-   * 開啟SHP檔案上傳對話框 (轉發事件給父組件)
-   */
+  //#region -- 開啟檔案上傳對話框 (轉發事件給父組件)
+  // 開啟 SHP 上傳對話框
   const triggerOpenShp = () => emit('open-shp');
+  // 開啟 KML 上傳對話框
+  const triggerOpenKml = () => emit('open-kml');
   //#endregion
 
   //#region ◆切換圖層顯示狀態 [toggleLayerVisibility]

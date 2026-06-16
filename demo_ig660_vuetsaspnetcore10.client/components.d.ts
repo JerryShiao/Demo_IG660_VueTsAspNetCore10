@@ -18,6 +18,7 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     Dialog: typeof import('primevue/dialog')['default']
+    KmlImportDialog: typeof import('./src/components/KmlImportDialog.vue')['default']
     LayerDialog: typeof import('./src/components/LayerDialog.vue')['default']
     MapView: typeof import('./src/components/MapView.vue')['default']
     ShpImportDialog: typeof import('./src/components/ShpImportDialog.vue')['default']

@@ -191,10 +191,14 @@
     <!--圖層控制 跳窗 -->
     <LayerDialog ref="layerDialogRef"
                  @open-shp="handleOpenShp"
+                 @open-kml="handleOpenKml"
                  @nofunction-alert="NofunctionAlert" />
 
     <!--SHP 跳窗 -->
-    <ShpImportDialog ref="shpDialogRef" @onImportComplete="handleShpImportComplete"/>
+    <ShpImportDialog ref="shpDialogRef" @onImportComplete="handleShpImportComplete" />
+
+    <!--KML 跳窗 -->
+    <KmlImportDialog ref="kmlDialogRef"/>
 
   </div>
 </template>
@@ -233,6 +237,7 @@
 
   // 子組件引入
   import ShpImportDialog from './ShpImportDialog.vue'; // 引入 ShpImportDialog 組件
+  import KmlImportDialog from './KmlImportDialog.vue'; // 引入 KmlImportDialog 組件
   import LayerDialog from './LayerDialog.vue';         // 引入 LayerDialog 組件
 
   // Store 引入
@@ -240,8 +245,9 @@
 
   //【宣告】=====================================================================
   //【組件引用 Ref】
-  const shpDialogRef = ref<InstanceType<typeof ShpImportDialog> | null>(null);     // 創建對 ShpImportDialog 組件的引用
-  const layerDialogRef = ref<InstanceType<typeof LayerDialog> | null>(null); // 創建對 LayerDialog 組件的引用
+  const shpDialogRef = ref<InstanceType<typeof ShpImportDialog> | null>(null); // 創建對 ShpImportDialog 組件的引用
+  const kmlDialogRef = ref<InstanceType<typeof KmlImportDialog> | null>(null); // 創建對 KmlImportDialog 組件的引用
+  const layerDialogRef = ref<InstanceType<typeof LayerDialog> | null>(null);   // 創建對 LayerDialog 組件的引用
 
   //【地圖與基礎 UI 宣告】
   const mapElement = ref(null);                                     // 用於綁定地圖容器的ref
@@ -494,6 +500,20 @@
       });
       return new SimpleRenderer({ symbol: fillSymbol });
     }
+  };
+  //#endregion
+
+  //#endregion
+
+  //#region 【KML】匯入
+
+  //#region ◆點擊 KML 按鈕時觸發 [handleOpenKml]
+  /**
+   * 點擊 KML 按鈕時觸發
+   */
+  const handleOpenKml = () => {
+    // 直接呼叫子元件暴露出來的 openDialog() 方法
+    kmlDialogRef.value?.openDialog();
   };
   //#endregion
 
