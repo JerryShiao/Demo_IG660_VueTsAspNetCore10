@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Demo_IG660_VueTsAspNetCore10.Server/bin/Debug/net10.0/Demo_IG660_VueTsAspNetCore10.Server.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Demo_IG660_VueTsAspNetCore10.Server",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "startDebugging", // 改為啟動偵錯
+                "pattern": "now listening on:\\s+(https?://\\S+)",
+                "name": "localhost (Chrome)" // 這裡的名稱必須跟下面 Chrome 設定的 "name" 完全一模一樣
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "localhost (Chrome)",
+            "url": "https://localhost:5173",
+            "webRoot": "${workspaceFolder}/demo_ig660_vuetsaspnetcore10.client"
+        }
+    ]
+}
