@@ -1,8 +1,8 @@
 //【圖層管理 Pinia store】
 import { defineStore } from 'pinia'; // 引入 Pinia 定義 store
-import { ref } from 'vue';           // 引入 Vue 的 ref 用於響應式狀態
-import GeoJSONLayer from '@arcgis/core/layers/GeoJSONLayer'; // 引入 ArcGIS GeoJSONLayer 類別
+import { shallowRef } from 'vue';    // 引入 Vue 的 shallowRef 用於管理圖層實例的響應式引用
 import type Map from '@arcgis/core/Map'; // 引入 Map 類型
+import type Layer from '@arcgis/core/layers/Layer'; // 引入 Layer 類型
 
 /**
  * 圖層歷程記錄介面
@@ -13,7 +13,7 @@ export interface LayerRecord {
   shapeType: string;   // 圖形類型 (point/polyline/polygon)
   visible: boolean;    // 是否顯示
   createdAt: Date;     // 創建時間
-  layer: GeoJSONLayer; // ArcGIS 圖層實例
+  layer: Layer;        // ArcGIS 圖層實例
   mapInstance?: Map;   // Map 實例引用，用於移除圖層
 }
 
@@ -22,7 +22,9 @@ export interface LayerRecord {
  */
 export const useLayerStore = defineStore('layer', () => {
   // 圖層歷程紀錄列表
-  const layerRecords = ref<LayerRecord[]>([]);
+  // shallowRef 只會追蹤 layerRecords 陣列本身的增刪（.value = ... 或 .push）
+  // 絕不會去深層代理裡面塞的 Layer 實例
+  const layerRecords = shallowRef<LayerRecord[]>([]);
 
   /**
    * 新增圖層歷程紀錄
@@ -30,10 +32,11 @@ export const useLayerStore = defineStore('layer', () => {
   const addLayerRecord = (record: Omit<LayerRecord, 'id' | 'createdAt'>) => {
     const newRecord: LayerRecord = {
       ...record,
-      id: `layer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `layer_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       createdAt: new Date()
     };
-    layerRecords.value.push(newRecord);
+    // shallowRef 的陣列操作需要觸發更新，用解構賦值重新塞入
+    layerRecords.value = [...layerRecords.value, newRecord];
     return newRecord;
   };
 
@@ -50,7 +53,8 @@ export const useLayerStore = defineStore('layer', () => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         record.mapInstance.remove(record.layer);
       }
-      layerRecords.value.splice(index, 1);
+      // 移除陣列項目並觸發 shallowRef 更新
+      layerRecords.value = layerRecords.value.filter(r => r.id !== id);
     }
   };
 
@@ -58,26 +62,26 @@ export const useLayerStore = defineStore('layer', () => {
    * 更新圖層顯示狀態
    */
   const toggleLayerVisibility = (id: string) => {
-    const record = layerRecords.value.find(r => r.id === id);
-    if (record) {
-      record.visible = !record.visible;
-      if (record.layer) {
+    layerRecords.value = layerRecords.value.map(record => {
+      if (record.id === id && record.layer) {
+        record.visible = !record.visible;
         record.layer.visible = record.visible;
       }
-    }
+      return record;
+    });
   };
 
   /**
    * 設定圖層顯示狀態
    */
   const setLayerVisibility = (id: string, visible: boolean) => {
-    const record = layerRecords.value.find(r => r.id === id);
-    if (record) {
-      record.visible = visible;
-      if (record.layer) {
+    layerRecords.value = layerRecords.value.map(record => {
+      if (record.id === id && record.layer) {
+        record.visible = visible;
         record.layer.visible = visible;
       }
-    }
+      return record;
+    });
   };
 
   /**
