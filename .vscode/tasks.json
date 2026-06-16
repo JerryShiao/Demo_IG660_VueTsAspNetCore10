@@ -12,6 +12,24 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "一鍵發佈前後端 (Publish)",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "publish",
+                "${workspaceFolder}/Demo_IG660_VueTsAspNetCore10.Server/Demo_IG660_VueTsAspNetCore10.Server.csproj",
+                "-c",
+                "Release",
+                "-o",
+                "${workspaceFolder}/dist-production"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
         }
     ]
 }
