@@ -190,6 +190,9 @@
             initInteractDialog();
           }, 50); // 延遲 50 毫秒，確保 PrimeVue Dialog 完全開起並掛載完畢
         });
+      } else {
+        // Dialog 關閉時，清除上傳的檔案
+        selectedFile.value = null;
       }
     },
     { immediate: true } // 👈 加上 immediate: true，讓網頁一打開 (初次建立) 就立刻執行一次這個監聽器
