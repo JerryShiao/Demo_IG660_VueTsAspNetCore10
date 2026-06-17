@@ -19,7 +19,7 @@
           <!--檔案上傳 input (隱藏)-->
           <input ref="fileInput"
                  type="file"
-                 accept=".zip"
+                 accept=".kml"
                  style="display: none"
                  @change="onFileSelect" />
           <!--檔案上傳 Button-->
@@ -69,6 +69,10 @@
             效能無法與一般單機程式相同，<br>
             過多的圖徵可能會讀取失敗或不穩。
           </p>
+          <br>
+          <p>
+            ※標準 KML 檔案預設採用 WGS84 座標系統 (EPSG:4326)。
+          </p>
         </div>
 
         <!--[開始匯入]按鈕-->
@@ -93,8 +97,9 @@
     watch,      // 監聽響應式數據變化
     nextTick    // 在 DOM 更新後執行回調
   } from 'vue'; // Vue 3 Composition API
-  import interact from 'interactjs';    // 用於實現拖放和調整大小的庫
-  import Swal from 'sweetalert2'; // 用於顯示美觀的彈窗提示
+  import interact from 'interactjs';     // 用於實現拖放和調整大小的庫
+  import Swal from 'sweetalert2';        // 用於顯示美觀的彈窗提示
+  import { kml } from '@tmcw/togeojson'; // 用於將 KML 轉換為 GeoJSON 的庫
 
   //【宣告】=====================================================================
   const emit = defineEmits(['onImportComplete', 'onError']); // 定義組件事件
@@ -202,6 +207,116 @@
           }
         });
     });
+  };
+  //#endregion
+
+  //#region ◆讀取並解析 KML 核心主程式 [processKml]
+  /**
+   * ◆讀取並解析 KML 核心主程式
+   */
+  const processKml = async () => {
+    if (!selectedFile.value) return;
+    loading.value = true;
+
+    try {
+      // 1. 將檔案讀取為文字字串 (KML 本質上是 XML 文字)
+      const kmlText = await readAsTextAsync(selectedFile.value);
+
+      // 2. 利用瀏覽器自帶的 DOMParser 解析 XML
+      const parser = new DOMParser();
+      const kmlDoc = parser.parseFromString(kmlText, 'text/xml');
+
+      // 檢查 XML 是否有解析錯誤
+      const parserError = kmlDoc.querySelector('parsererror');
+      if (parserError) {
+        throw new Error('KML 檔案格式錯誤，無法正確解析 XML 內容。');
+      }
+
+      // 3. 轉為 GeoJSON
+      let finalGeoJson;
+
+      // 嘗試使用 togeojson 轉換
+      finalGeoJson = kml(kmlDoc);
+
+      // 4. 清理 GeoJSON 中不被支援的欄位
+      finalGeoJson = cleanGeoJsonForArcGIS(finalGeoJson);
+
+      // 5. 發送成功事件給父元件
+      emit('onImportComplete', {
+        geoJson: finalGeoJson,
+        fileName: selectedFile.value.name,
+        shapeType: 'KML' // 標記來源類型
+      });
+
+      // 5. 顯示成功訊息
+      Swal.fire({
+        icon: 'success',
+        title: '匯入成功',
+        text: 'KML 圖資已成功匯入！'
+      });
+
+      // 關閉視窗
+      isDialogVisible.value = false;
+    }
+    catch (error: any) {
+      // 顯示錯誤訊息
+      console.error(error);
+      Swal.fire({
+        icon: 'warning',
+        title: '匯入失敗',
+        text: error.message || '讀取 KML 圖資失敗，請檢查檔案格式。'
+      });
+      emit('onError', error.message || '讀取 KML 圖資失敗，請檢查檔案格式。');
+    }
+    finally {
+      selectedFile.value = null; // 重置狀態
+      loading.value = false;     // 關閉 Loading
+    }
+  };
+  //#endregion
+
+  //#region ◆輔助函式：將 File 物件讀取為文字字串 [readAsTextAsync]
+  /**
+   * 輔助方法：利用 FileReader 將 File 物件異步轉換為文字
+   */
+  const readAsTextAsync = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('檔案讀取中斷或失敗。'));
+      reader.readAsText(file);
+    });
+  };
+  //#endregion
+
+  //#region ◆輔助函式：清理 GeoJSON 以相容 ArcGIS [cleanGeoJsonForArcGIS]
+  /**
+   * 清理 GeoJSON 中不被 ArcGIS GeoJSONLayer 支援的欄位
+   */
+  const cleanGeoJsonForArcGIS = (geoJson: any) => {
+    // 不被 ArcGIS 支援的欄位清單
+    const unsupportedFields = [
+      'title',
+      'id',
+      'visibility',
+      'icon-offset',
+      'icon-offset-units',
+      '@geometry-type',
+      'open',
+      '_properties'
+    ];
+
+    if (geoJson.features && Array.isArray(geoJson.features)) {
+      geoJson.features.forEach((feature: any) => {
+        if (feature.properties) {
+          unsupportedFields.forEach(field => {
+            delete feature.properties[field];
+          });
+        }
+      });
+    }
+
+    return geoJson;
   };
   //#endregion
 

@@ -171,6 +171,7 @@
           <button @click="isSideOpen = !isSideOpen" class="functionBtn closePageBtn" title="收合畫面">
             <img class="iconImg" src="/src/Icons/sidebar-expand.svg" alt="">
             <p class="name-tag">收合畫面</p>
+            *
           </button>
         </div>
       </div>
@@ -198,13 +199,17 @@
     <ShpImportDialog ref="shpDialogRef" @onImportComplete="handleShpImportComplete" />
 
     <!--KML 跳窗 -->
-    <KmlImportDialog ref="kmlDialogRef"/>
+    <KmlImportDialog ref="kmlDialogRef" @onImportComplete="handleKmlImportComplete" />
 
   </div>
 </template>
 
 <script setup lang="ts">
   //【引入】=====================================================================
+  // 引入型別
+  import type { FieldInfo, KmlImportData } from '../types';
+  import type { GeoJSONFeature } from '../types/geoJson';
+
   // Vue
   import {
     ref,        // 引入ref函數以創建響應式變量
@@ -389,7 +394,7 @@
     // ✅ 先驗證輸入資料
     if (!importData.geoJson) {
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: '無效資料',
         text: '未收到有效的 GeoJSON 資料'
       });
@@ -404,8 +409,8 @@
       const blob = new Blob([geoJsonString], { type: 'application/json' });
       const blobUrl = URL.createObjectURL(blob);
 
-      // 根據圖形類型設定符號樣式
-      const renderer = getRendererByShapeType(importData.shapeType);
+      // 根據圖形類型設定符號樣式（傳入 geoJson 以便自動偵測幾何類型）
+      const renderer = getRendererByShapeType(importData.shapeType, importData.geoJson);
 
       // 創建 GeoJSON 圖層
       const geoJsonLayer = new GeoJSONLayer({
@@ -453,52 +458,12 @@
       // 延遲顯示 Swal，確保它能被正確渲染
       nextTick(() => {
         Swal.fire({
-          icon: 'error',
+          icon: 'warning',
           title: '添加圖層失敗',
           text: error.message || '無法將圖層添加到地圖',
           confirmButtonText: '確定'
         });
       });
-    }
-  };
-  //#endregion
-
-  //#region ◆根據圖形類型獲取渲染器 [getRendererByShapeType]
-  /**
-   * 根據圖形類型設定對應的符號樣式
-   */
-  const getRendererByShapeType = (shapeType: string): SimpleRenderer => {
-    // 安全地轉換為字符串並轉換為小寫
-    const shapeTypeLower = String(shapeType || '').toLowerCase().trim();
-
-    if (shapeTypeLower.includes('point')) {
-      // 點狀符號
-      const markerSymbol = new SimpleMarkerSymbol({
-        color: [0, 122, 194],
-        size: '8px',
-        outline: {
-          color: [255, 255, 255],
-          width: 1
-        }
-      });
-      return new SimpleRenderer({ symbol: markerSymbol });
-    } else if (shapeTypeLower.includes('polyline') || shapeTypeLower.includes('line')) {
-      // 線狀符號
-      const lineSymbol = new SimpleLineSymbol({
-        color: [0, 122, 194],
-        width: 2
-      });
-      return new SimpleRenderer({ symbol: lineSymbol });
-    } else {
-      // 面狀符號（預設）
-      const fillSymbol = new SimpleFillSymbol({
-        color: [0, 122, 194, 0.3], // 帶透明度的藍色
-        outline: {
-          color: [0, 122, 194],
-          width: 2
-        }
-      });
-      return new SimpleRenderer({ symbol: fillSymbol });
     }
   };
   //#endregion
@@ -517,6 +482,212 @@
   };
   //#endregion
 
+  //#region ◆處理 KML 匯入完成 [handleKmlImportComplete]
+  /**
+   * 處理 KML 匯入完成事件
+   */
+  const handleKmlImportComplete = (importData: KmlImportData) => {
+    // 先驗證輸入資料
+    if (!importData.geoJson) {
+      Swal.fire({
+        icon: 'warning',
+        title: '無效資料',
+        text: '未收到有效的 GeoJSON 資料'
+      });
+      return;
+    }
+    try {
+      //測試
+      console.log('收到的 GeoJSON 資料：', importData.geoJson);
+
+      // 創建臨時 Blob URL 用於 GeoJSONLayer
+      const geoJsonString = JSON.stringify(importData.geoJson);
+      const blob = new Blob([geoJsonString], { type: 'application/json' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      // 根據圖形類型設定符號樣式
+      const renderer = getRendererByShapeType(importData.shapeType, importData.geoJson);
+
+      // 創建 GeoJSON 圖層
+      const geoJsonLayer = new GeoJSONLayer({
+        url: blobUrl,
+        title: importData.fileName,
+        renderer: renderer,
+        // 不設定 outFields，讓 GeoJSONLayer 自動處理
+        popupTemplate: {
+          title: '{properties.name || "圖資"}',
+          content: [
+            {
+              type: 'fields',
+              fieldInfos: [] // 自動展示所有屬性
+            }
+          ]
+        }
+      });
+
+      // 監聽圖層加載完成
+      geoJsonLayer.when(
+        () => {
+          console.log('GeoJSON 圖層加載成功:', importData.fileName);
+        },
+        (error: any) => {
+          console.error('GeoJSON 圖層加載失敗:', error);
+        }
+      );
+
+      // 將圖層加入地圖
+      if (mapInstance.value) {
+        mapInstance.value.add(geoJsonLayer);
+      }
+
+      // 直接存儲到普通 Map（不需要重新賦值）
+      geoJsonLayers.set(importData.fileName, geoJsonLayer);
+
+      // 添加到 Pinia Store 進行歷程管理
+      layerStore.addLayerRecord({
+        fileName: importData.fileName,
+        shapeType: importData.shapeType,
+        visible: true,
+        layer: geoJsonLayer,
+        mapInstance: mapInstance.value! // 傳入 Map 實例
+      });
+
+      // 顯示成功訊息
+      Swal.fire({
+        icon: 'success',
+        title: '圖層已加入',
+        text: `${importData.fileName} 已成功添加到地圖上`,
+        timer: 2000
+      });
+    } catch (error: any) {
+      console.error('添加 GeoJSON 圖層失敗:', error);
+
+      // 延遲顯示 Swal，確保它能被正確渲染
+      nextTick(() => {
+        Swal.fire({
+          icon: 'warning',
+          title: '添加圖層失敗',
+          text: error.message || '無法將圖層添加到地圖',
+          confirmButtonText: '確定'
+        });
+      });
+    }
+  };
+  //#endregion
+
+  //#region ◆提取欄位類型 [extractFieldsFromGeoJSON]
+  /**
+ * 提取欄位類型
+ */
+  const extractFieldsFromGeoJSON = (geoJson: any): FieldInfo[] => {
+    const fieldMap = new globalThis.Map<string, FieldInfo>();
+
+    if (geoJson.features && Array.isArray(geoJson.features)) {
+      geoJson.features.forEach((feature: any) => {
+        if (feature.properties && typeof feature.properties === 'object') {
+          Object.entries(feature.properties).forEach(([key, value]) => {
+            if (!fieldMap.has(key)) {
+              let fieldType: FieldInfo['type'] = 'string';
+              if (typeof value === 'number') {
+                fieldType = Number.isInteger(value) ? 'integer' : 'double';
+              } else if (typeof value === 'boolean') {
+                fieldType = 'string';
+              } else if (value instanceof Date || typeof value === 'string' && !isNaN(Date.parse(value))) {
+                fieldType = 'date';
+              }
+
+              fieldMap.set(key, {
+                name: key,
+                alias: key,
+                type: fieldType
+              });
+            }
+          });
+        }
+      });
+    }
+
+    return Array.from(fieldMap.values());
+  };
+  //#endregion
+
+  //#endregion
+
+  //#region ◆根據圖形類型獲取渲染器 [getRendererByShapeType]
+  /**
+   * 根據圖形類型獲取渲染器
+   */
+  const getRendererByShapeType = (shapeType: string, geoJson?: any): SimpleRenderer => {
+    // 安全地轉換為字符串並轉換為小寫
+    const shapeTypeLower = String(shapeType || '').toLowerCase().trim();
+
+    // 優先從 GeoJSON 的實際幾何類型判斷
+    if (geoJson && geoJson.features && geoJson.features.length > 0) {
+      const firstFeature = geoJson.features[0];
+      if (firstFeature.geometry) {
+        const geometryType = firstFeature.geometry.type.toLowerCase();
+
+        if (geometryType === 'point' || geometryType === 'multipoint') {
+          // 點狀符號
+          const markerSymbol = new SimpleMarkerSymbol({
+            color: [0, 122, 194],
+            size: '16px',  // 從 8px 放大到 16px
+            outline: {
+              color: [255, 255, 255],
+              width: 2.5  // 增加外框寬度，使邊界更明顯
+            }
+          });
+          return new SimpleRenderer({ symbol: markerSymbol });
+        } else if (geometryType === 'linestring' || geometryType === 'multilinestring') {
+          // 線狀符號
+          const lineSymbol = new SimpleLineSymbol({
+            color: [0, 122, 194],
+            width: 2
+          });
+          return new SimpleRenderer({ symbol: lineSymbol });
+        } else if (geometryType === 'polygon' || geometryType === 'multipolygon') {
+          // 面狀符號
+          const fillSymbol = new SimpleFillSymbol({
+            color: [0, 122, 194, 0.3], // 帶透明度的藍色
+            outline: {
+              color: [0, 122, 194],
+              width: 2
+            }
+          });
+          return new SimpleRenderer({ symbol: fillSymbol });
+        }
+      }
+    }
+
+    // 回退到原始邏輯（根據 shapeType 判斷）
+    if (shapeTypeLower.includes('point')) {
+      const markerSymbol = new SimpleMarkerSymbol({
+        color: [0, 122, 194],
+        size: '8px',
+        outline: {
+          color: [255, 255, 255],
+          width: 1
+        }
+      });
+      return new SimpleRenderer({ symbol: markerSymbol });
+    } else if (shapeTypeLower.includes('polyline') || shapeTypeLower.includes('line')) {
+      const lineSymbol = new SimpleLineSymbol({
+        color: [0, 122, 194],
+        width: 2
+      });
+      return new SimpleRenderer({ symbol: lineSymbol });
+    } else {
+      // 預設為面狀符號
+      const fillSymbol = new SimpleFillSymbol({
+        color: [0, 122, 194, 0.3],
+        outline: {
+          color: [0, 122, 194],
+          width: 2
+        }
+      });
+      return new SimpleRenderer({ symbol: fillSymbol });
+    }
+  };
   //#endregion
 
 </script>
@@ -727,7 +898,7 @@
     align-items: center;
     padding-top: 10px;
   }
-   /*【圖層控制】END =====================================================*/
+  /*【圖層控制】END =====================================================*/
 </style>
 
 <style>

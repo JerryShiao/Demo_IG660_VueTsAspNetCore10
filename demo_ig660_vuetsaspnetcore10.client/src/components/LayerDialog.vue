@@ -213,7 +213,8 @@
     8: { name: 'MULTIPOINT', icon: '⭕', tooltip: '多點圖形' },
     11: { name: 'POINTZ', icon: '🔵', tooltip: '3D 點狀圖形' },
     13: { name: 'POLYLINEZ', icon: '〰️', tooltip: '3D 線狀圖形' },
-    15: { name: 'POLYGONZ', icon: '⬜', tooltip: '3D 面狀圖形' }
+    15: { name: 'POLYGONZ', icon: '⬜', tooltip: '3D 面狀圖形' },
+    'KML': { name: 'KML', icon: '🗺️', tooltip: 'KML 格式圖形' }  // 新增 KML 支持
   };
 
   //【生命週期】===================================================================
@@ -395,23 +396,30 @@
   * 根據 shapeType 返回對應的圖示 class
   */
   const getShapeTypeIcon = (shapeType: number | string): string => {
-    const key = typeof shapeType === 'string' ? parseInt(shapeType, 10) : shapeType;
-    return ShapeTypeMap[key]?.icon || 'pi-question';
+    const key = typeof shapeType === 'string'
+      ? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10))
+      : shapeType;
+    return ShapeTypeMap[key]?.icon || '❓';
   };
 
   /**
  * 根據 shapeType 返回對應的名稱
  */
   const getShapeTypeName = (shapeType: number | string): string => {
-    const key = typeof shapeType === 'string' ? parseInt(shapeType, 10) : shapeType;
+    const key = typeof shapeType === 'string'
+      ? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10))
+      : shapeType;
     return ShapeTypeMap[key]?.name || '未知類型';
   };
 
   /**
-   * 根據 shapeType 返回對應的 Tooltip 說明
+   * 根據 shapeType 返回對應的 Tooltip 說明pi-
    */
   const getShapeTypeTooltip = (shapeType: number | string): string => {
-    const key = typeof shapeType === 'string' ? parseInt(shapeType, 10) : shapeType;
+    // 如果是字符串，先嘗試轉換為數字；失敗則保留原字符串
+    const key = typeof shapeType === 'string'
+      ? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10))
+      : shapeType;
     return ShapeTypeMap[key]?.tooltip || '未知圖形類型';
   };
 
