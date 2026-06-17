@@ -162,7 +162,7 @@
           <div class="import-grid">
             <Button label="SHP" severity="contrast" raised @click="triggerOpenShp" />
             <Button label="KML" severity="contrast" raised @click="triggerOpenKml" />
-            <Button label="DXF" severity="contrast" raised @click="triggerNoFunctionAlert" />
+            <Button label="DXF" severity="contrast" raised @click="triggerOpenDxf" />
             <Button label="CSV 地號" severity="contrast" raised @click="triggerNoFunctionAlert" />
             <Button label="CSV 坐標" severity="contrast" raised @click="triggerNoFunctionAlert" />
             <Button label="XML(建物模型)" severity="secondary" raised @click="triggerNoFunctionAlert" />
@@ -193,6 +193,7 @@
   const emit = defineEmits([
     'open-shp', // 打開 SHP 上傳視窗事件
     'open-kml', // 打開 KML 上傳視窗事件
+    'open-dxf', // 打開 DXF 上傳視窗事件
     'nofunction-alert']);
 
   // —— PrimeVue 控制響應式變數 ——
@@ -334,6 +335,8 @@
   const triggerOpenShp = () => emit('open-shp');
   // 開啟 KML 上傳對話框
   const triggerOpenKml = () => emit('open-kml');
+  // 開啟 DXF 上傳對話框
+  const triggerOpenDxf = () => emit('open-dxf');
   //#endregion
 
   //#region ◆切換圖層顯示狀態 [toggleLayerVisibility]
