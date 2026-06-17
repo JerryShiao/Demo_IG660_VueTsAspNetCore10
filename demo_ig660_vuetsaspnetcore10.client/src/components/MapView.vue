@@ -203,7 +203,7 @@
     <KmlImportDialog ref="kmlDialogRef" @onImportComplete="handleKmlImportComplete" />
 
     <!--DXF 跳窗 -->
-    <DxfImportDialog ref="dxfDialogRef"/>
+    <DxfImportDialog ref="dxfDialogRef" @onImportComplete="handleDxfImportComplete" />
 
   </div>
 </template>
@@ -630,6 +630,66 @@
     dxfDialogRef.value?.openDialog();
   };
   //#endregion
+
+  // 處理 DXF 匯入完成事件
+  const handleDxfImportComplete = (importData: { geoJson: any; fileName: string; shapeType: string; }) => {
+    if (!importData.geoJson) {
+      Swal.fire({ icon: 'warning', title: '無效資料', text: '未收到有效的 GeoJSON 資料' });
+      return;
+    }
+
+    try {
+      console.log('DXF 轉 GeoJSON 成功：', importData.geoJson);
+
+      // 1. 建立 Blob URL 用於 ArcGIS GeoJSONLayer
+      const geoJsonString = JSON.stringify(importData.geoJson);
+      const blob = new Blob([geoJsonString], { type: 'application/json' });
+      const blobUrl = URL.createObjectURL(blob);
+
+      // 2. 獲取符號渲染樣式（複用原有 getRendererByShapeType 邏輯）
+      const renderer = getRendererByShapeType(importData.shapeType, importData.geoJson);
+
+      // 3. 實例化 ArcGIS GeoJSONLayer
+      const geoJsonLayer = new GeoJSONLayer({
+        url: blobUrl,
+        title: importData.fileName,
+        renderer: renderer,
+        popupTemplate: {
+          title: '{properties.type} (圖層: {properties.layer})',
+          content: [{ type: 'fields' }]
+        }
+      });
+
+      // 4. 將圖層加入地圖實例
+      if (mapInstance.value) {
+        mapInstance.value.add(geoJsonLayer);
+      }
+
+      // 5. 註冊記錄至 Pinia Store (操作歷程管理)
+      layerStore.addLayerRecord({
+        fileName: importData.fileName,
+        shapeType: importData.shapeType,
+        visible: true,
+        layer: geoJsonLayer,
+        mapInstance: mapInstance.value!
+      });
+
+      Swal.fire({
+        icon: 'success',
+        title: '圖層已加入',
+        text: `${importData.fileName} 已成功添加到地圖與歷程管理上`,
+        timer: 2000
+      });
+
+    } catch (error: any) {
+      console.error('添加 DXF GeoJSON 圖層失敗:', error);
+      Swal.fire({
+        icon: 'warning',
+        title: '添加圖層失敗',
+        text: error.message || '無法將 DXF 圖層渲染至地圖。'
+      });
+    }
+  };
 
   //#endregion
 

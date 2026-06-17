@@ -126,7 +126,8 @@
   </Dialog>
 </template>
 
-<script setup lang="ts">//【引入】=====================================================================
+<script setup lang="ts">
+  //【引入】=====================================================================
   import {
     ref,        // Vue 3 的響應式引用
     watch,      // 監聽響應式數據變化
@@ -134,14 +135,17 @@
   } from 'vue'; // Vue 3 Composition API
   import interact from 'interactjs';    // 用於實現拖放和調整大小的庫
   import Select from 'primevue/select'; // PrimeVue 的選擇組件
-  import Swal from 'sweetalert2'; // 用於顯示美觀的彈窗提示
+  import Swal from 'sweetalert2';       // 用於顯示美觀的彈窗提示
+  // 引入 dxf-parser 與地理轉換工具
+  import DxfParser from 'dxf-parser'; // 用於解析 DXF 文件的庫
+  import { transformDxfToGeoJson } from '../utils/geoUtils'; // 工具函數：用來轉換 DXF 為 GeoJSON
 
   //【宣告】=====================================================================
   const emit = defineEmits(['onImportComplete', 'onError']); // 定義組件事件
 
   // 控制視窗顯示狀態
   const isDialogVisible = ref(false);              // 控制 Dialog 顯示
-  const dialogTitle = ref("DXF 匯入"); // Dialog 標題
+  const dialogTitle = ref("DXF 匯入");             // Dialog 標題
   const dialogWidth = ref("464px");                // Dialog 預設寬度
   const loading = ref(false);                      // 加載狀態
   const selectedFile = ref<File | null>(null);     // 使用者選擇的檔案
@@ -191,6 +195,9 @@
       selectedFile.value = target.files[0] ?? null;
     }
   };
+
+  const fileInput = ref<HTMLInputElement>(); // 用於觸發檔案選取的隱藏 input 元素
+  const openFilePicker = () => { fileInput.value?.click(); }; // 觸發檔案選取對話框
 
   //【方法】===================================================================
 
@@ -262,11 +269,77 @@
   };
   //#endregion
 
-  const fileInput = ref<HTMLInputElement>();
+  //#region ◆解析 DXF 並轉為 GeoJSON [processDXF]
+  /**
+   * 解析 DXF 並轉為 GeoJSON
+   */
+  const processDXF = async () => {
+    if (!selectedFile.value) return;
+    loading.value = true;
 
-  const openFilePicker = () => {
-    fileInput.value?.click();
+    try {
+      // 1. 將檔案讀取為 ArrayBuffer，並用對應的編碼解碼成字串
+      const arrayBuffer = await selectedFile.value.arrayBuffer();
+      const decoder = new TextDecoder(selectedEncoding.value);
+      let dxfText = decoder.decode(arrayBuffer);
+
+      // 防呆清洗：移除常見於一些 CAD 軟體匯出時在檔案頭尾產生的特殊 NULL 或不完整換行控制字元
+      dxfText = dxfText.replace(/\0/g, '').trim();
+
+      // 2. 初始化 dxf-parser 並解析文字
+      const parser = new DxfParser();
+      let parsedDxf: any = null;
+
+      try {
+        parsedDxf = parser.parseSync(dxfText);
+      } catch (parseError) {
+        console.warn("parseSync 發生預期外中斷，嘗試強制截取 ENTITIES 區段...", parseError);
+      }
+
+      // 3. 檢查如果 parsedDxf 為空，或者 entities 不存在，做一個備用安全機制
+      if (!parsedDxf || !parsedDxf.entities || parsedDxf.entities.length === 0) {
+        throw new Error('DXF 檔案內未偵測到任何有效的圖元實體(Entities)！請檢查該 DXF 檔是否包含 R12/R14 的標準線段，或改存成其他版本的 DXF 再行試試。');
+      }
+
+      // 4. 呼叫工具函式做投影轉換與 GeoJSON 包裝
+      const finalGeoJson = transformDxfToGeoJson(parsedDxf, selectedEpsg.value);
+
+      if (!finalGeoJson || finalGeoJson.features.length === 0) {
+        throw new Error('轉換過程中無法提取出任何 POINT、LINE 或 POLYLINE。');
+      }
+
+      // 5. 定義 shapeType
+      const hasPolygon = finalGeoJson.features.some((f: any) => f.geometry.type === 'Polygon');
+      const shapeType = hasPolygon ? 'polygon' : 'polyline';
+
+      // 6. 發送成功事件給父元件 (MapView.vue)
+      emit('onImportComplete', {
+        geoJson: finalGeoJson,
+        fileName: selectedFile.value.name,
+        shapeType: shapeType
+      });
+
+      Swal.fire({
+        icon: 'success',
+        title: '匯入成功',
+        text: 'DXF 圖資已成功轉換並匯入！'
+      });
+
+      isDialogVisible.value = false;
+    } catch (error: any) {
+      console.error(error);
+      Swal.fire({
+        icon: 'warning',
+        title: '匯入失敗',
+        text: error.message || '讀取 DXF 圖資失敗，請檢查檔案是否損壞或編碼是否正確。'
+      });
+      emit('onError', error.message || '讀取 DXF 失敗。');
+    } finally {
+      selectedFile.value = null;
+      loading.value = false;
+    }
   };
+  //#endregion
 
   // 開放方法給外部 View 元件控制開啟
   defineExpose({

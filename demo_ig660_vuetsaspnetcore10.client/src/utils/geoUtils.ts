@@ -2,14 +2,38 @@
  * @file geoUtils.ts
  * @description 處理坐標投影轉換與標準 GeoJSON 格式生成工具
  */
+  //【引入】=====================================================================
+import proj4 from 'proj4';                              // 引入 proj4 庫，用於坐標投影轉換
+import type { ShpRecord } from '../services/shpParser'; // 引入 ShpRecord 類型定義
+import { ShapeType } from '../services/shpParser';      // 引入 ShapeType 枚舉，用於識別圖形類型
+import type {
+  PointContent,   // 定義點內容類型
+  PolylineContent // 定義線內容類型
+} from '../services/shpParser'; // 引入 PointContent 和 PolylineContent 類型定義
 
-import proj4 from 'proj4';
-import type { ShpRecord } from '../services/shpParser';
-import { ShapeType } from '../services/shpParser';
-import type { PointContent, PolylineContent } from '../services/shpParser';
+//【宣告】=====================================================================
+const EPSG4326 = 'EPSG:4326'; // 定義 WGS 84 坐標系統的 EPSG 代碼
 
-const EPSG4326 = 'EPSG:4326';
+//【物件結構定義】=====================================================================
+interface DbfRecord {
+  [key: string]: string | number | boolean | null;
+}
+interface GeoJsonFeature {
+  type: 'Feature';
+  properties: DbfRecord;
+  geometry: {
+    type: 'Point' | 'LineString' | 'Polygon' | 'MultiLineString' | 'MultiPolygon';
+    // 🎯 精準定義所有支援的幾何陣列維度，100% 擺脫 any 
+    coordinates: number[] | number[][] | number[][][] | number[][][][];
+  };
+}
+interface GeoJsonFeatureCollection {
+  type: 'FeatureCollection';
+  features: GeoJsonFeature[];
+  bbox: number[];
+}
 
+//【函式定義】=====================================================================
 /**
  * 坐標系統投影轉換
  * @param x 原始 X 坐標
@@ -49,26 +73,6 @@ export function transformCoordinate(x: number, y: number, sourceEpsg: string): {
       return { x: 0, y: 0 };
     }
   }
-}
-
-interface DbfRecord {
-  [key: string]: string | number | boolean | null;
-}
-
-interface GeoJsonFeature {
-  type: 'Feature';
-  properties: DbfRecord;
-  geometry: {
-    type: 'Point' | 'LineString' | 'Polygon' | 'MultiLineString' | 'MultiPolygon';
-    // 🎯 精準定義所有支援的幾何陣列維度，100% 擺脫 any 
-    coordinates: number[] | number[][] | number[][][] | number[][][][];
-  };
-}
-
-interface GeoJsonFeatureCollection {
-  type: 'FeatureCollection';
-  features: GeoJsonFeature[];
-  bbox: number[];
 }
 
 /**
@@ -234,5 +238,104 @@ export function convertToGeoJson(
     type: 'FeatureCollection',
     bbox: [minCoord.x, minCoord.y, maxCoord.x, maxCoord.y],
     features
+  };
+}
+
+/**
+ * 將 dxf-parser 解析後的 DXF 資料轉換為標準 GeoJSON 格式 (EPSG:4326)
+ * @param dxfData dxf-parser 所解析出來的物件
+ * @param sourceEpsg 使用者選擇的來源坐標系統 (例如: '3826')
+ */
+export function transformDxfToGeoJson(dxfData: any, sourceEpsg: string): any {
+  const features: any[] = [];
+  const epsgStr = `EPSG:${sourceEpsg}`;
+
+  if (dxfData && dxfData.entities) {
+    dxfData.entities.forEach((entity: any, index: number) => {
+      let geometry: any = null;
+      const properties: any = {
+        layer: entity.layer || '0',
+        type: entity.type,
+        handle: entity.handle,
+        color: entity.color,
+        index: index
+      };
+
+      switch (entity.type) {
+        case 'POINT': {
+          if (entity.position) {
+            const pt = transformCoordinate(entity.position.x, entity.position.y, epsgStr);
+            geometry = {
+              type: 'Point',
+              coordinates: [pt.x, pt.y]
+            };
+          }
+          break;
+        }
+
+        case 'LINE': {
+          if (entity.start && entity.end) {
+            const ptStart = transformCoordinate(entity.start.x, entity.start.y, epsgStr);
+            const ptEnd = transformCoordinate(entity.end.x, entity.end.y, epsgStr);
+            geometry = {
+              type: 'LineString',
+              coordinates: [
+                [ptStart.x, ptStart.y],
+                [ptEnd.x, ptEnd.y]
+              ]
+            };
+          }
+          break;
+        }
+
+        case 'LWPOLYLINE':
+        case 'POLYLINE': case 'POLYLINE': {
+          if (entity.vertices && entity.vertices.length > 0) {
+            const coords = entity.vertices.map((v: any) => {
+              const pt = transformCoordinate(v.x, v.y, epsgStr);
+              return [pt.x, pt.y];
+            });
+
+            // 閉合則為 Polygon，否則為 LineString
+            if (entity.shape || entity.closed) {
+              if (coords.length > 0) {
+                const first = coords[0];
+                const last = coords[coords.length - 1];
+                if (first[0] !== last[0] || first[1] !== last[1]) {
+                  coords.push([first[0], first[1]]);
+                }
+              }
+              geometry = {
+                type: 'Polygon',
+                coordinates: [coords]
+              };
+            } else {
+              geometry = {
+                type: 'LineString',
+                coordinates: coords
+              };
+            }
+          }
+          break;
+        }
+
+        default:
+          // 其他不支援或暫不處理的幾何類型 (例如 TEXT, ARC 圓弧等) 略過
+          break;
+      }
+
+      if (geometry) {
+        features.push({
+          type: 'Feature',
+          geometry: geometry,
+          properties: properties
+        });
+      }
+    });
+  }
+
+  return {
+    type: 'FeatureCollection',
+    features: features
   };
 }
