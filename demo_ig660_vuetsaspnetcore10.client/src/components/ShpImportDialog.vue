@@ -74,9 +74,7 @@
           <!--推薦提示：符合推薦 = 綠色✓，不符合 = 黃色⚠️-->
           <div v-if="recommendationReason"
                class="text-xs p-3 rounded-lg flex items-start gap-2"
-               :style="selectedEpsg === recommendedEpsg
-                 ? { backgroundColor: '#e8f5e9', borderLeft: '4px solid #4caf50', color: '#2e7d32' }
-                 : { backgroundColor: '#fff3e0', borderLeft: '4px solid #ff9800', color: '#e65100' }">
+               :style="alertStyle">
 
             <!-- 符合推薦：綠色打勾 -->
             <i v-if="selectedEpsg === recommendedEpsg"
@@ -170,7 +168,7 @@
     ref,        // Vue 3 的響應式引用
     watch,      // 監聽響應式數據變化
     nextTick,   // 在 DOM 更新後執行回調
-    defineProps // 宣告和接收父組件傳遞過來的屬性（Props）
+    computed    // 用於創建計算屬性
   } from 'vue'; // Vue 3 Composition API
   import interact from 'interactjs';    // 用於實現拖放和調整大小的庫
   import Select from 'primevue/select'; // PrimeVue 的選擇組件
@@ -221,6 +219,13 @@
 
   // 自定義的 SHP 解析服務
   const parserService = new ShpParserService();
+
+  // 推薦提示的樣式
+  const alertStyle = computed(() =>
+    selectedEpsg.value === recommendedEpsg.value
+      ? { backgroundColor: '#e8f5e9', borderLeft: '4px solid #4caf50', color: '#2e7d32' }
+      : { backgroundColor: '#fff3e0', borderLeft: '4px solid #ff9800', color: '#e65100' }
+  );
 
   //【生命週期】===================================================================
   // 監聽器：當視窗打開時
