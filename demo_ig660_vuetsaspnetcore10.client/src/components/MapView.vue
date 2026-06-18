@@ -203,7 +203,7 @@
     <KmlImportDialog ref="kmlDialogRef" @onImportComplete="handleKmlImportComplete" />
 
     <!--DXF 跳窗 -->
-    <DxfImportDialog ref="dxfDialogRef" @onImportComplete="handleDxfImportComplete" />
+    <DxfImportDialog ref="dxfDialogRef" :mapSpatialRef="getMapSpatialReference()" @onImportComplete="handleDxfImportComplete" />
 
   </div>
 </template>
@@ -631,7 +631,10 @@
   };
   //#endregion
 
-  // 處理 DXF 匯入完成事件
+  //#region ◆處理 DXF 匯入完成事件 [handleDxfImportComplete]
+  /**
+   * 處理 DXF 匯入完成事件
+   */
   const handleDxfImportComplete = (importData: { geoJson: any; fileName: string; shapeType: string; }) => {
     if (!importData.geoJson) {
       Swal.fire({ icon: 'warning', title: '無效資料', text: '未收到有效的 GeoJSON 資料' });
@@ -714,6 +717,7 @@
       });
     }
   };
+  //#endregion
 
   //#endregion
 
@@ -791,6 +795,40 @@
       });
       return new SimpleRenderer({ symbol: fillSymbol });
     }
+  };
+  //#endregion
+
+  //#region ◆獲取地圖的空間參考 [getMapSpatialReference]
+  /**
+   * 獲取地圖的空間參考信息
+   */
+  const getMapSpatialReference = () => {
+    if (!mapView.value) {
+      console.warn('地圖視圖未初始化');
+      return {
+        wkid: 3857, // 預設 Web Mercator
+        name: '地圖未初始化'
+      };
+    }
+
+    const spatialRef = mapView.value.spatialReference;
+
+    console.log('🗺️ 地圖空間參考信息:', {
+      WKID: spatialRef?.wkid,
+      名稱: spatialRef?.isWebMercator ? 'Web Mercator' : spatialRef?.isWGS84 ? 'WGS84' : '其他投影',
+      詳細: spatialRef
+    });
+
+    return {
+      wkid: spatialRef?.wkid ?? 3857,
+      isWebMercator: spatialRef?.isWebMercator ?? false,
+      isWGS84: spatialRef?.isWGS84 ?? false,
+      name: spatialRef?.isWebMercator
+        ? 'Web Mercator (EPSG:3857)'
+        : spatialRef?.isWGS84
+          ? 'WGS84 (EPSG:4326)'
+          : '其他投影系統'
+    };
   };
   //#endregion
 

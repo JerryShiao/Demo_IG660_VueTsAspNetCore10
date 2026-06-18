@@ -54,73 +54,87 @@
         </div>
 
         <!--坐標系統-->
-        <div class="flex items-stretch border border-gray-300 rounded-lg overflow-hidden h-11">
-          <div class="flex items-center justify-center font-bold px-6" style="background-color: #eceae6; color: #222; min-width:95px; height:44px; display: flex; align-items: center; justify-content: center;">
-            坐標系統
+        <div class="flex flex-col gap-2">
+          <div class="flex items-stretch border border-gray-300 rounded-lg overflow-hidden h-11">
+            <div class="flex items-center justify-center font-bold px-6" style="background-color: #eceae6; color: #222; min-width:95px; height:44px; display: flex; align-items: center; justify-content: center;">
+              坐標系統
+            </div>
+            <Select id="epsg"
+                    v-model="selectedEpsg"
+                    :options="epsgOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    class="flex-1 border-none focus:ring-0"
+                    :pt="{
+                      root: { class: 'border-none shadow-none h-full items-center' },
+                      label: { class: 'text-sm text-gray-800 font-medium pl-3' }
+                    }" />
           </div>
-          <Select id="epsg"
-                  v-model="selectedEpsg"
-                  :options="epsgOptions"
-                  optionLabel="label"
-                  optionValue="value"
-                  class="flex-1 border-none focus:ring-0"
-                  :pt="{
+
+          <!-- 坐標推薦提示 -->
+          <div v-if="recommendationReason"
+               class="text-xs p-3 rounded-lg flex items-start gap-2"
+               style="background-color: #e8f5e9; border-left: 4px solid #4caf50; color: #2e7d32;">
+            <i class="pi pi-check-circle" style="margin-top: 2px; flex-shrink: 0;"></i>
+            <div>
+              <p class="font-bold mb-1">系統推薦</p>
+              <p>{{ recommendationReason }}</p>
+              <p class="mt-1 text-xs opacity-80">當前選擇: <strong>{{ selectedEpsg }}</strong></p>
+            </div>
+          </div>
+
+          <!--編碼方式-->
+          <div class="flex items-stretch border border-gray-300 rounded-lg overflow-hidden h-11">
+            <div class="flex items-center justify-center font-bold px-6" style="background-color: #eceae6; color: #222; min-width:95px; height:44px; display: flex; align-items: center; justify-content: center;">
+              編碼方式
+            </div>
+            <Select id="encoding"
+                    v-model="selectedEncoding"
+                    :options="encodingOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    class="flex-1 border-none focus:ring-0"
+                    :pt="{
                     root: { class: 'border-none shadow-none h-full items-center' },
                     label: { class: 'text-sm text-gray-800 font-medium pl-3' }
                   }" />
-        </div>
-
-        <!--編碼方式-->
-        <div class="flex items-stretch border border-gray-300 rounded-lg overflow-hidden h-11">
-          <div class="flex items-center justify-center font-bold px-6" style="background-color: #eceae6; color: #222; min-width:95px; height:44px; display: flex; align-items: center; justify-content: center;">
-            編碼方式
           </div>
-          <Select id="encoding"
-                  v-model="selectedEncoding"
-                  :options="encodingOptions"
-                  optionLabel="label"
-                  optionValue="value"
-                  class="flex-1 border-none focus:ring-0"
-                  :pt="{
-                    root: { class: 'border-none shadow-none h-full items-center' },
-                    label: { class: 'text-sm text-gray-800 font-medium pl-3' }
-                  }" />
+
+
+          <div class="flex items-center gap-2 mt-2 mb-2">
+            <button @click="showNotes = !showNotes"
+                    class="hover:opacity-80 font-bold text-sm flex items-center gap-1"
+                    style="color: #dc5e5e;">
+              <i :class="showNotes ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+              注意事項
+            </button>
+          </div>
+
+          <div v-if="showNotes" class="text-xs leading-relaxed space-y-1 p-3 rounded-lg"
+               style="color: #dc5e5e; background-color: #fdf0f0;">
+            <p>
+              ※本線上系統藉由瀏覽器執行，<br>
+              效能無法與一般單機程式相同，<br>
+              過多的圖徵可能會讀取失敗或不穩。
+            </p>
+            <br>
+            <p>
+              ※讀取後，屬性若出現亂碼，可能是編碼錯誤，<br>
+              請切換編碼後，重新載入看看。
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-3 mt-2">
+            <Button :disabled="!selectedFile || loading"
+                    :loading="loading"
+                    @click="processDXF"
+                    class="w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none text-white font-bold py-3 rounded-lg text-lg flex justify-center items-center gap-2 shadow-sm">
+              <i class="pi pi-upload font-bold"></i>
+              <span>開始匯入</span>
+            </Button>
+          </div>
+
         </div>
-
-
-        <div class="flex items-center gap-2 mt-2 mb-2">
-          <button @click="showNotes = !showNotes"
-                  class="hover:opacity-80 font-bold text-sm flex items-center gap-1"
-                  style="color: #dc5e5e;">
-            <i :class="showNotes ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
-            注意事項
-          </button>
-        </div>
-
-        <div v-if="showNotes" class="text-xs leading-relaxed space-y-1 p-3 rounded-lg"
-             style="color: #dc5e5e; background-color: #fdf0f0;">
-          <p>
-            ※本線上系統藉由瀏覽器執行，<br>
-            效能無法與一般單機程式相同，<br>
-            過多的圖徵可能會讀取失敗或不穩。
-          </p>
-          <br>
-          <p>
-            ※讀取後，屬性若出現亂碼，可能是編碼錯誤，<br>
-            請切換編碼後，重新載入看看。
-          </p>
-        </div>
-
-        <div class="flex flex-col gap-3 mt-2">
-          <Button :disabled="!selectedFile || loading"
-                  :loading="loading"
-                  @click="processDXF"
-                  class="w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none text-white font-bold py-3 rounded-lg text-lg flex justify-center items-center gap-2 shadow-sm">
-            <i class="pi pi-upload font-bold"></i>
-            <span>開始匯入</span>
-          </Button>
-        </div>
-
       </div>
     </div>
   </Dialog>
@@ -131,7 +145,8 @@
   import {
     ref,        // Vue 3 的響應式引用
     watch,      // 監聽響應式數據變化
-    nextTick    // 在 DOM 更新後執行回調
+    nextTick,   // 在 DOM 更新後執行回調
+    defineProps // 宣告和接收父組件傳遞過來的屬性（Props）
   } from 'vue'; // Vue 3 Composition API
   import interact from 'interactjs';    // 用於實現拖放和調整大小的庫
   import Select from 'primevue/select'; // PrimeVue 的選擇組件
@@ -143,17 +158,29 @@
   //【宣告】=====================================================================
   const emit = defineEmits(['onImportComplete', 'onError']); // 定義組件事件
 
+  // 接收來自父元件的座標系統信息
+  const props = defineProps({
+    mapSpatialRef: {
+      type: Object,
+      default: () => ({ wkid: 3857, name: 'Web Mercator' })
+    }
+  });
+
   // 控制視窗顯示狀態
-  const isDialogVisible = ref(false);              // 控制 Dialog 顯示
-  const dialogTitle = ref("DXF 匯入");             // Dialog 標題
-  const dialogWidth = ref("464px");                // Dialog 預設寬度
-  const loading = ref(false);                      // 加載狀態
-  const selectedFile = ref<File | null>(null);     // 使用者選擇的檔案
-  const showNotes = ref(true); // 控制注意事項顯示/隱藏
+  const isDialogVisible = ref(false);          // 控制 Dialog 顯示
+  const dialogTitle = ref("DXF 匯入");         // Dialog 標題
+  const dialogWidth = ref("464px");            // Dialog 預設寬度
+  const loading = ref(false);                  // 加載狀態
+  const selectedFile = ref<File | null>(null); // 使用者選擇的檔案
+  const showNotes = ref(true);                 // 控制注意事項顯示/隱藏
 
   // 預設坐標系與編碼
   const selectedEpsg = ref('3826');
   const selectedEncoding = ref('utf-8');
+
+  // 推薦的座標系統
+  const recommendedEpsg = ref<string>('');
+  const recommendationReason = ref<string>('');
 
   // 坐標系統選項
   const epsgOptions = [
@@ -171,15 +198,18 @@
   ];
 
   //【生命週期】===================================================================
-  // 監聽器：當視窗打開時，重新綁定 interactjs 縮放與拖拽
+  // 監聽器：當視窗打開時
   watch(
     isDialogVisible,
     (newVal) => {
       if (newVal) {
+        // 根據地圖座標系統推薦最佳選項
+        updateRecommendation();
+
         // 使用 nextTick 確保 Vue 已將 Dialog 渲染至 DOM，
         nextTick(() => {
           setTimeout(() => {
-            initInteractDialog();
+            initInteractDialog(); // 重新綁定 interactjs 縮放與拖拽
           }, 50); // 延遲 50 毫秒，確保 PrimeVue Dialog 完全開起並掛載完畢
         });
       } else {
@@ -398,7 +428,7 @@
 
   //#region ◆診斷 DXF 坐標範圍 [diagnostic]
   /**
-   * 在轉換前診斷 DXF 坐標範圍
+   * 在轉換前診斷 DXF 坐標範圍，並與推薦坐標系比對
    */
   const diagnosticDxfCoordinates = (dxfData: any) => {
     if (!dxfData?.entities || dxfData.entities.length === 0) return;
@@ -458,18 +488,86 @@
     // 檢查是否有有效坐標
     if (coordCount === 0 || !isFinite(minX)) return;
 
+    // 與推薦坐標系進行驗證
+    const detectedEpsg = detectEpsgFromCoords(minX, maxX, minY, maxY);
+    const matchesRecommended = detectedEpsg === recommendedEpsg.value;
+
     console.log('📊 DXF 坐標範圍診斷:', {
       總座標數: coordCount,
       X_Range: [minX, maxX],
       Y_Range: [minY, maxY],
       中心點: [(minX + maxX) / 2, (minY + maxY) / 2],
-      推測的坐標系:
-        (minX > 119 && minX < 123 && maxX > 119 && maxX < 123)
-          ? 'TWD97 經緯度 (3824) 或 WGS84 (4326)'
-          : 'TWD97 二度分帶 (3826) 或其他投影系'
+      推測的坐標系: detectedEpsg,
+      與推薦系統匹配: matchesRecommended ? '✅ 是' : '⚠️ 否',
     });
 
+    // 如果推測與推薦不符，給予警告
+    if (!matchesRecommended && detectedEpsg !== 'auto') {
+      console.warn(`⚠️ 警告：DXF 坐標系推測為 ${detectedEpsg}，但推薦為 ${recommendedEpsg.value}。`);
+    }
+
     return { minX, maxX, minY, maxY };
+  };
+  //#endregion
+
+  //#region ◆根據地圖座標系統更新推薦 [updateRecommendation]
+  /**
+   * 根據地圖座標系統更新推薦
+   */
+  const updateRecommendation = () => {
+    const mapRef = props.mapSpatialRef;
+
+    console.log('🔍 分析地圖座標系:', mapRef);
+
+    // 根據地圖的 WKID 判斷推薦的 EPSG
+    if (mapRef?.isWGS84 || mapRef?.wkid === 4326) {
+      recommendedEpsg.value = '4326';
+      recommendationReason.value = '地圖使用 WGS84 座標系統，建議選擇 4326 (WGS84 經緯度)';
+    } else if (mapRef?.isWebMercator || mapRef?.wkid === 3857) {
+      recommendedEpsg.value = '4326';
+      recommendationReason.value = '地圖使用 Web Mercator，DXF 通常需轉換為 WGS84 (4326)';
+    } else {
+      // 預設推薦台灣的坐標系統
+      recommendedEpsg.value = '3826';
+      recommendationReason.value = '根據位置自動推薦 TWD97 二度分帶 (3826)';
+    }
+
+    // 自動設置為推薦的坐標系統
+    selectedEpsg.value = recommendedEpsg.value;
+
+    console.log('✅ 推薦座標系:', {
+      推薦代碼: recommendedEpsg.value,
+      原因: recommendationReason.value
+    });
+  };
+  //#endregion
+
+  //#region ◆從坐標範圍推測 EPSG [detectEpsgFromCoords]
+  /**
+   * 從坐標範圍推測 EPSG 代碼
+   */
+  const detectEpsgFromCoords = (minX: number, maxX: number, minY: number, maxY: number): string => {
+    // TWD97 經緯度 (3824): X ~ 119-123, Y ~ 22-26
+    if (minX > 119 && maxX < 123 && minY > 22 && maxY < 26) {
+      return '3824';
+    }
+
+    // WGS84 經緯度 (4326): 同上 (台灣範圍)
+    if (minX > 119 && maxX < 123 && minY > 22 && maxY < 26) {
+      return '4326';
+    }
+
+    // TWD97 二度分帶 (3826): X ~ 150000-350000, Y ~ 2400000-2700000
+    if (minX > 100000 && maxX < 400000 && minY > 2000000 && maxY < 3000000) {
+      return '3826';
+    }
+
+    // Web Mercator (3857): X ~ -20000000-20000000, Y ~ -30000000-30000000
+    if (minX > -30000000 && maxX < 30000000 && minY > -30000000 && maxY < 30000000) {
+      return '3857';
+    }
+
+    return 'auto';
   };
   //#endregion
 
