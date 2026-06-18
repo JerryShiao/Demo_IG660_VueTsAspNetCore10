@@ -71,15 +71,34 @@
                     }" />
           </div>
 
-          <!-- 坐標推薦提示 -->
+          <!-- 坐標推薦提示：符合推薦 = 綠色✓，不符合 = 黃色⚠️ -->
           <div v-if="recommendationReason"
                class="text-xs p-3 rounded-lg flex items-start gap-2"
-               style="background-color: #e8f5e9; border-left: 4px solid #4caf50; color: #2e7d32;">
-            <i class="pi pi-check-circle" style="margin-top: 2px; flex-shrink: 0;"></i>
+               :style="selectedEpsg === recommendedEpsg
+               ? { backgroundColor: '#e8f5e9', borderLeft: '4px solid #4caf50', color: '#2e7d32' }
+               : { backgroundColor: '#fff3e0', borderLeft: '4px solid #ff9800', color: '#e65100' }">
+
+            <!-- 符合推薦：綠色打勾 -->
+            <i v-if="selectedEpsg === recommendedEpsg"
+               class="pi pi-check-circle"
+               style="margin-top: 2px; flex-shrink: 0;"></i>
+
+            <!-- 不符合推薦：黃色驚嘆號 -->
+            <i v-else
+               class="pi pi-exclamation-circle"
+               style="margin-top: 2px; flex-shrink: 0;"></i>
+
             <div>
-              <p class="font-bold mb-1">系統推薦</p>
+              <!-- 符合推薦的標題 -->
+              <p v-if="selectedEpsg === recommendedEpsg" class="font-bold mb-1">✓ 推薦選擇</p>
+              <!-- 不符合推薦的標題 -->
+              <p v-else class="font-bold mb-1">⚠️ 建議修改</p>
+
               <p>{{ recommendationReason }}</p>
-              <p class="mt-1 text-xs opacity-80">當前選擇: <strong>{{ selectedEpsg }}</strong></p>
+              <p class="mt-1 text-xs opacity-80">
+                當前選擇: <strong>{{ selectedEpsg }}</strong>
+                <span v-if="selectedEpsg !== recommendedEpsg"> (推薦: {{ recommendedEpsg }})</span>
+              </p>
             </div>
           </div>
 
@@ -537,7 +556,8 @@
 
     console.log('✅ 推薦座標系:', {
       推薦代碼: recommendedEpsg.value,
-      原因: recommendationReason.value
+      原因: recommendationReason.value,
+      當前選擇: selectedEpsg.value
     });
   };
   //#endregion
