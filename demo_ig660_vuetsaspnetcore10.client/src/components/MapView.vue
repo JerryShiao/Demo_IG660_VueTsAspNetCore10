@@ -641,6 +641,18 @@
     try {
       console.log('DXF 轉 GeoJSON 成功：', importData.geoJson);
 
+      // 檢查坐標範圍是否合理（WGS84 坐標應在 [-180, 180] 和 [-90, 90] 之間）
+      const features = importData.geoJson.features || [];
+      if (features.length > 0) {
+        const firstFeature = features[0];
+        console.log('第一個特徵的座標:', firstFeature.geometry.coordinates);
+
+        // 驗證座標範圍
+        const coords = firstFeature.geometry.coordinates;
+        const flatCoords = JSON.stringify(coords);
+        console.log('座標範圍檢查:', flatCoords);
+      }
+
       // 1. 建立 Blob URL 用於 ArcGIS GeoJSONLayer
       const geoJsonString = JSON.stringify(importData.geoJson);
       const blob = new Blob([geoJsonString], { type: 'application/json' });
@@ -660,7 +672,19 @@
         }
       });
 
-      // 4. 將圖層加入地圖實例
+      // 4. 監聽圖層載入事件（重要！確保圖層正確加載）
+      geoJsonLayer.when(
+        () => {
+          console.log('✅ DXF 圖層加載成功:', importData.fileName);
+          console.log('圖層範圍:', geoJsonLayer.fullExtent);
+        },
+        (error: any) => {
+          console.error('❌ DXF 圖層加載失敗:', error);
+          throw new Error(`圖層加載失敗: ${error.message}`);
+        }
+      );
+
+      // 5. 將圖層加入地圖實例
       if (mapInstance.value) {
         mapInstance.value.add(geoJsonLayer);
       }
@@ -686,7 +710,7 @@
       Swal.fire({
         icon: 'warning',
         title: '添加圖層失敗',
-        text: error.message || '無法將 DXF 圖層渲染至地圖。'
+        text: error.message || '無法將 DXF 圖層渲染至地圖。請檢查坐標系統。'
       });
     }
   };

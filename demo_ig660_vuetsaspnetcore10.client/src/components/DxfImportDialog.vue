@@ -157,9 +157,11 @@
 
   // 坐標系統選項
   const epsgOptions = [
-    { label: '3826 (TWD97 / TM2_121)', value: '3826' },
+    { label: '3826 (TWD97 二度分帶 121°E)', value: '3826' },
+    { label: '3824 (TWD97 經緯度)', value: '3824' },
     { label: '4326 (WGS84 經緯度)', value: '4326' },
-    { label: '3857 (Web Mercator)', value: '3857' }
+    { label: '3857 (Web Mercator)', value: '3857' },
+    { label: '自動檢測 (根據坐標值)', value: 'auto' }
   ];
 
   // 編碼選項
@@ -301,12 +303,65 @@
         throw new Error('DXF 檔案內未偵測到任何有效的圖元實體(Entities)！請檢查該 DXF 檔是否包含 R12/R14 的標準線段，或改存成其他版本的 DXF 再行試試。');
       }
 
-      // 4. 呼叫工具函式做投影轉換與 GeoJSON 包裝
-      const finalGeoJson = transformDxfToGeoJson(parsedDxf, selectedEpsg.value);
+      console.log(`📁 DXF 檔案解析完成，共 ${parsedDxf.entities.length} 個實體`);
+
+      // 4. 診斷 DXF 坐標範圍
+      const coordRange = diagnosticDxfCoordinates(parsedDxf);
+      if (coordRange) {
+        console.warn('⚠️ 建議：請根據上述坐標範圍確認選擇的坐標系統是否正確');
+      }
+
+      // 5. 呼叫工具函式做投影轉換與 GeoJSON 包裝
+      const finalGeoJson = transformDxfToGeoJson(
+        parsedDxf,
+        selectedEpsg.value === 'auto' ? '3826' : selectedEpsg.value
+      );
 
       if (!finalGeoJson || finalGeoJson.features.length === 0) {
-        throw new Error('轉換過程中無法提取出任何 POINT、LINE 或 POLYLINE。');
+        throw new Error('轉換過程中無法提取出任何有效的圖形。');
       }
+
+      // 6. 診斷轉換結果
+      let minGeoX = Infinity, maxGeoX = -Infinity;
+      let minGeoY = Infinity, maxGeoY = -Infinity;
+      let validCoordCount = 0;
+
+      const extractCoords = (coords: any): void => {
+        if (!Array.isArray(coords)) return;
+
+        for (let j = 0; j < coords.length; j++) {
+          if (typeof coords[j] === 'number') {
+            // 一維陣列：[x, y]
+            if (j % 2 === 0) {
+              minGeoX = Math.min(minGeoX, coords[j]);
+              maxGeoX = Math.max(maxGeoX, coords[j]);
+            } else {
+              minGeoY = Math.min(minGeoY, coords[j]);
+              maxGeoY = Math.max(maxGeoY, coords[j]);
+              validCoordCount++;
+            }
+          } else if (Array.isArray(coords[j])) {
+            // 遞歸處理多層陣列
+            extractCoords(coords[j]);
+          }
+        }
+      };
+
+      for (let i = 0; i < finalGeoJson.features.length; i++) {
+        const feature = finalGeoJson.features[i];
+        if (feature.geometry?.coordinates) {
+          extractCoords(feature.geometry.coordinates);
+        }
+      }
+
+      console.log('✅ GeoJSON 轉換結果:', {
+        特徵數: finalGeoJson.features.length,
+        有效座標數: validCoordCount,
+        座標範圍: isFinite(minGeoX) ? {
+          X: [minGeoX, maxGeoX],
+          Y: [minGeoY, maxGeoY]
+        } : '無法計算'
+      });
 
       // 5. 定義 shapeType
       const hasPolygon = finalGeoJson.features.some((f: any) => f.geometry.type === 'Polygon');
@@ -322,12 +377,12 @@
       Swal.fire({
         icon: 'success',
         title: '匯入成功',
-        text: 'DXF 圖資已成功轉換並匯入！'
+        text: `已轉換 ${finalGeoJson.features.length} 個圖形`
       });
 
       isDialogVisible.value = false;
     } catch (error: any) {
-      console.error(error);
+      console.error('❌ DXF 處理失敗:', error);
       Swal.fire({
         icon: 'warning',
         title: '匯入失敗',
@@ -341,10 +396,88 @@
   };
   //#endregion
 
+  //#region ◆診斷 DXF 坐標範圍 [diagnostic]
+  /**
+   * 在轉換前診斷 DXF 坐標範圍
+   */
+  const diagnosticDxfCoordinates = (dxfData: any) => {
+    if (!dxfData?.entities || dxfData.entities.length === 0) return;
+
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    let coordCount = 0;
+
+    // 使用迴圈而非展開運算符，避免堆棧溢出
+    for (let i = 0; i < dxfData.entities.length; i++) {
+      const entity = dxfData.entities[i];
+
+      // 單點坐標
+      if (entity.position) {
+        minX = Math.min(minX, entity.position.x ?? 0);
+        maxX = Math.max(maxX, entity.position.x ?? 0);
+        minY = Math.min(minY, entity.position.y ?? 0);
+        maxY = Math.max(maxY, entity.position.y ?? 0);
+        coordCount++;
+      }
+
+      // 起點
+      if (entity.start) {
+        minX = Math.min(minX, entity.start.x ?? 0);
+        maxX = Math.max(maxX, entity.start.x ?? 0);
+        minY = Math.min(minY, entity.start.y ?? 0);
+        maxY = Math.max(maxY, entity.start.y ?? 0);
+        coordCount++;
+      }
+
+      // 終點
+      if (entity.end) {
+        minX = Math.min(minX, entity.end.x ?? 0);
+        maxX = Math.max(maxX, entity.end.x ?? 0);
+        minY = Math.min(minY, entity.end.y ?? 0);
+        maxY = Math.max(maxY, entity.end.y ?? 0);
+        coordCount++;
+      }
+
+      // 頂點集合
+      if (entity.vertices && Array.isArray(entity.vertices)) {
+        for (let j = 0; j < entity.vertices.length; j++) {
+          const v = entity.vertices[j];
+          if (v && typeof v.x === 'number' && typeof v.y === 'number') {
+            minX = Math.min(minX, v.x);
+            maxX = Math.max(maxX, v.x);
+            minY = Math.min(minY, v.y);
+            maxY = Math.max(maxY, v.y);
+            coordCount++;
+          }
+        }
+      }
+    }
+
+    // 檢查是否有有效坐標
+    if (coordCount === 0 || !isFinite(minX)) return;
+
+    console.log('📊 DXF 坐標範圍診斷:', {
+      總座標數: coordCount,
+      X_Range: [minX, maxX],
+      Y_Range: [minY, maxY],
+      中心點: [(minX + maxX) / 2, (minY + maxY) / 2],
+      推測的坐標系:
+        (minX > 119 && minX < 123 && maxX > 119 && maxX < 123)
+          ? 'TWD97 經緯度 (3824) 或 WGS84 (4326)'
+          : 'TWD97 二度分帶 (3826) 或其他投影系'
+    });
+
+    return { minX, maxX, minY, maxY };
+  };
+  //#endregion
+
   // 開放方法給外部 View 元件控制開啟
   defineExpose({
     openDialog: () => { isDialogVisible.value = true; }
-  });</script>
+  });
+</script>
 
 <style>
   /* 確保關閉 PrimeVue 內建溢出限制，讓外層可以觸發 interact 邊緣 */
