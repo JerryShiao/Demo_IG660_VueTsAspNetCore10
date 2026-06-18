@@ -204,6 +204,28 @@
   const layerStore = useLayerStore();              // 圖層狀態管理實例
 
   /**
+  * ShapeType 轉換映射
+  */
+  const ShapeTypeStringMap: Record<string, number | string> = {
+    'point': 1,
+    'POINT': 1,
+    'polyline': 3,
+    'POLYLINE': 3,
+    'polygon': 5,
+    'POLYGON': 5,
+    'multipoint': 8,
+    'MULTIPOINT': 8,
+    'pointz': 11,
+    'POINTZ': 11,
+    'polylinez': 13,
+    'POLYLINEZ': 13,
+    'polygonz': 15,
+    'POLYGONZ': 15,
+    'kml': 'KML',
+    'KML': 'KML'
+  };
+
+  /**
  * ShapeType 列舉對應表
  */
   const ShapeTypeMap: Record<number | string, { name: string; icon: string; tooltip: string }> = {
@@ -399,9 +421,15 @@
   * 根據 shapeType 返回對應的圖示 class
   */
   const getShapeTypeIcon = (shapeType: number | string): string => {
-    const key = typeof shapeType === 'string'
-      ? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10))
-      : shapeType;
+    let key: number | string = shapeType;
+
+    if (typeof shapeType === 'string') {
+      key = ShapeTypeStringMap[shapeType] ?? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10));
+    }
+    else {
+      key = shapeType;
+    }
+
     return ShapeTypeMap[key]?.icon || '❓';
   };
 
@@ -409,9 +437,14 @@
  * 根據 shapeType 返回對應的名稱
  */
   const getShapeTypeName = (shapeType: number | string): string => {
-    const key = typeof shapeType === 'string'
-      ? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10))
-      : shapeType;
+    let key: number | string = shapeType;
+
+    if (typeof shapeType === 'string') {
+      key = ShapeTypeStringMap[shapeType] ?? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10));
+    }
+    else {
+      key = shapeType;
+    }
     return ShapeTypeMap[key]?.name || '未知類型';
   };
 
@@ -420,9 +453,14 @@
    */
   const getShapeTypeTooltip = (shapeType: number | string): string => {
     // 如果是字符串，先嘗試轉換為數字；失敗則保留原字符串
-    const key = typeof shapeType === 'string'
-      ? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10))
-      : shapeType;
+    let key: number | string = shapeType;
+
+    if (typeof shapeType === 'string') {
+      key = ShapeTypeStringMap[shapeType] ?? (isNaN(parseInt(shapeType, 10)) ? shapeType : parseInt(shapeType, 10));
+    }
+    else {
+      key = shapeType;
+    }
     return ShapeTypeMap[key]?.tooltip || '未知圖形類型';
   };
 
