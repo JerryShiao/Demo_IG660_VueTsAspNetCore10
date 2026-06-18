@@ -197,7 +197,7 @@
                  @nofunction-alert="NofunctionAlert" />
 
     <!--SHP 跳窗 -->
-    <ShpImportDialog ref="shpDialogRef" @onImportComplete="handleShpImportComplete" />
+    <ShpImportDialog ref="shpDialogRef" :mapSpatialRef="getMapSpatialReference()" @onImportComplete="handleShpImportComplete" />
 
     <!--KML 跳窗 -->
     <KmlImportDialog ref="kmlDialogRef" @onImportComplete="handleKmlImportComplete" />
