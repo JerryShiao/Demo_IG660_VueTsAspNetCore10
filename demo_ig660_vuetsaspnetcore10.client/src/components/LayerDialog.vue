@@ -163,7 +163,7 @@
             <Button label="SHP" severity="contrast" raised @click="triggerOpenShp" />
             <Button label="KML" severity="contrast" raised @click="triggerOpenKml" />
             <Button label="DXF" severity="contrast" raised @click="triggerOpenDxf" />
-            <Button label="CSV 地號" severity="contrast" raised @click="triggerNoFunctionAlert" />
+            <Button label="CSV 地號" severity="contrast" raised @click="triggerOpenPlotNumberCsv" />
             <Button label="CSV 坐標" severity="contrast" raised @click="triggerNoFunctionAlert" />
             <Button label="XML(建物模型)" severity="secondary" raised @click="triggerNoFunctionAlert" />
             <Button label="ZPB(建物平面圖)" severity="secondary" raised @click="triggerNoFunctionAlert" />
@@ -194,7 +194,9 @@
     'open-shp', // 打開 SHP 上傳視窗事件
     'open-kml', // 打開 KML 上傳視窗事件
     'open-dxf', // 打開 DXF 上傳視窗事件
-    'nofunction-alert']);
+    'open-plot-number-csv', // 打開地號 CSV 上傳視窗事件
+    'nofunction-alert'
+  ]);
 
   // —— PrimeVue 控制響應式變數 ——
   const isLayerPanelVisible = ref(true);           // 預設開啟
@@ -359,6 +361,8 @@
   const triggerOpenKml = () => emit('open-kml');
   // 開啟 DXF 上傳對話框
   const triggerOpenDxf = () => emit('open-dxf');
+  // 開啟 CSV 地號 上傳對話框
+  const triggerOpenPlotNumberCsv = () => emit('open-plot-number-csv');
   //#endregion
 
   //#region ◆切換圖層顯示狀態 [toggleLayerVisibility]

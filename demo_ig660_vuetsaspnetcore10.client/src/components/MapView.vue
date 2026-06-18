@@ -194,6 +194,7 @@
                  @open-shp="handleOpenShp"
                  @open-kml="handleOpenKml"
                  @open-dxf="handleOpenDxf"
+                 @open-plot-number-csv="handleOpenPlotNumberCsv"
                  @nofunction-alert="NofunctionAlert" />
 
     <!--SHP 跳窗 -->
@@ -204,6 +205,10 @@
 
     <!--DXF 跳窗 -->
     <DxfImportDialog ref="dxfDialogRef" :mapSpatialRef="getMapSpatialReference()" @onImportComplete="handleDxfImportComplete" />
+
+    <!--CSV地號 跳窗 -->
+    <PlotNumberCsvImportDialog ref="plotNumberCsvDialogRef" />
+
 
   </div>
 </template>
@@ -249,6 +254,7 @@
   import ShpImportDialog from './ShpImportDialog.vue'; // 引入 ShpImportDialog 組件
   import KmlImportDialog from './KmlImportDialog.vue'; // 引入 KmlImportDialog 組件  
   import DxfImportDialog from './DxfImportDialog.vue'; // 引入 DxfImportDialog 組件
+  import PlotNumberCsvImportDialog from './PlotNumberCsvImportDialog.vue'; // 引入 PlotNumberCsvImportDialog 組件
 
   // Store 引入
   import { useLayerStore } from '../stores/layerStore';
@@ -259,6 +265,7 @@
   const shpDialogRef = ref<InstanceType<typeof ShpImportDialog> | null>(null); // 創建對 ShpImportDialog 組件的引用
   const kmlDialogRef = ref<InstanceType<typeof KmlImportDialog> | null>(null); // 創建對 KmlImportDialog 組件的引用
   const dxfDialogRef = ref<InstanceType<typeof DxfImportDialog> | null>(null); // 創建對 DxfImportDialog 組件的引用
+  const plotNumberCsvDialogRef = ref<InstanceType<typeof PlotNumberCsvImportDialog> | null>(null); // 創建對 PlotNumberCsvImportDialog 組件的引用
 
   //【地圖與基礎 UI 宣告】
   const mapElement = ref(null);                                     // 用於綁定地圖容器的ref
@@ -718,6 +725,20 @@
     }
   };
   //#endregion
+
+  //#endregion
+
+  //#region 【CSV地號】匯入
+  //#region ◆點擊 CSV 地號 按鈕時觸發 [handleOpenPlotNumberCsv]
+  /**
+   * 點擊 CSV 地號 按鈕時觸發
+   */
+  const handleOpenPlotNumberCsv = () => {
+    // 直接呼叫子元件暴露出來的 openDialog() 方法
+    plotNumberCsvDialogRef.value?.openDialog();
+  };
+  //#endregion
+
 
   //#endregion
 
