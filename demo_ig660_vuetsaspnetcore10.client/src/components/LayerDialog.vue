@@ -384,7 +384,7 @@
 
     Swal.fire({
       title: '確認刪除',
-      text: `確定要刪除圖層「${record.fileName}」嗎？此操作無法恢復。`,
+      html: `確定要刪除圖層「${record.fileName}」嗎？<br/>此操作無法恢復。`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: '刪除',

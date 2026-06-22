@@ -22,14 +22,41 @@
                  accept=".csv"
                  style="display: none"
                  @change="onFileSelect" />
-          <!--檔案上傳 Button-->
-          <Button @click="openFilePicker"
-                  :pt="{ root: { class: 'w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none rounded-lg text-white font-bold py-3 justify-center text-lg' } }">
-            <div class="flex items-center justify-center gap-2">
-              <i class="pi pi-folder-open font-bold"></i>
-              <span>選擇檔案 (.csv)</span>
-            </div>
-          </Button>
+          <div style="display:flex;">
+
+            <!--範例檔 Button-->
+            <Button style="background-color: #6366f1 !important"
+                    @click="downloadSampleCsv_PlotNumber"
+                    title="下載範例檔案"
+                    @mouseenter="$event.target.style.backgroundColor='#4f46e5'"
+                    @mouseleave="$event.target.style.backgroundColor='#6366f1'"
+                    :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 justify-center text-lg' } }">
+              <div class="flex items-center justify-center gap-2">
+                <i class="pi pi-download font-bold"></i>
+                <span>範例下載</span>
+              </div>
+            </Button>&ensp;
+
+            <!--檔案上傳 Button-->
+            <Button @click="openFilePicker"
+                    title="選擇要匯入的 CSV 檔案"
+                    :pt="{ root: { class: 'w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none rounded-lg text-white font-bold py-3 justify-center text-lg' } }">
+              <div class="flex items-center justify-center gap-2">
+                <i class="pi pi-folder-open font-bold"></i>
+                <span>選擇檔案 (.csv)</span>
+              </div>
+            </Button>&ensp;
+
+            <!--[開始匯入]按鈕-->
+            <Button :disabled="!selectedFile || loading"
+                    :loading="loading"
+                    @click="processCsv"
+                    class="w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none text-white font-bold py-3 rounded-lg text-lg flex justify-center items-center gap-2 shadow-sm">
+              <i class="pi pi-upload font-bold"></i>
+              <span>開始匯入</span>
+            </Button>
+
+          </div>
 
           <!--檔案名稱 顯示-->
           <div style="display: flex; justify-content: flex-start;">
@@ -45,7 +72,7 @@
           <div style="display: flex; justify-content: flex-start;">
             大小：
             <div v-if="selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              {{ (selectedFile.size / 1024).toFixed(0) }} kb
+              {{ Math.max(1, (selectedFile.size / 1024).toFixed(0)) }} kb
             </div>
             <div v-if="!selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
               ---
@@ -53,22 +80,13 @@
           </div>
         </div>
 
-        <!--[開始匯入]按鈕-->
-        <div class="flex flex-col gap-3 mt-2">
-          <Button :disabled="!selectedFile || loading"
-                  :loading="loading"
-                  @click="processCsv"
-                  class="w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none text-white font-bold py-3 rounded-lg text-lg flex justify-center items-center gap-2 shadow-sm">
-            <i class="pi pi-upload font-bold"></i>
-            <span>開始匯入</span>
-          </Button>
-        </div>
       </div>
     </div>
   </Dialog>
 </template>
 
-<script setup lang="ts">//【引入】=====================================================================
+<script setup lang="ts">
+  //【引入】=====================================================================
   import {
     ref,        // Vue 3 的響應式引用
     watch,      // 監聽響應式數據變化
@@ -189,6 +207,29 @@
     });
   };
   //#endregion
+
+  const downloadSampleCsv_PlotNumber = () => {
+    try {
+      // 方式1: 如果檔案在 public 資料夾
+      const link = document.createElement('a');
+      link.href = '/sample-files/CsvSampleFile_PlotNumber.csv';
+      link.download = 'CSV地號_匯入範例.csv';
+      link.click();
+      Swal.fire({
+        icon: 'success',
+        title: '範例下載成功',
+        text: '檔案名稱：CSV地號_匯入範例.csv'
+      });
+    }
+    catch (error) {
+      console.error('下載範例檔案失敗:', error);
+      Swal.fire({
+        icon: 'error',
+        title: '下載失敗',
+        text: '無法下載範例檔案，請稍後再試。',
+      });
+    }
+  }
 
   // 開放方法給外部 View 元件控制開啟
   defineExpose({
