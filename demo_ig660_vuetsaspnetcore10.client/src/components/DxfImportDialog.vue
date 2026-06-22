@@ -40,6 +40,7 @@
 
             <!--選擇檔案 Button-->
             <Button @click="openFilePicker"
+                    title="選擇要匯入的檔案"
                     severity="primary"
                     :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 text-lg' } }">
               <div class="flex items-center justify-center gap-2">
@@ -52,6 +53,7 @@
             <Button :disabled="!selectedFile || loading"
                     :loading="loading"
                     @click="processDXF"
+                    title="開始匯入檔案"
                     severity="success"
                     :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 text-lg' } }">
               <div class="flex items-center justify-center gap-2">

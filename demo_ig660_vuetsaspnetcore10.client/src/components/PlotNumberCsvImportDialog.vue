@@ -15,45 +15,60 @@
       <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-4">
 
         <!--檔案上傳-->
-        <div class="flex flex-col items-start w-full">
-          <!--檔案上傳 input (隱藏)-->
-          <input ref="fileInput"
-                 type="file"
-                 accept=".csv"
-                 style="display: none"
-                 @change="onFileSelect" />
+        <div class="flex flex-col w-full">
+
           <div style="display:flex;">
+            <!--檔案上傳 input (隱藏)-->
+            <input ref="fileInput"
+                   type="file"
+                   accept=".csv"
+                   style="display: none"
+                   @change="onFileSelect" />
+
+            <!--清除檔案 Button-->
+            <Button v-if="selectedFile"
+                    title="清除已選擇的檔案"
+                    @click="clearSelectedFile"
+                    severity="danger"
+                    outlined
+                    :pt="{ root: { class: 'w-full border-2 rounded-lg font-bold py-3' } }">
+              <div class="flex items-center justify-center gap-2">
+                <i class="pi pi-trash font-bold"></i>
+                <span>清除檔案</span>
+              </div>
+            </Button>&ensp;
 
             <!--範例檔 Button-->
-            <Button style="background-color: #6366f1 !important"
-                    @click="downloadSampleCsv_PlotNumber"
+            <Button @click="downloadSampleCsv_PlotNumber"
                     title="下載範例檔案"
-                    @mouseenter="$event.target.style.backgroundColor='#4f46e5'"
-                    @mouseleave="$event.target.style.backgroundColor='#6366f1'"
-                    :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 justify-center text-lg' } }">
+                    @mouseenter="isButtonHovered = true"
+                    @mouseleave="isButtonHovered = false"
+                    :style="{ backgroundColor: isButtonHovered ? '#4f46e5' : '#6366f1' }"
+                    :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 text-lg' } }">
               <div class="flex items-center justify-center gap-2">
                 <i class="pi pi-download font-bold"></i>
-                <span>範例下載</span>
+                <span class="whitespace-nowrap">範例下載</span>
               </div>
             </Button>&ensp;
 
-            <!--檔案上傳 Button-->
+            <!--選擇檔案 Button-->
             <Button @click="openFilePicker"
-                    title="選擇要匯入的 CSV 檔案"
-                    :pt="{ root: { class: 'w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none rounded-lg text-white font-bold py-3 justify-center text-lg' } }">
+                    title="選擇要匯入的檔案"
+                    :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 text-lg' } }">
               <div class="flex items-center justify-center gap-2">
                 <i class="pi pi-folder-open font-bold"></i>
-                <span>選擇檔案 (.csv)</span>
+                <span class="whitespace-nowrap">選擇檔案</span>
               </div>
             </Button>&ensp;
 
-            <!--[開始匯入]按鈕-->
+            <!--開始匯入 Button-->
             <Button :disabled="!selectedFile || loading"
                     :loading="loading"
-                    @click="processCsv"
-                    class="w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none text-white font-bold py-3 rounded-lg text-lg flex justify-center items-center gap-2 shadow-sm">
+                    title="開始匯入檔案"
+                    severity="success"
+                    :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 text-lg' } }">
               <i class="pi pi-upload font-bold"></i>
-              <span>開始匯入</span>
+              <span class="whitespace-nowrap">開始匯入</span>
             </Button>
 
           </div>
@@ -102,10 +117,11 @@
   // 控制視窗顯示狀態
   const isDialogVisible = ref(false);          // 控制 Dialog 顯示
   const dialogTitle = ref("CSV 地號");         // Dialog 標題
-  const dialogWidth = ref("464px");            // Dialog 預設寬度
+  const dialogWidth = ref("600px");             // Dialog 預設寬度
   const loading = ref(false);                  // 加載狀態
   const selectedFile = ref<File | null>(null); // 使用者選擇的檔案
   const showNotes = ref(true);                 // 控制注意事項顯示/隱藏
+  const isButtonHovered = ref(false);          // 按鈕 hover 狀態
 
   //【生命週期】===================================================================
   // 監聽器：當視窗打開時
