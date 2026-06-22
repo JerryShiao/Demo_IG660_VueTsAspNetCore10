@@ -72,6 +72,7 @@
               未上傳
             </div>
           </div>
+
           <!--檔案大小 顯示-->
           <div style="display: flex; justify-content: flex-start;">
             大小：
