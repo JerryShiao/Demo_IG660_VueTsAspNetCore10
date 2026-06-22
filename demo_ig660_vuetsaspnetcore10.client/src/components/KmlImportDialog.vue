@@ -79,7 +79,7 @@
           <div style="display: flex; justify-content: flex-start;">
             大小：
             <div v-if="selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              {{ Math.max(1, (selectedFile.size / 1024).toFixed(0)) }} kb
+              {{ Math.max(1, Math.round(selectedFile.size / 1024)) }} kb
             </div>
             <div v-if="!selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
               ---

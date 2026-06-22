@@ -87,7 +87,7 @@
           <div style="display: flex; justify-content: flex-start;">
             大小：
             <div v-if="selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              {{ Math.max(1, (selectedFile.size / 1024).toFixed(0)) }} kb
+              {{ Math.max(1, Math.round(selectedFile.size / 1024)) }} kb
             </div>
             <div v-if="!selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
               ---
@@ -119,6 +119,7 @@
   const dialogTitle = ref("CSV 地號");         // Dialog 標題
   const dialogWidth = ref("600px");             // Dialog 預設寬度
   const loading = ref(false);                  // 加載狀態
+  const fileInput = ref<HTMLInputElement>();   // 用於觸發檔案選取的隱藏 input 元素
   const selectedFile = ref<File | null>(null); // 使用者選擇的檔案
   const showNotes = ref(true);                 // 控制注意事項顯示/隱藏
   const isButtonHovered = ref(false);          // 按鈕 hover 狀態
@@ -138,6 +139,9 @@
       } else {
         // Dialog 關閉時，清除上傳的檔案
         selectedFile.value = null;
+        if (fileInput && fileInput.value) {
+          fileInput.value.value = '';  // 重置 input 元件
+        }
       }
     },
     { immediate: true } // 👈 加上 immediate: true，讓網頁一打開 (初次建立) 就立刻執行一次這個監聽器
@@ -151,8 +155,8 @@
     }
   };
 
-  const fileInput = ref<HTMLInputElement>(); // 用於觸發檔案選取的隱藏 input 元素
-  const openFilePicker = () => { fileInput.value?.click(); }; // 觸發檔案選取對話框
+  // 觸發檔案選取對話框
+  const openFilePicker = () => { fileInput.value?.click(); }; 
 
   //【方法】===================================================================
 
@@ -224,9 +228,12 @@
   };
   //#endregion
 
+  //#region ◆下載範例檔案 [downloadSampleCsv_PlotNumber]
+  /**
+   * 下載範例檔案
+   */
   const downloadSampleCsv_PlotNumber = () => {
     try {
-      // 方式1: 如果檔案在 public 資料夾
       const link = document.createElement('a');
       link.href = '/sample-files/CsvSampleFile_PlotNumber.csv';
       link.download = 'CSV地號_匯入範例.csv';
@@ -246,6 +253,32 @@
       });
     }
   }
+  //#endregion
+
+  //#region ◆清除檔案 [clearSelectedFile]
+  /**
+   * 清除檔案
+   */
+  const clearSelectedFile = () => {
+    Swal.fire({
+      title: '確認清除',
+      html: `確定要清除已選擇的檔案嗎？<br/>此操作無法恢復。`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '清除',
+      cancelButtonText: '取消',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        selectedFile.value = null;
+        if (fileInput && fileInput.value) {
+          fileInput.value.value = '';  // 重置 input 元件
+        }
+      }
+    });
+  };
+  //#endregion
 
   // 開放方法給外部 View 元件控制開啟
   defineExpose({
