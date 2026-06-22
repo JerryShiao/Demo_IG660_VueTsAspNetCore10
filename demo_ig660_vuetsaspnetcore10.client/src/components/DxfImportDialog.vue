@@ -16,20 +16,51 @@
 
         <!--檔案上傳-->
         <div class="flex flex-col items-start w-full">
-          <!--檔案上傳 input (隱藏)-->
-          <input ref="fileInput"
-                 type="file"
-                 accept=".dxf"
-                 style="display: none"
-                 @change="onFileSelect" />
-          <!--檔案上傳 Button-->
-          <Button @click="openFilePicker"
-                  :pt="{ root: { class: 'w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none rounded-lg text-white font-bold py-3 justify-center text-lg' } }">
-            <div class="flex items-center justify-center gap-2">
-              <i class="pi pi-folder-open font-bold"></i>
-              <span>選擇檔案 (.dxf)</span>
-            </div>
-          </Button>
+
+          <div style="display:flex;">
+            <!--檔案上傳 input (隱藏)-->
+            <input ref="fileInput"
+                   type="file"
+                   accept=".dxf"
+                   style="display: none"
+                   @change="onFileSelect" />
+
+            <!--清除檔案 Button-->
+            <Button v-if="selectedFile"
+                    title="清除已選擇的檔案"
+                    @click="clearSelectedFile"
+                    severity="danger"
+                    outlined
+                    :pt="{ root: { class: 'w-full border-2 rounded-lg font-bold py-3' } }">
+              <div class="flex items-center justify-center gap-2">
+                <i class="pi pi-trash font-bold"></i>
+                <span>清除檔案</span>
+              </div>
+            </Button>&ensp;
+
+            <!--選擇檔案 Button-->
+            <Button @click="openFilePicker"
+                    severity="primary"
+                    :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 text-lg' } }">
+              <div class="flex items-center justify-center gap-2">
+                <i class="pi pi-folder-open font-bold"></i>
+                <span>選擇檔案 (.dxf)</span>
+              </div>
+            </Button>&ensp;
+
+            <!--開始匯入 Button-->
+            <Button :disabled="!selectedFile || loading"
+                    :loading="loading"
+                    @click="processDXF"
+                    severity="success"
+                    :pt="{ root: { class: 'w-full border-none rounded-lg text-white font-bold py-3 text-lg' } }">
+              <div class="flex items-center justify-center gap-2">
+                <i class="pi pi-upload font-bold"></i>
+                <span>開始匯入</span>
+              </div>
+            </Button>
+
+          </div>
 
           <!--檔案名稱 顯示-->
           <div style="display: flex; justify-content: flex-start;">
@@ -41,6 +72,7 @@
               未上傳
             </div>
           </div>
+
           <!--檔案大小 顯示-->
           <div style="display: flex; justify-content: flex-start;">
             大小：
@@ -53,8 +85,8 @@
           </div>
         </div>
 
-        <!--坐標系統-->
         <div class="flex flex-col gap-2">
+          <!--坐標系統-->
           <div class="flex items-stretch border border-gray-300 rounded-lg overflow-hidden h-11">
             <div class="flex items-center justify-center font-bold px-6" style="background-color: #eceae6; color: #222; min-width:95px; height:44px; display: flex; align-items: center; justify-content: center;">
               坐標系統
@@ -117,7 +149,7 @@
                   }" />
           </div>
 
-
+          <!--注意事項-->
           <div class="flex items-center gap-2 mt-2 mb-2">
             <button @click="showNotes = !showNotes"
                     class="hover:opacity-80 font-bold text-sm flex items-center gap-1"
@@ -127,6 +159,7 @@
             </button>
           </div>
 
+          <!--注意事項(內文)-->
           <div v-if="showNotes" class="text-xs leading-relaxed space-y-1 p-3 rounded-lg"
                style="color: #dc5e5e; background-color: #fdf0f0;">
             <p>
@@ -139,16 +172,6 @@
               ※讀取後，屬性若出現亂碼，可能是編碼錯誤，<br>
               請切換編碼後，重新載入看看。
             </p>
-          </div>
-
-          <div class="flex flex-col gap-3 mt-2">
-            <Button :disabled="!selectedFile || loading"
-                    :loading="loading"
-                    @click="processDXF"
-                    class="w-full bg-[#00bfa5] hover:bg-[#00a68f] border-none text-white font-bold py-3 rounded-lg text-lg flex justify-center items-center gap-2 shadow-sm">
-              <i class="pi pi-upload font-bold"></i>
-              <span>開始匯入</span>
-            </Button>
           </div>
 
         </div>
@@ -188,6 +211,7 @@
   const dialogTitle = ref("DXF 匯入");         // Dialog 標題
   const dialogWidth = ref("464px");            // Dialog 預設寬度
   const loading = ref(false);                  // 加載狀態
+  const fileInput = ref<HTMLInputElement>();   // 用於觸發檔案選取的隱藏 input 元素
   const selectedFile = ref<File | null>(null); // 使用者選擇的檔案
   const showNotes = ref(true);                 // 控制注意事項顯示/隱藏
 
@@ -239,6 +263,9 @@
       } else {
         // Dialog 關閉時，清除上傳的檔案
         selectedFile.value = null;
+        if (fileInput && fileInput.value) {
+          fileInput.value.value = '';  // 重置 input 元件
+        }
       }
     },
     { immediate: true } // 👈 加上 immediate: true，讓網頁一打開 (初次建立) 就立刻執行一次這個監聽器
@@ -252,8 +279,8 @@
     }
   };
 
-  const fileInput = ref<HTMLInputElement>(); // 用於觸發檔案選取的隱藏 input 元素
-  const openFilePicker = () => { fileInput.value?.click(); }; // 觸發檔案選取對話框
+  // 觸發檔案選取對話框
+  const openFilePicker = () => { fileInput.value?.click(); }; 
 
   //【方法】===================================================================
 
@@ -593,6 +620,31 @@
     }
 
     return 'auto';
+  };
+  //#endregion
+
+  //#region ◆清除檔案 [clearSelectedFile]
+  /**
+   * 清除檔案
+   */
+  const clearSelectedFile = () => {
+    Swal.fire({
+      title: '確認清除',
+      html: `確定要清除已選擇的檔案嗎？<br/>此操作無法恢復。`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '清除',
+      cancelButtonText: '取消',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        selectedFile.value = null;
+        if (fileInput && fileInput.value) {
+          fileInput.value.value = '';  // 重置 input 元件
+        }
+      }
+    });
   };
   //#endregion
 
