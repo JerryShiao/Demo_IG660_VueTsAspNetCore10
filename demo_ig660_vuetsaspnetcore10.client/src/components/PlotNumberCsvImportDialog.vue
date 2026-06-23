@@ -75,23 +75,59 @@
 
           <!--檔案名稱 顯示-->
           <div style="display: flex; justify-content: flex-start;">
-            檔案：
             <div v-if="selectedFile" class="mt-3  text-gray-700 text-sm leading-relaxed px-2 break-all">
-              {{ selectedFile.name }}
+              檔案：{{ selectedFile.name }}
             </div>
             <div v-if="!selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              未上傳
+              檔案：未上傳
             </div>
           </div>
           <!--檔案大小 顯示-->
           <div style="display: flex; justify-content: flex-start;">
-            大小：
             <div v-if="selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              {{ Math.max(1, Math.round(selectedFile.size / 1024)) }} kb
+              大小：{{ Math.max(1, Math.round(selectedFile.size / 1024)) }} kb
             </div>
             <div v-if="!selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              ---
+              大小：---
             </div>
+          </div>
+        </div>
+
+        <!--CSV內容顯示列表-->
+        <div class="flex flex-col w-full">
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-gray-700 font-semibold">CSV 預覽</span>
+              <span class="text-xs text-gray-400 font-normal">( 預期欄位：行政區、地段、地號 )</span>
+            </div>
+            <span v-if="csvDataList.length > 0" class="text-blue-600 text-sm font-medium">共 {{ csvDataList.length }} 筆</span>
+          </div>
+
+          <!-- 類 DataGrid 容器 -->
+          <div v-if="csvDataList.length > 0" class="relative overflow-auto border rounded-lg bg-white max-h-[300px] shadow-sm">
+            <table class="min-w-full divide-y divide-gray-200 border-separate border-spacing-0">
+              <thead class="bg-gray-50 sticky top-0 z-10">
+                <tr>
+                  <th v-for="(header, index) in csvHeaders" :key="index"
+                      class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b bg-gray-50">
+                    {{ header }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-100">
+                <tr v-for="(row, rowIndex) in csvDataList" :key="rowIndex"
+                    class="hover:bg-blue-50/50 transition-colors duration-150 odd:bg-white even:bg-gray-50/30">
+                  <td v-for="(cell, cellIndex) in row" :key="cellIndex"
+                      class="px-4 py-2.5 whitespace-nowrap text-sm text-gray-600 border-b border-gray-100">
+                    {{ cell }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div v-if="csvDataList.length === 0" class="flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
+            <span class="text-gray-400 text-sm">尚未上傳檔案或檔案內容為空</span>
           </div>
         </div>
 
@@ -124,6 +160,17 @@
   const showNotes = ref(true);                 // 控制注意事項顯示/隱藏
   const isButtonHovered = ref(false);          // 按鈕 hover 狀態
 
+  // CSV 資料
+  const csvDataList = ref<PlotImportData[]>([]); // 儲存解析後的 CSV 資料列表
+  const csvHeaders = ref<string[]>([]); // 儲存 CSV 標題列
+  csvHeaders.value = ["行政區", "地段", "地號"]; // 設定 CSV 預期標題列
+
+  // 定義 CSV 解析後的資料結構
+  interface PlotImportData {
+    district: string; // 行政區
+    section: string;  // 地段
+    plotNumber: string; // 地號
+  }
   //【生命週期】===================================================================
   // 監聽器：當視窗打開時
   watch(
@@ -139,6 +186,7 @@
       } else {
         // Dialog 關閉時，清除上傳的檔案
         selectedFile.value = null;
+        csvDataList.value = [];
         if (fileInput && fileInput.value) {
           fileInput.value.value = '';  // 重置 input 元件
         }
@@ -149,14 +197,68 @@
 
   // 處理檔案選取事件
   const onFileSelect = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    if (target.files && target.files.length > 0) {
-      selectedFile.value = target.files[0] ?? null;
+    try {
+      // 取得使用者選擇的檔案
+      const target = event.target as HTMLInputElement;
+      const file = target.files?.[0];
+      if (!file) {
+        target.value = ''; // 清空選取
+        throw new Error("未選擇檔案");
+      }
+
+      // 驗證檔案是否為 .csv
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        target.value = ''; // 清空選取
+        throw new Error("請選擇 CSV 檔案");
+      }
+
+      // 驗證檔案大小是否超過 5MB
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSizeInBytes) {
+        target.value = ''; // 清空選取
+        throw new Error("檔案大小超過 5MB");
+      }
+
+      // 取得檔案
+      selectedFile.value = file;
+
+      // 讀取 CSV 資料
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        if (!text) { // 檢查讀取結果是否為空
+          return;
+        }
+
+        // 解析 CSV (簡單實作：以換行分割，忽略第一行標題)
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        const dataRows = lines.slice(1); // 跳過標題列
+
+        csvDataList.value = dataRows.map(row => {
+          const columns = row.split(',');
+          return {
+            district: columns[0]?.trim() ?? '',
+            section: columns[1]?.trim() ?? '',
+            plotNumber: columns[2]?.trim() ?? ''
+          };
+        });
+      };
+
+      // 考慮到台灣常見的 CSV 編碼，若有亂碼問題可改用 'Big5'
+      reader.readAsText(file, 'UTF-8');
+    }
+    catch (error) {
+      console.error("檔案選取錯誤:", error);
+      Swal.fire({
+        icon: 'error',
+        title: '檔案選取錯誤',
+        text: '請重新選擇檔案。',
+      });
     }
   };
 
   // 觸發檔案選取對話框
-  const openFilePicker = () => { fileInput.value?.click(); }; 
+  const openFilePicker = () => { fileInput.value?.click(); };
 
   //【方法】===================================================================
 
@@ -272,6 +374,7 @@
     }).then((result) => {
       if (result.isConfirmed) {
         selectedFile.value = null;
+        csvDataList.value = [];
         if (fileInput && fileInput.value) {
           fileInput.value.value = '';  // 重置 input 元件
         }

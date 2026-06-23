@@ -65,24 +65,22 @@
           </div>
 
           <!--檔案名稱 顯示-->
-          <div style="display: flex; justify-content: flex-start;">
-            檔案：
+          <div style="display: flex; justify-content: flex-start;">            
             <div v-if="selectedFile" class="mt-3  text-gray-700 text-sm leading-relaxed px-2 break-all">
-              {{ selectedFile.name }}
+              檔案：{{ selectedFile.name }}
             </div>
             <div v-if="!selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              未上傳
+              檔案：未上傳
             </div>
           </div>
 
           <!--檔案大小 顯示-->
-          <div style="display: flex; justify-content: flex-start;">
-            大小：
+          <div style="display: flex; justify-content: flex-start;">            
             <div v-if="selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              {{ Math.max(1, Math.round(selectedFile.size / 1024)) }} kb
+              大小：{{ Math.max(1, Math.round(selectedFile.size / 1024)) }} kb
             </div>
             <div v-if="!selectedFile" class="mt-3 text-gray-700 text-sm leading-relaxed px-2 break-all">
-              ---
+              大小：---
             </div>
           </div>
         </div>
