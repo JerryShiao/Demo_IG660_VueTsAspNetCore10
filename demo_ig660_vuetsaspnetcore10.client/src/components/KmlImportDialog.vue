@@ -15,7 +15,7 @@
       <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-4">
 
         <!--檔案上傳-->
-        <div class="flex flex-col items-start w-full">
+        <div class="flex flex-col w-full">
 
           <div style="display:flex;">
             <!--檔案上傳 input (隱藏)-->
@@ -96,7 +96,7 @@
         </div>
 
         <!--注意事項(內文)-->
-        <div v-if="showNotes" class="text-xs leading-relaxed space-y-1 p-3 rounded-lg"
+        <div v-if="showNotes" class="leading-relaxed space-y-1 p-3 rounded-lg"
              style="color: #dc5e5e; background-color: #fdf0f0;">
           <p>
             ※本線上系統藉由瀏覽器執行，<br>
@@ -132,7 +132,7 @@
   // 控制視窗顯示狀態
   const isDialogVisible = ref(false);          // 控制 Dialog 顯示
   const dialogTitle = ref("KML 匯入");         // Dialog 標題
-  const dialogWidth = ref("464px");            // Dialog 預設寬度
+  const dialogWidth = ref("600px");            // Dialog 預設寬度
   const loading = ref(false);                  // 加載狀態
   const fileInput = ref<HTMLInputElement>();   // 用於觸發檔案選取的隱藏 input 元素
   const selectedFile = ref<File | null>(null); // 使用者選擇的檔案

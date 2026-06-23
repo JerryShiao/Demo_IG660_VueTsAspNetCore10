@@ -98,7 +98,7 @@
           <div class="flex justify-between items-center mb-2">
             <div class="flex items-center gap-2">
               <span class="text-gray-700 font-semibold">CSV 預覽</span>
-              <span class="text-xs text-gray-400 font-normal">( 預期欄位：行政區、地段、地號 )</span>
+              <span class="text-gray-400 font-normal">( 預期欄位：行政區、地段、地號 )</span>
             </div>
             <span v-if="csvDataList.length > 0" class="text-blue-600 text-sm font-medium">共 {{ csvDataList.length }} 筆</span>
           </div>
@@ -109,7 +109,7 @@
               <thead class="bg-gray-50 sticky top-0 z-10">
                 <tr>
                   <th v-for="(header, index) in csvHeaders" :key="index"
-                      class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider border-b bg-gray-50">
+                      class="px-4 py-3 text-left font-bold text-gray-600 uppercase tracking-wider border-b bg-gray-50">
                     {{ header }}
                   </th>
                 </tr>

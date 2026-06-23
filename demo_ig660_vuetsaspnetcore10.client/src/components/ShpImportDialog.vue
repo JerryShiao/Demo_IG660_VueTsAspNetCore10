@@ -15,7 +15,7 @@
       <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-4">
 
         <!--檔案上傳-->
-        <div class="flex flex-col items-start w-full">
+        <div class="flex flex-col w-full">
 
           <div style="display:flex;">
             <!--檔案上傳 input (隱藏)-->
@@ -105,7 +105,7 @@
 
           <!--推薦提示：符合推薦 = 綠色✓，不符合 = 黃色⚠️-->
           <div v-if="recommendationReason"
-               class="text-xs p-3 rounded-lg flex items-start gap-2"
+               class="p-3 rounded-lg flex gap-2"
                :style="alertStyle">
 
             <!-- 符合推薦：綠色打勾 -->
@@ -125,7 +125,7 @@
               <p v-else class="font-bold mb-1">⚠️ 建議修改</p>
 
               <p>{{ recommendationReason }}</p>
-              <p class="mt-1 text-xs opacity-80">
+              <p class="mt-1 opacity-80">
                 當前選擇: <strong>{{ selectedEpsg }}</strong>
                 <span v-if="selectedEpsg !== recommendedEpsg"> (推薦: {{ recommendedEpsg }})</span>
               </p>
@@ -160,7 +160,7 @@
           </div>
 
           <!--注意事項(內文)-->
-          <div v-if="showNotes" class="text-xs leading-relaxed space-y-1 p-3 rounded-lg"
+          <div v-if="showNotes" class="leading-relaxed space-y-1 p-3 rounded-lg"
                style="color: #dc5e5e; background-color: #fdf0f0;">
             <p>
               ※本線上系統藉由瀏覽器執行，<br>
@@ -215,7 +215,7 @@
   // 控制視窗顯示狀態
   const isDialogVisible = ref(false);              // 控制 Dialog 顯示
   const dialogTitle = ref("SHP(Shapefile) 匯入");  // Dialog 標題
-  const dialogWidth = ref("464px");                // Dialog 預設寬度
+  const dialogWidth = ref("600px");                // Dialog 預設寬度
   const loading = ref(false);                      // 加載狀態
   const fileInput = ref<HTMLInputElement>();       // 用於觸發檔案選取的隱藏 input 元素
   const selectedFile = ref<File | null>(null);     // 使用者選擇的檔案
